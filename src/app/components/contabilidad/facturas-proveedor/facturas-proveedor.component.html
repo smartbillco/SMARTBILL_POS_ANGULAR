@@ -1,0 +1,226 @@
+<header class="content__title">
+  <h1 class="text-themecolor">FACTURAS PROVEEDORES</h1>
+  <div class="actions">
+    <div class="dropdown actions__item">
+      <i data-toggle="dropdown" class="zmdi zmdi-more-vert"></i>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item"><b>Buscar Por Mes</b></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="card">
+  <div class="card-body">
+    <div class="buttomheaderright">
+      <button *ngIf="listFacturas.length == 0" class="btn btn-danger">
+        No hay facturas registradas
+      </button>&nbsp;
+      <button (click)="activeAddInvoice = true" class="btn btn-success btn--icon-text" data-toggle="modal"
+        data-target="#modal-registrar-factura-proveedor">
+        <i class="zmdi zmdi-money zmdi-hc-fw"></i>
+        Registrar factura proveedor
+      </button>&nbsp;
+
+      <button class="btn btn-success btn--icon-text">
+        <i class="fas fa-file-export"></i>
+        Exportar
+      </button>&nbsp;
+    </div>
+
+
+
+    <!-- Filtros -->
+    <div class="row">
+      <div class="col-12">
+
+        <div class="row mt-3">
+          <div class="form-group col-4">
+            <select class="browser-default custom-select" (change)="filterValidate($event.target.value)">
+              <option value="0">Aplicar filtro por:</option>
+              <option value="1">Proveedor</option>
+              <option value="2">Pendiente de pago</option>
+              <option value="3">Fecha</option>
+            </select>
+          </div>
+
+
+          <div class="form-group col-4 animated fadeIn" *ngIf="filterByClient">
+            <button (click)="activeProvidersModal = true" class="btn btn-primary" data-toggle="modal"
+              data-target="#modal-selectProvider">
+              <i class="fa fa-search"></i>
+              Seleccionar proveedor
+            </button>
+          </div>
+
+          <div class="form-group col-8 animated fadeIn" *ngIf="filterByDate">
+            <div class="row">
+              <div class="col-12 col-md-3">
+                <input class="proper-dateInput " type="date" [(ngModel)]="currentDate.fechaInicio"
+                  palceolder="dd/mm/yyyy">
+              </div>
+
+              <div class="col-12 col-md-3">
+                <input class="proper-dateInput" type="date" [(ngModel)]="currentDate.fechaFin" placeholder="dd/mm/yyyy">
+              </div>
+
+              <div class="col-12 col-md-1">
+                <button (click)="getInvoicesByImplicitDate(currentDate)" style="margin-top: 7px" class="btn btn-info">
+                  Buscar <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- Terminan filtos -->
+
+
+    <!--Busqueda de CC-->
+
+    <!--Lista de facturas-->
+    <div class="table-responsive">
+      <table id="dt-categoria" class="table table-bordered" style="width: 100%">
+        <thead>
+          <tr>
+            <th class="td-option">Número</th>
+            <th class="td-option">Atendido por</th>
+            <th class="td-option">Proveedor</th>
+            <th class="td-option">Total</th>
+            <th class="td-option">Saldo</th>
+            <th class="td-option">Estado</th>
+            <th class="td-option">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let fac of listFacturas'>
+            <td>{{fac.numero}}</td>
+            <td>{{fac.nombreEmpleado}}</td>
+            <td>{{fac.nombreProveedor}}</td>
+            <td>{{fac.valor | currency: 'USD'}}</td>
+            <td>{{fac.saldo | currency: 'USD'}}</td>
+            <td><span style="color: white" class="badge"
+                [ngClass]="{'badge-success': fac.estado === 'PAGADO', 'badge-danger': fac.estado === 'PENDIENTE'}">{{fac.estado}}
+              </span></td>
+            <td>
+              <!-- <button (click)='verDetalles(fac)' class="btn btn-success btn--icon" title="Ver Detalles">
+                <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
+              </button> -->
+              <button (click)='verDetalles(fac)' class="btn btn-outline-success" title="Ver Detalles">
+                <i class="fa fa-list"></i>
+              </button> &nbsp;
+
+              <button [disabled]="fac.estado == 'PAGADO'" (click)='setAddAbonoCC(fac)' class="btn btn-outline-primary"
+                title="Registrar Abonos">
+                <i class="zmdi zmdi-money zmdi-hc-fw"></i>
+              </button>&nbsp;
+
+              <button (click)='verAbonos(fac)' class="btn btn-outline-info" title="Ver Abonos">
+                <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
+              </button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- Modal Detalles Factura-->
+<div class="modal fade" id="modal-detalles" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Detalle Factura No. {{cuentaPorPagar.numero}}</div>
+      </header>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table id="dt-consulta-abonos" class="table table-bordered" style="width: 100%">
+            <thead>
+              <tr>
+                <th class="td-option">Producto</th>
+                <th class="td-option">Unidad</th>
+                <th class="td-option">Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let det of cuentaPorPagar.listaCompras'>
+                <td>{{det.producto}}</td>
+                <td>{{det.medida}}</td>
+                <td>{{det.cantidad}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal insertar abonos CP-->
+<div class="modal fade" id="modal-add-abono-cp" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Registrar abono a cuenta No. {{cuentaPorPagar.numero}}</div>
+      </header>
+      <div class="modal-body">
+        <form #formAddAbonos='ngForm' (ngSubmit)='registrarNuevoAbono()'>
+          <div class="form-group">
+            <label>Valor</label>
+            <input [(ngModel)]='nuevoAbono.valor' step="any" type="number" class="form-control" minlength="2" required
+              min="1000" max="100000000" name="valorNuevoAbono">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer">
+            <button type="button" type="submit" class="btn btn-primary">Aceptar</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal abonos CP-->
+<div class="modal fade" id="modal-abonos-cp" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Abonos a cuenta No. {{cuentaPorPagar.numero}}</div>
+      </header>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table id="dt-consulta-abonos" class="table table-bordered" style="width: 100%">
+            <thead>
+              <tr>
+                <th class="td-option">Fecha</th>
+                <th class="td-option">Total Abonado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let ab of listAbonos'>
+                <td>{{ab.fecha}}</td>
+                <td><b>{{ab.valor}}</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- select provider modal -->
+<app-select-provider *ngIf="activeProvidersModal" (providerSelected)="setProvider($event)">
+</app-select-provider>
+<!-- end of select provider Modal -->
+
+<app-add-provider-invoice *ngIf="activeAddInvoice" [listaProductos]="listaProductos"
+  [listaProveedores]="listaProveedores" [where]="'/home/compras'">
+</app-add-provider-invoice>

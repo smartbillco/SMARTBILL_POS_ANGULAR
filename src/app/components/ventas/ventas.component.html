@@ -1,0 +1,774 @@
+<header class="content__title">
+</header>
+<div class="card" style="height: auto; min-height: 85vh !important">
+    <div class="row" style=" height: auto; min-height: 85vh">
+        <!--Venta-->
+        <div class="col-md-4 invoiceSide">
+            <!-- Formulario cliente -->
+            <div class="card-body" style="flex: 0; padding: 1.1rem" >
+                <form #formClienteFactura='ngForm' (ngSubmit)='searchCustomer()'>
+                    <div class="form-row" style="margin-bottom: -5%">
+
+                        <div class="col-md-8" *ngIf="searchById">
+                            <div class="form-group">
+                                <input type="text"
+                                       id="name"
+                                       name="nameC"
+                                       class="form-control form-control-lg is-valid"
+                                       required
+                                       minlength="2"
+                                       pattern="^[-+]?\d*$"
+                                       [(ngModel)]="cliente.identificacion"
+                                       #idCliente
+                                       placeholder="Número de celular o documento de cliente" />
+                                <i class="form-group__bar"></i>
+                            </div>
+                        </div>
+
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success pull-right" title="Verificar Cliente">
+                                <i class="zmdi zmdi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <button type="button"
+                                    class="btn btn-outline-success pull-right"
+                                    title="Agregar nuevo cliente"
+                                    (click)="addNewCustomer()">
+                                <i class="fas fa-user-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+
+                    </div>
+                </form>
+            </div>
+
+          <div class="row" class="clinetContainer">
+                <div class="col-12">
+                    <span> Nombre de cliente: <span style="color: #2FBB7F">{{ newCustomer?.nombre }}</span>  </span>
+                </div>
+                <div style="position: relative;" > <button (click)="removeCustomer()" *ngIf="!flagToremoveCustomer" style="position: absolute; top: 10px" class="btn btn-outline-danger"> <i class="fa fa-trash " ></i> </button> </div>
+                <div class="col-12">
+                    <span> Numero de identificación: <span style="color: #2FBB7F"> {{ newCustomer?.identificacion }} </span></span>
+                </div>
+            </div>
+            <!-- Tabla detalles factura -->
+            <div class="card-body" id="table-container">
+                <div class="table-responsive">
+                    <table id="dt-proveedor" class="table table-bordered">
+                        <thead class="thead-default">
+                            <tr class="text-center">
+                                <td>Producto</td>
+                                <td>Cant.</td>
+                                <td>Valor Unitario</td>
+                                <td>Total</td>
+                                <td>Acción</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="font-weight: bold; text-transform:uppercase; font-size: 15px" *ngFor="let det of listaDetalles">
+                                <td style="text-align: center">{{det.nombre}}</td>
+                                <td class="text-center vertical-center"><input [(ngModel)]='det.cantidad' type="number" class="form-control form-control-lg"></td>
+                                <td class="text-center vertical-center" style="font-weight:normal">
+                                    {{det.precioProducto | currency:'USD'}}
+                                </td>
+                                <!---td class="text-center vertical-center" style="text-align:center">
+                      {{det.cantidad*det.precioProducto | currency:'USD'}}</td-->
+                                <td style="font-size: 12px" class="text-center vertical-center" style="text-align:center">
+                                    {{getTotalDetalle(det) | currency:'USD'}}</td>
+                                <td style="text-align: center;">
+                                    <!--button class="btn btn-primary btn--icon btnaccion" data-toggle="tooltip"
+                    (click)="setDetalleEditar(det)" title="Editar">
+                    <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                  </button-->
+                                    <button class="btn btn-danger btn--icon btnaccion" (click)="borrarDetalle(det)" data-title="Delete">
+                    <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                  </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <!-- <tfoot class="thead-default">
+              <tr>
+                <td
+                  style="font-weight: bold; background-color: #2196f3; color: #fff;font-size:15px; vertical-align: middle; text-align: center">
+                  TOTAL</td>
+                <td style="background-color: #2196f3; border-right-color:#2196f3"></td>
+                <td style="background-color: #2196f3"></td>
+                <td
+                  style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center">
+                  {{totalVenta | currency:'USD'}}</td>
+                <td style="background-color: #2196f3"></td>
+              </tr>
+
+            </tfoot>  -->
+                    </table>
+                </div>
+            </div>
+            <div class="row getTotal">
+                <div class="col-12 getTotal__item mb-3">
+                <div class="getTotal__item--sub">
+                    Total:
+                </div>
+                <div class="getTotal__item--sub">
+                    {{totalVenta | currency:'USD'}}
+                </div>
+                </div>
+
+
+                <div class="col-12 text-center mt-2 mb-2">
+                        <button class="btn btn-outline-secondary" (click)="cancelar()">
+                                    <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                                        Cancelar
+                        </button> &nbsp;
+
+                        <button class="btn btn-success" (click)='guardar()'>
+                                    <i class="zmdi zmdi-floppy zmdi-hc-fw"></i>
+                                        Facturar
+                        </button>
+                    </div>
+            </div>
+
+        </div>
+        <!--Categorías y productos-->
+        <div class="col-md-8">
+            <!-- Categorías -->
+            <!-- <div class="row mb-2">
+          <h4 class="card-title h4">Productos</h4>
+      </div> -->
+            <!-- <div class="row">
+        <div id="scroll" class="row">
+          <div *ngFor="let cat of listaCategorias" class="col-md-auto">
+            <div (click)='filtrarPorCategoria(cat)'>
+              <h5><span class="badge badge-primary">{{cat.nombre}}</span></h5>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+            <!-- Productos-->
+            <div class="row mt-3">
+
+                <div class="col-md-7">
+                    <div class="form-group ">
+                        <input #nombreP type="text"
+                               class="form-control form-control-lg is-valid"
+                               id="validationServer01"
+                               [(ngModel)]="search"
+                               pattern="[a-zA-Z ]*"
+                               name="buscar-prod-nombre"
+                               placeholder="Busqueda por nombre o codigo de barras">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success pull-right" title="Verificar Cliente"><i
+                  class="zmdi zmdi-search"></i></button>
+                    </div>
+                </div>
+                <div class="col-md-3 ml-5">
+                    <button class="btn btn-outline-success"> Caja: {{ caja.nombre }} </button>
+                </div>
+                <!-- <div class="col-md-5" style="margin-top: 6px" >
+            <div class="form-group ">
+                <input #codigoBP type="text" class="form-control form-control-lg" id="codigoBP"
+                  [(ngModel)]="codigoBarrasBuscar" name="buscar-prod-codigo-b" (focusout)='buscarProductoCodigoBarras()'
+                  placeholder="código de barras">
+              </div>
+        </div> -->
+            </div>
+
+            <!-- <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="validationServer02">Ingrese código de producto</label>
+                    <input type="number" #codigoP class="form-control is-valid" id="validationServer02"
+                      (blur)="buscarProductoPorCodigo(codigoP.value)">
+                    <i class="form-group__bar"></i>
+                  </div>
+                </div> -->
+
+
+            <!-- <div class="row">
+        <div class="col-9 contacts__items" >
+          <div *ngFor="let prod of listaProductos | searchFilter: getSearchValue()" class="product__item">
+            <div class="product__item--description" (click)="addProducto(prod)">
+              <a class="product__img">
+                <img [src]="prod.foto ? prod.foto : 'assets/logo.png'">
+              </a>
+              <div class="product__info">
+                <strong>{{prod.precio | currency: 'USD'}}</strong>
+                <p>{{prod.nombre}}</p>
+              </div>
+            </div>
+          </div> -->
+
+            <div class="row products__content">
+                <div class="col-9 products__items animated fadeIn ">
+                    <div class="animated fadeIn product__item" *ngFor="let prod of filteredCategory | searchFilter: getSearchValue()" (click)="addProducto(prod)">
+                        <div class="item__content">
+                            <img [src]="prod.foto ? prod.foto : 'assets/logo.png'" alt="">
+                            <span class="product__description text-center"> {{ prod.nombre }}<span class="text-center" > {{ prod.precio | currency: 'USD' }} </span> </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-3" id="category__products">
+                    <div class="categories__content">
+                        <div class="category__title">
+                            <h3 class="h3 text-center" style="color: white">Categorias</h3>
+                        </div>
+
+                        <div class="category__list">
+                            <div (click)="filtrarPorCategoria( '1' )" class="category__item mb-1"> Todas</div>
+                            <div (click)='filtrarPorCategoria(cat)' *ngFor="let cat of listaCategorias" class="category__item mb-1"> {{cat.nombre}} </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <!-- Modal Resumen Factura-->
+    <div class="modal fade" id="modal-venta" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <header class="price-table__header bg-blue">
+                    <div class="row">
+                        <div class="price-table__title col-10"> Proceso de facturación </div>
+                        <div class="col-2">
+                            <button class="btn btn-info btn--icon float-right" type="reset" data-dismiss="modal">
+                          <i class="zmdi zmdi-close"></i>
+                  </button>
+                        </div>
+                    </div>
+                </header>
+                <div class="modal-body">
+                    <div class="card-header" role="tab" id="headingOne" style="height: 93px">
+                        <!--a aria-expanded="true" aria-controls="collapseOne"-->
+                        <div class="row">
+                            <div class="col">
+                                <p class="text-themecolor">Cliente: {{newCustomer?.nombre}}</p>
+                                <p class="text-themecolor">ID: {{newCustomer?.identificacion}}</p>
+                            </div>
+                            <h4 style="text-align:right; color: red; font-weight: bold; padding-right: 31px;">Factura No: {{factura.codigo}}</h4>
+                        </div>
+
+                    <!-- <div class="btn-group btn-group-toggle  mt-3 no-index" data-toggle="buttons">
+                            <p class="text-themecolor mr-5 ">Metodo de pago:</p>
+                        <label *ngFor="let med of mediosDePago"
+                                [ngClass]="med.id == factura.idMediosPago ? 'btn active':'btn'"
+                                (click)='setIdMedios(med.id)'>
+                            <input type="radio"
+                                   name="options"
+                                   [value]='med.id'
+                                   [(ngModel)]='factura.idMediosPago'>
+                            {{med.descripcion}}
+                        </label>
+                    </div> -->
+
+
+                        <!--/a-->
+                    </div>
+
+                    <!--div class="card-body"-->
+                    <!-- <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="thead-default">
+                                <tr class="text-center">
+                                    <td>Producto</td>
+                                    <td>Cantidad</td>
+                                    <td>Valor Unitario</td>
+                                    <td>Total</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="font-weight: bold; text-transform:uppercase; font-size: 15px;" *ngFor="let det of listaDetalles">
+                                    <td>{{det.nombre}}</td>
+                                    <td class="text-center">{{det.cantidad}}</td>
+                                    <td class="text-center">{{det.precioProducto | currency:'USD'}}</td>
+                                    <td class="text-center">{{det.total | currency:'USD'}}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="thead-default mt-5">
+                                <tr>
+                                    <td style="background-color: #2196f3;
+                                               color: #fff;
+                                               font-weight: bold;
+                                               text-transform: uppercase;
+                                               border-right-color:#2196f3">
+                                    </td>
+                                    <td style="background-color: #2196f3; border-right-color:#2196f3">
+                                    </td>
+                                    <td style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: right">
+                                        SubTotal: </td>
+                                    <td style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center; ">
+                                        {{totalVenta | currency:'USD'}}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: #2196f3;border-right-color:#2196f3">
+                                    </td>
+                                    <td style="background-color: #2196f3; border-right-color:#2196f3">
+                                    </td>
+
+                                    <td  style="background-color: #2196f3;
+                                               color: #fff;
+                                               font-weight: bold;
+                                               text-transform: uppercase;
+                                               border-right-color:#fff;
+                                               text-align: right">
+                                         <span  *ngIf="factura.idMediosPago != 4"> Recibe en {{ payMethodSelected }}: </span>
+                                        <span *ngIf="factura.idMediosPago === 4" >No se recibe dinero</span>
+                                    </td>
+
+
+                                    <td class="text-center"
+                                        style="font-weight: bold;
+                                               background-color: #2196f3;
+                                               font-size:19px;
+                                               color: #fff;
+                                               text-align: center">
+                                        <input type="number"
+                                               name="factura.recibe"
+                                               id="fac-recibe"
+                                               #recibe
+                                               [(ngModel)]='factura.recibido'
+                                               [disabled]="factura.idMediosPago === 4"
+                                               class="form-control form-control-lg is-valid"
+                                                style=" color:#fff;
+                                                        text-align:center;
+                                                        font-weight: bold;
+                                                        border-bottom: 0px !important; font-size: 20px "
+                                                        placeholder="$">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#2196f3">
+                                    </td>
+                                    <td style="background-color: #2196f3; border-right-color:#2196f3">
+                                    </td>
+
+
+                                    <td style="background-color: #2196f3;
+                                               color: #fff;
+                                               font-weight: bold;
+                                               text-transform: uppercase;
+                                               border-right-color:#fff;
+                                               text-align: right">
+                                            Descuento:
+                                        <div class="radio">
+                                            <label><input type="radio" name="optradio" checked (click)="discountType(1)" > Porcentaje </label> &nbsp;
+                                            <label><input type="radio" name="optradio" checked (click)="discountType(0)" > Valor</label>
+                                        </div>
+                                    </td>
+
+
+                                    <td style="font-weight: bold;
+                                               background-color: #2196f3;
+                                               font-size:19px;
+                                               color: #fff !important;
+                                               text-align: center">
+
+                                            <input type="number"
+                                               (keyup)="setTotalSale()"
+                                               *ngIf="factura.tipoDescuento === 0"
+                                               name="descuento"
+                                               id="fac-recibe"
+                                               #descuento
+                                               [(ngModel)]='factura.descuento'
+                                               class="form-control form-control-lg is-valid"
+                                                style=" color:#fff !important;
+                                                        text-align:center;
+                                                        font-weight: bold;
+                                                        border-bottom: 0px !important;
+                                                        font-size: 20px;
+                                                        "
+                                                        placeholder="$">
+
+                                                        <input type="number"
+                                                        (keyup)="setTotalSale()"
+                                                        *ngIf="factura.tipoDescuento  === 1"
+                                                        name="descuento"
+                                                        id="fac-recibe"
+                                                        #descuento
+                                                        [(ngModel)]='factura.descuento'
+                                                        class="form-control form-control-lg is-valid"
+                                                         style=" color:#fff !important;
+                                                                 text-align:center;
+                                                                 font-weight: bold;
+                                                                 border-bottom: 0px !important;
+                                                                 font-size: 20px
+                                                                 "
+                                                                 placeholder="%">
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#2196f3">
+                                    </td>
+                                    <td style="background-color: #2196f3; border-right-color:#2196f3">
+                                    </td>
+                                    <td style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: right">
+                                        Total: </td>
+                                    <td style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center">
+                                        {{temporaryTotal | currency:'USD'}}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#2196f3">
+                                    </td>
+                                    <td style="background-color: #2196f3; border-right-color:#2196f3">
+                                    </td>
+                                    <td style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#fff; text-align: right">
+                                        Cambio: </td>
+                                    <td style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center">
+                                        {{factura.recibido - temporaryTotal | currency:'USD'}}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div> -->
+                    <!--/div-->
+                    <div class="invoiceDetail">
+                        <div class="invoiceDetail__tableHeader">
+                                <div class="invoiceDetail__tableHeader--item">Producto</div>
+                                <div class="invoiceDetail__tableHeader--item">Cantidad </div>
+                                <div class="invoiceDetail__tableHeader--item"> Valor </div>
+                                <div class="invoiceDetail__tableHeader--item">Total</div>
+                        </div>
+                        <div class="invoiceDetali__products">
+                            <div class="invoiceDetali__products--item" *ngFor="let det of listaDetalles" >
+                                <div class="itemProduct__description line-right"> {{ det.nombre }} </div>
+                                <div class="itemProduct__description line-right"> {{ det.cantidad }} </div>
+                                <div class="itemProduct__description line-right"> {{ det.precioProducto | currency: 'USD' }} </div>
+                                <div class="itemProduct__description line-left"> {{ det.total | currency: 'USD' }} </div>
+                            </div>
+                        </div>
+                        <div class="inviceDetali__invoiceDecription">
+                            <div class="inviceDetali__invoiceDecription--data">
+                                <div class="data__item">
+                                    <div class="data__item--description">
+                                        <span class="description__span" > SubTotal:  </span>
+                                    </div>
+                                    <div class="data__item--input">
+                                        {{ totalVenta | currency: 'USD' }}
+                                    </div>
+                                </div>
+                                <div class="data__item">
+                                    <div class="data__item--description">
+                                        <span class="description__span mr-1" > Descuento:  </span>
+                                        <input type="radio" name="optradio" checked (click)="discountType(1)" > (%) &nbsp;
+                                        <input type="radio" name="optradio" checked (click)="discountType(0)" > ($)
+                                    </div>
+                                    <div class="data__item--input">
+                                            <input type="number"
+                                                   (keyup)="setTotalSale()"
+                                                   *ngIf="factura.tipoDescuento === 0"
+                                                   name="descuento"
+                                                   id="fac-recibe"
+                                                   step="0.01"
+                                                   pattern="^\d+(?:\.\d{1,2})?$"
+                                                   #descuento
+                                                   [(ngModel)]='factura.descuento'
+                                                  class="form-control form-control-lg is-valid"
+                                                style=" color:#fff !important;
+                                                        text-align:center;
+                                                        font-weight: bold;
+                                                        border-bottom: 0px !important;
+                                                        font-size: 20px;
+                                                        "
+                                                        placeholder="$">
+
+                                            <input type="number"
+                                                     (keyup)="setTotalSale()"
+                                                     *ngIf="factura.tipoDescuento  === 1"
+                                                     name="descuento"
+                                                     id="fac-recibe"
+                                                     #descuento
+                                                     [(ngModel)]='factura.descuento'
+                                                     class="form-control form-control-lg is-valid"
+                                                      style=" color:#fff !important;
+                                                              text-align:center;
+                                                              font-weight: bold;
+                                                              border-bottom: 0px !important;
+                                                              font-size: 20px
+                                                              "
+                                                              placeholder="%">
+
+                                    </div>
+                                </div>
+                                <div class="data__item">
+                                    <div class="data__item--description">
+                                        <span class="description__span" > Total:  </span>
+                                    </div>
+                                    <div class="data__item--input">
+                                        {{ temporaryTotal | currency: 'USD' }}
+                                    </div>
+                                </div>
+                                <div class="data__item">
+                                    <div class="data__item--description">
+                                        <span class="description__span" > Cambio:  </span>
+                                    </div>
+                                    <div class="data__item--input">
+                                        {{factura.recibido - temporaryTotal | currency:'USD'}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="inviceDetali__invoiceDecription--paymentMethods">
+                                <div class="paymentMethod__detail">
+                                    <span class="detail__span" > Efectivo:</span>
+                                    <div class="detail__input">
+                                        <input id="test" (keyup)="setRecivedValue()"  #recibe [(ngModel)]='listaMediosDePago.efectivo' class="input__pymentMethod" type="number">
+                                    </div>
+                                </div>
+                                <div class="paymentMethod__detail">
+                                    <span class="detail__span" >Tj debito:</span>
+                                    <div class="detail__input">
+                                        <input (keyup)="setRecivedValue()" [(ngModel)]='listaMediosDePago.tarjeta' class="input__pymentMethod" type="number">
+                                    </div>
+                                </div>
+
+                                <!-- <div class="paymentMethod__detail">
+                                        <span class="detail__span" >Tj credito:</span>
+                                        <div class="detail__input">
+                                            <input (keyup)="setRecivedValue()" [(ngModel)]='listaMediosDePago.tarjeta' class="input__pymentMethod" type="number">
+                                        </div>
+                                    </div> -->
+
+                                <!-- <div class="paymentMethod__detail">
+                                    <span class="detail__span" > CXC:</span>
+                                    <div class="detail__input">
+                                        <input (click)="factura.idMediosPago = listaMediosDePago.cxc" [(ngModel)]='listaMediosDePago.cxc' class="input__pymentMethod" type="checkbox">
+                                    </div>
+                                </div> -->
+                                <div class="paymentMethod__detail">
+                                    <span class="detail__span" > Cheque:</span>
+                                    <div class="detail__input">
+                                        <input (keyup)="setRecivedValue()" [(ngModel)]='listaMediosDePago.cheque' class="input__pymentMethod" type="number">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--p style="font-weight: bold">¿Desea imprimir la factura de la venta?</p-->
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-primary" (click)="guardarFactura()" *ngIf='clienteExiste' data-dismiss="modal">Imprimir y Enviar</button>
+                        <button type="button" class="btn btn-primary" (click)="guardarFactura()" *ngIf='clienteExiste' data-dismiss="modal">Solo Enviar</button>
+
+            <button (click)="cancelInvocie()" type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                Cancelar
+            </button>
+
+            <button type="button" class="btn btn-success" (click)="validateInvoice()" *ngIf='!clienteExiste'>
+                    <i style="margin-right: 15px" class="fa fa-floppy-o" aria-hidden="true"></i>Facturar
+            </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!--Modal Cantidad en caja-->
+    <div class="modal fade" id="modal-cant-caja" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 158%;">
+                <header class="price-table__header bg-blue">
+                    Por favor ingrese la cantidad que se encuentra actualmente en caja.
+                </header>
+                <div class="modal-body">
+                    <div class="card">
+                        <form #formCantCaja='ngForm' ngNativeValidate (ngSubmit)='setCantCaja()'>
+                            <div class="form-group">
+                                <label>Cantidad en caja</label>
+                                <input type="number" name="cantCaja" min="1000" max="50000000" [(ngModel)]='cantCaja' class="form-control" required>
+                                <i class="form-group__bar"></i>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">Aceptar</button>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!--Modal Editar Detalle-->
+    <div class="modal fade" id="modal-edit_precio" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 158%;">
+                <header class="price-table__header bg-blue">
+                    Cambiar Precio
+                </header>
+                <div class="modal-body">
+                    <div class="card">
+                        <form #formCantCaja='ngForm' ngNativeValidate (ngSubmit)='editarDetalle()'>
+                            <div class="row">
+                                <div class="form-group">
+                                    <label>Nuevo precio</label>
+                                    <input type="number" name="nuevoPrecio" min="100" max="50000000" [(ngModel)]='detEditar.precioProducto' class="form-control form-control-lg" required>
+                                    <i class="form-group__bar"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label>Motivo del cambio</label>
+                                    <select class="form-control form-control-lg" required>
+                  <option *ngFor='let m of listMotivos'>{{m}}</option>
+                </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Clave de autorización</label>
+                                    <input type="text" name="claveAuth" maxlength="20" minlength="8" [(ngModel)]='claveAuth' class="form-control form-control-lg" required>
+                                    <i class="form-group__bar"></i>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">Aceptar</button>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!--Modal Nuevo Cliente-->
+    <div class="modal fade" id="modal-cliente" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <header class="price-table__header bg-blue ">
+                    <div class="row">
+                        <div class="price-table__title col-10"> Agregar cliente a sistema  </div>
+                        <div class="col-2">
+                            <button class="btn btn-info btn--icon float-right"
+                                    type="reset"
+                                    data-dismiss="modal">
+                                    <i class="zmdi zmdi-close"></i>
+                            </button>
+                        </div>
+                    </div>
+                  </header>
+                <form #formClientes='ngForm' (ngSubmit)='crearCliente()'>
+                    <div class="modal-body">
+                        <div class="form-group"
+                             [ngClass]="{'invalid': (cliNombre?.errors?.required || cliNombre?.errors?.minlength) && cliNombre.touched} ">
+                            <label>Nombre</label>
+                            <input [(ngModel)]='nuevoCliente.nombre'
+                                   type="text"
+                                   class="form-control form-control-lg"
+                                   maxlength="45"
+                                   minlength="2"
+                                   required
+                                   name="cliNombre"
+                                   #cliNombre='ngModel'>
+                                   <div class="litle-text" *ngIf="cliNombre.touched" >
+                                        <span *ngIf="cliNombre?.errors?.required">El nombre es requerido</span>
+                                        <span *ngIf="cliNombre?.errors?.minlength">Se requieren minimo  2 caracteres</span>
+                                    </div>
+                            <i class="form-group__bar"></i>
+                        </div>
+
+                        <div class="form-group">
+                                <label>Tipo de identificación</label>
+                                <select class="form-control form-control-lg"
+                                        [(ngModel)]='nuevoCliente.tipoIdentificacion'
+                                        name="ClienteTipo"
+                                        #ClienteTipo="ngModel">
+                                <option *ngFor='let t of listTipos' [(ngValue)]='t'>{{t}}</option>
+                                </select>
+                                <div class="litle-text" *ngIf="ClienteTipo.touched" >
+                                    <span *ngIf="ClienteTipo?.errors?.required">El tipo de identificación es requerido</span>
+                                </div>
+                                <i class="form-group__bar"></i>
+                            </div>
+
+
+
+                        <div class="form-group"
+                             [ngClass]="{'invalid': (cliIdenti?.errors?.required || cliIdenti?.errors?.minlength ) && cliIdenti.touched} ">
+                            <label>Número de identificación</label>
+                            <input [(ngModel)]='nuevoCliente.identificacion'
+                                   type="text"
+                                   class="form-control form-control-lg"
+                                   maxlength="45"
+                                   minlength="5"
+                                   required
+                                   name="cliIdenti"
+                                   #cliIdenti='ngModel'>
+                               <div class="litle-text" *ngIf="cliIdenti.touched" >
+                                  <span *ngIf="cliIdenti?.errors?.required">El numero de identificación es requerido</span>
+                                  <span *ngIf="cliIdenti?.errors?.minlength">Se requieren minimo 5 caracteres</span>
+                              </div>
+                            <i class="form-group__bar"></i>
+                        </div>
+
+                        <div class="form-group"
+                             [ngClass]="{'invalid': (cliCelular?.errors?.required || cliCelular?.errors?.minlength ) && cliCelular.touched} ">
+                            <label>Celular</label>
+                            <input [(ngModel)]='nuevoCliente.celular'
+                                   type="text"
+                                   class="form-control form-control-lg"
+                                   minlength="10"
+                                   maxlength="10"
+                                   pattern="\d*"
+                                   required
+                                   name="cliCelular"
+                                   #cliCelular='ngModel'>
+                               <div class="litle-text" *ngIf="cliCelular.touched" >
+                                  <span *ngIf="cliCelular?.errors?.required">El numero de celular es requerido</span>
+                                  <span *ngIf="cliCelular?.errors?.minlength">Se requieren minimo 10 caracteres</span>
+                              </div>
+                            <i class="form-group__bar"></i>
+                        </div>
+
+                        <div class="form-group"
+                             [ngClass]="{'invalid': (cliDireccion?.errors?.required || cliDireccion?.errors?.minlength ) && cliDireccion.touched} ">
+                            <label>Dirección</label>
+                            <input [(ngModel)]='nuevoCliente.direccion'
+                                   type="text"
+                                   class="form-control form-control-lg"
+                                   maxlength="45"
+                                   minlength="5"
+                                   name="cliDireccion"
+                                   required
+                                   #cliDireccion="ngModel">
+                               <div class="litle-text" *ngIf="cliDireccion.touched" >
+                                  <span *ngIf="cliDireccion?.errors?.required">La dirección es requerida</span>
+                                  <span *ngIf="cliDireccion?.errors?.minlength">Se requieren minimo 5 caracteres</span>
+                              </div>
+                            <i class="form-group__bar"></i>
+                        </div>
+
+                        <div class="modal-footer modalMargenInferior">
+                            <button type="button" data-dismiss="modal" class="btn btn-outline-secondary">Cerrar</button>
+                            <button type="submit" class="btn btn-success"> <i class="fas fa-plus mr-2"></i> Agregar Cliente</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+

@@ -1,0 +1,119 @@
+
+    <div class="table-responsive">
+      <table id="dt-categoria" class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="td-option">Número de factura</th>
+            <th class="td-option">Total</th>
+            <th class="td-option">Ver Detalles</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let fac of listFacturas'>
+            <td class="text-center">{{fac.idFactura}}</td>
+            <!-- <td>{{fac.usuario}}</td> -->
+            <td class="text-center" >{{fac.valor | currency: 'USD'}}</td>
+            <td class="text-center"  style="font-size: 18px">
+              <button (click)='verDetalles(fac)' class="btn btn-outline-success" title="Ver Detalles">
+                  <i class="far fa-file-alt"></i>
+              </button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+
+
+<!-- Modal Detalles Factura-->
+<div class="modal fade" id="modal-detalles" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <header class="price-table__header bg-blue ">
+            <div class="row">
+                <div class="price-table__title col-10"> Factura numero {{ factura.idFactura }}  </div>
+                <div class="col-2">
+                    <button class="btn btn-info btn--icon float-right"
+                            type="reset"
+                            data-dismiss="modal">
+                            <i class="zmdi zmdi-close"></i>
+                    </button>
+                </div>
+            </div>
+          </header>
+      <div class="modal-body">
+        <div class="accordion" role="tablist">
+          <div class="card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table id="dt-proveedor" class="table table-bordered">
+                  <thead class="thead-default">
+                    <tr class="text-center">
+                      <td>Producto</td>
+                      <td>Cantidad</td>
+                      <td>Valor Unitario</td>
+                      <td>Total</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="font-weight: bold; text-transform:uppercase; font-size: 15px;"
+                      *ngFor="let det of factura.listDetallesFactura">
+                      <td>{{det.nombre}}</td>
+                      <td class="text-center">{{det.cantidad}}</td>
+                      <td class="text-center">{{det.precioProducto | currency:'USD'}}</td>
+                      <td class="text-center">{{det.total | currency:'USD'}}</td>
+                    </tr>
+                  </tbody>
+                  <tfoot class="thead-default">
+                    <tr>
+                      <td
+                        style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#2196f3">
+                        Total</td>
+                      <td style="background-color: #2196f3; border-right-color:#2196f3">
+                      </td>
+                      <td style="background-color: #2196f3"></td>
+                      <td
+                        style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center">
+                        {{factura.valor | currency:'USD'}}</td>
+                    </tr>
+                    <tr>
+                      <td
+                        style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#2196f3">
+                        Recibe</td>
+                      <td style="background-color: #2196f3; border-right-color:#2196f3">
+                      </td>
+                      <td style="background-color: #2196f3"></td>
+                      <td
+                        style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center">
+                        {{factura.recibido | currency:'USD'}}</td>
+                    </tr>
+                    <tr>
+                      <td
+                        style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#2196f3">
+                        Cambio</td>
+                      <td style="background-color: #2196f3; border-right-color:#2196f3">
+                      </td>
+                      <td style="background-color: #2196f3"></td>
+                      <td
+                        style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center">
+                        {{factura.cambio | currency:'USD'}}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div><br>
+        <div class="modal-footer">          
+          <button type="button" class="btn btn-primary btn--icon-text"  (click)='reImprimirFactura()'>
+            <i class="zmdi zmdi-print"></i>Imprimir</button>
+          <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal detalle factura encontrada -->
+
+<!-- Termina modal de factura encontrada -->

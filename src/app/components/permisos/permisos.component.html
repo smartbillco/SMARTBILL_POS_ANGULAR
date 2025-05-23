@@ -1,0 +1,89 @@
+<div class="row">
+    <div class="col-md-4">
+      <header class="content__title">
+          <h1>PERMISOS</h1>
+      </header>
+    </div>    
+</div>
+<div class="card">
+    <div class="card-body">
+
+        <div class="table-responsive">
+          <table id="dt-permiso" class="table table-bordered" style="width: 100%">
+            <thead class="thead-default">
+              <tr>
+                <th class="td-option">Código</th>
+                <th class="td-option">Nombre</th>
+                <th class="td-option">URL</th>
+                <th class="td-option">Estado</th>
+                <td class="td-option">Opciones</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let per of listaPermisos'>
+                <td class="anchoColumnaCodigo">{{per.id}}</td>
+                <td>{{per.nombre}}</td>
+                <td>{{per.url}}</td>                
+                <td>{{per.estado == 1 ? 'ACTIVO' : 'INACTIVO' }}</td>
+                <td class="tableoption anchoColumnaOpciones">                  
+                  <button (click)='setActualizarPermiso(per)' class="btn btn-primary btn--icon"
+                    [disabled]='tipoUsuario != 1' data-title="Edit" data-toggle="modal" data-target="#modal-editarpermiso"
+                    title="Editar">
+                    <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br><br>
+        </div>
+        
+      </div>    
+  </div>
+
+<div class="modal fade" id="modal-editarpermiso" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Editar Permiso</div>
+      </header>
+      <form #formeditarPermisos='ngForm' ngNativeValidate (ngSubmit)='editarPermiso()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Código</label>
+            <input [(ngModel)]='permisoActualizar.id' maxlength="7" minlength="2" readonly type="text"
+              class="form-control" required name="perEditId">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Nombre</label>
+            <input [(ngModel)]='permisoActualizar.nombre' minlength="2" maxlength="45" type="text" class="form-control"
+              required name="perEditNombre">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>URL</label>
+            <input [(ngModel)]='permisoActualizar.url' minlength="2" maxlength="45" type="text" class="form-control"
+              name="perEditDesc" disabled>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <div class="select">
+              <label>Estado</label>
+              <select [(ngModel)]='permisoActualizar.estado' class="form-control" name="perEditEstado">                
+                <option [ngValue]="t.valor" *ngFor='let t of listaEstados'>
+                  {{t.nombre}}</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Editar Permiso</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal"
+              (click)='cerrarModalEditar()'>Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

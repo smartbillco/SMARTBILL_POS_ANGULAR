@@ -1,0 +1,285 @@
+<div class="row">
+    <div class="col-md-4">
+      <header class="content__title">
+          <h1>ROLES</h1>
+      </header>
+    </div>    
+</div>
+<div class="card">
+    <div class="card-body">
+
+        <div class="buttomheaderright">
+          <button class="btn btn-primary btn--icon-text" data-toggle="modal" data-target="#modal-rol"
+              [disabled]='tipoUsuario != "1"'><i class="zmdi zmdi-file-plus zmdi-hc-fw"></i> Agregar Rol</button> &nbsp;          
+        </div>
+        
+        <div class="table-responsive">
+          <table id="dt-rol" class="table table-bordered" style="width: 100%">
+            <thead class="thead-default">
+              <tr>
+                <th class="td-option">Código</th>
+                <th class="td-option">Nombre</th>
+                <th class="td-option">Estado</th>
+                <td class="td-option">Opciones</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let rl of listaRols'>
+                <td class="anchoColumnaCodigo">{{rl.id}}</td>
+                <td>{{rl.nombre}}</td>
+                <td>{{rl.estado == 1 ? 'ACTIVO' : 'INACTIVO' }}</td>
+                <td class="tableoption anchoColumnaOpciones">                  
+                  <button (click)='setActualizarRol(rl)' class="btn btn-primary btn--icon"
+                    [disabled]='tipoUsuario != 1' data-title="Edit" data-toggle="modal" data-target="#modal-editarrol"
+                    title="Editar">
+                    <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                  </button> &nbsp;
+                  <button (click)='setPermisosRol(rl)' class="btn btn-success btn--icon"
+                    [disabled]='tipoUsuario != 1' data-title="Edit" data-toggle="modal" data-target="#modal-permisosRol"
+                    title="Ver Permisos">
+                    <i class="fa fa-shield zmdi-hc-fw"></i>
+                  </button> &nbsp;
+                  <button (click)='eliminarRol(rl)' class="btn btn-danger btn--icon" data-title="Delete"
+                    [disabled]='tipoUsuario != 1' title="Eliminar" data-toggle="modal" data-target="#delete">
+                    <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br><br>
+        </div>        
+      </div>    
+  </div>
+
+<div class="modal fade" id="modal-rol" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Agregar Rol</div>
+      </header>
+      <form #formRols='ngForm' ngNativeValidate (ngSubmit)='crearRol()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input [(ngModel)]='rol.nombre' type="text" class="form-control" minlength="2" required maxlength="45"
+              name="rlNombre">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Estado</label>
+            <select [(ngModel)]='rol.estado' class="form-control" name="estado"
+              required>
+              <option [ngValue]='t.valor' *ngFor='let t of listaEstados'>
+                {{t.nombre}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <br />
+            <h4 class="card-title">Permisos</h4>
+
+            <form #formInsuumoProd='ngForm' ngNativeValidate (ngSubmit)="addPermiso()">
+              <div class="row">
+                <div class="col-sm-11">
+                  <div class="form-group">
+                    <div class="select">
+                      <label>Permiso</label>
+                      <select [(ngModel)]='nuevoPermiso' class="form-control" name="permisoAdd" required>
+                        <option [ngValue]='permiso' *ngFor='let permiso of listaPermisosActivos'>
+                          {{permiso.nombre}}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-1">
+                  <div class="form-group botonAccion">
+                    <button type="submit" class="btn btn-success btn--icon" title="Agregar Permiso">
+                      <i class="zmdi zmdi-plus zmdi-hc-fw"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+  
+            <!-- Tabla Permisos -->
+            <div style="margin-bottom: -1%">
+              <div class="table-responsive">
+                <table id="dt-permisos-rol" class="table table-bordered">
+                  <thead class="thead-default">
+                    <tr class="text-center">
+                      <td>Permiso</td>
+                      <td>Estado</td>
+                      <td>Acción</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="text-transform:uppercase; font-size: 14px" *ngFor="let per of rol.listaPermisos">
+                      <td style="text-align: left; width:70%">{{per.nombre}}</td>
+                      <td class="text-center vertical-center" style="width:20%">
+                        {{per.estado == 1 ? 'ACTIVO' : 'INACTIVO'}}
+                      </td>
+                      <td style="text-align: center; width:10%">
+                        <button class="btn btn-danger btn--icon btnaccion" type="button"
+                          (click)="borrarPermisoRol(per)" data-title="Eliminar">
+                          <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Agregar Rol</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-editarrol" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Editar Rol</div>
+      </header>
+      <form #formeditarRols='ngForm' ngNativeValidate (ngSubmit)='editarRol()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Código</label>
+            <input [(ngModel)]='rolActualizar.id' maxlength="7" minlength="2" readonly type="text"
+              class="form-control" required name="rlEditId">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Nombre</label>
+            <input [(ngModel)]='rolActualizar.nombre' minlength="2" maxlength="45" type="text" class="form-control"
+              required name="rlEditNombre">
+            <i class="form-group__bar"></i>
+          </div>          
+          <div class="form-group">
+            <div class="select">
+              <label>Estado</label>
+              <select [(ngModel)]='rolActualizar.estado' class="form-control" name="rlEditEstado">                  
+                <option [ngValue]="est.valor" *ngFor='let est of listaEstados'>
+                  {{est.nombre}}</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <br />
+            <h4 class="card-title">Permisos</h4>
+
+            <form #formInsuumoProd='ngForm' ngNativeValidate (ngSubmit)="addPermisoEditar()">
+              <div class="row">
+                <div class="col-sm-11">
+                  <div class="form-group">
+                    <div class="select">
+                      <label>Permiso</label>
+                      <select [(ngModel)]='nuevoPermiso' class="form-control" name="permisos" required>
+                        <option [ngValue]='permiso' *ngFor='let permiso of listaPermisosActivos'>
+                          {{permiso.nombre}}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-1">
+                  <div class="form-group botonAccion">
+                    <button type="submit" class="btn btn-success btn--icon" title="Agregar Permiso">
+                      <i class="zmdi zmdi-plus zmdi-hc-fw"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+  
+            <!-- Tabla Permisos -->
+            <div style="margin-bottom: -1%">
+              <div class="table-responsive">
+                <table id="dt-permisos-rol-edit" class="table table-bordered">
+                  <thead class="thead-default">
+                    <tr class="text-center">
+                      <td>Permiso</td>
+                      <td>Estado</td>
+                      <td>Acción</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="text-transform:uppercase; font-size: 14px" *ngFor="let per of rolActualizar.listaPermisos">
+                      <td style="text-align: left; width:70%">{{per.nombre}}</td>
+                      <td class="text-center vertical-center" style="width:20%">
+                        {{per.estado == 1 ? 'ACTIVO' : 'INACTIVO'}}
+                      </td>
+                      <td style="text-align: center; width:10%">
+                        <button class="btn btn-danger btn--icon btnaccion" type="button"
+                          (click)="borrarPermisoRol(per)" data-title="Eliminar">
+                          <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Editar Rol</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal"
+              (click)='cerrarModalEditar()'>Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-permisosRol" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Permisos Asociados</div>        
+      </header>
+      <div class="modal-body">
+        <div class="form-group">
+            
+          <h4 class="card-title">{{rolDetalle.nombre}}</h4>
+
+          <!-- Tabla Permisos -->
+          <div style="margin-bottom: -1%">
+            <div class="table-responsive">
+              <table id="dt-permisos-rol" class="table table-bordered">
+                <thead class="thead-default">
+                  <tr class="text-center">
+                    <td>Permiso</td>
+                    <td>Estado</td>
+                    <!--td>Acción</td-->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="text-transform:uppercase; font-size: 14px" *ngFor="let per of listaPermisos">
+                    <td style="text-align: left; width:70%">{{per.nombre}}</td>
+                    <td class="text-center vertical-center" style="width:20%">
+                      {{per.estado == 1 ? 'ACTIVO' : 'INACTIVO'}}
+                    </td>
+                      <!-- <button class="btn btn-danger btn--icon btnaccion" type="button"
+                        (click)="eliminarPermisoRol(per)" data-title="Eliminar">
+                        <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                      </button> -->
+                    
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer modalMargenInferior">          
+          <button type="button" class="btn btn-success" data-dismiss="modal"
+            (click)='cerrarModalPermisosRol()'>Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

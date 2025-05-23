@@ -1,0 +1,63 @@
+<div class="modal fade" id="modal-cash-register-insert" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <header class="price-table__header bg-blue ">
+          <div class="row">
+              <div class="price-table__title col-10"> Agregar caja a negocio </div>
+              <div class="col-2">
+                  <button class="btn btn-info btn--icon float-right"
+                          type="reset"
+                          data-dismiss="modal">
+                          <i class="zmdi zmdi-close"></i>
+                  </button>
+              </div>
+          </div>
+        </header>
+        <form #formProductos='ngForm'>
+          <div class="modal-body">
+            <div class="row">
+                <div class="form-group col-12">
+                    <label>Nombre</label>
+                    <input [(ngModel)]="cajaToInsert.nombre" name="nombre"  type="text" class="form-control" placeholder="Identificador">
+                    <i class="form-group__bar"></i>
+                </div>                   
+                
+                <div class="form-group col-12">
+                    <label>Efectivo</label>
+                    <input #efectivo="ngModel" [(ngModel)]="cajaToInsert.efectivo" name="efectivo" required  type="number" class="form-control" placeholder="Efectivo actual para apertura">
+                    <div class="litle-text" *ngIf="efectivo.touched" >
+                        <span *ngIf="efectivo?.errors?.required">El nombre es requerido</span>
+                      </div>
+                    <i class="form-group__bar"></i>
+                </div> 
+                
+                <div class="form-group col-12">
+                    <label>Tipo </label>
+                    <div  class="select">
+                        <select  #tipo="ngModel" [(ngModel)]="cajaToInsert.tipo" name="tipo" class="form-control" required>
+                            <option value=1 >Principal</option>
+                            <option value=2 >Secundaria</option>
+                        </select>
+                        <i class="form-group__bar"></i>
+                        <div class="litle-text" *ngIf="tipo.touched" >
+                            <span *ngIf="tipo?.errors?.required">El nombre es requerido</span>
+                          </div>                        
+                    </div>
+                </div>                
+                                  
+            </div>
+          </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="submit"
+                    [disabled]="tipo.invalid || efectivo.invalid"
+                    (click)="insertCahsRegister()"
+                    class="btn btn-success">
+                    <i class="fas fa-plus"></i> Agregar caja
+            </button>
+          </div>
+
+      </div>
+    </div>
+  </div>

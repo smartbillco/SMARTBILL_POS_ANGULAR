@@ -1,0 +1,89 @@
+<div class="modal fade" id="modal-openCashRegister" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10">Gestión de cajas</div>
+          <div class="col-2">
+            <button class="btn btn-info btn--icon float-right" type="reset" data-dismiss="modal">
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <div *ngIf="!activeOpenCashRegister" class="modal-body">
+        <div class="table-responsive">
+          <table id="dt-mov-caja" class="table table-bordered" style="width: 100%">
+            <thead class="thead-default">
+              <tr>
+                <th class="td-option">Nombre</th>
+                <th class="td-option">Efectivo</th>
+                <th class="td-option">Estado actual</th>
+                <th class="td-option">Tipo</th>
+                <th class="td-option">Abrir caja</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cashRegister of cashRegisterList">
+                <td>{{ cashRegister.nombre }}</td>
+                <td>{{ cashRegister.efectivo | currency: "USD" }}</td>
+                <td>
+                  <span *ngIf="cashRegister.estado == 0" style="color: white" class="badge badge-danger">
+                    Cerrada
+                  </span>
+                  <span *ngIf="cashRegister.estado == 1" class="badge badge-success">
+                    Abierta
+                  </span>
+                </td>
+                <td>
+                  <button *ngIf="cashRegister.tipo == 2" class="btn btn-outline-warning">
+                    Secundaria
+                  </button>
+                  <button *ngIf="cashRegister.tipo == 1" class="btn btn-outline-primary">
+                    Principal
+                  </button>
+                </td>
+                <td>
+                  <button *ngIf="cashRegister.estado == 0" (click)="setCashRegister(cashRegister)" title="Abrir caja"
+                    class="btn btn-outline-success">
+                    <i class="fa fa-folder-open"></i>
+                  </button>
+                  <button *ngIf="cashRegister.estado == 1" (click)="closeCashRegister(cashRegister)" title="Cerrar caja"
+                    class="btn btn-outline-danger">
+                    <i class="fa fa-folder-minus"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br /><br />
+        </div>
+      </div>
+      <div *ngIf="!activeOpenCashRegister" class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+          Cerrar <i class="fa fa-close"></i>
+        </button>
+      </div>
+
+      <form *ngIf="activeOpenCashRegister" #formNuevoMoc="ngForm" ngNativeValidate>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Efectivo de apertura</label>
+            <input #efectivoApertura="ngModel" class="form-control form-control-lg"
+              [(ngModel)]="cashRegisterToOpen.efectivoApertura" type="number" name="efectivoApertura" />
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button data-dismiss="modal" (click)="activeOpenCashRegister = false" type="button"
+              class="btn btn-outline-secondary">
+              Cancelar
+            </button>
+            <button (click)="openCashRegister()" type="submit" class="btn btn-success">
+              Abrir caja
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,266 @@
+<div class="row">
+    <div class="col-md-4">
+        <header class="content__title">
+            <h1 class="text-themecolor">USUARIOS</h1>
+        </header>
+    </div>
+    <div class="buttomheaderright">
+
+
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+
+        <div class="buttomheaderright">
+            <button class="btn btn-primary btn--icon-text" data-toggle="modal" data-target="#modal-usuarioNuevo" [disabled]='tipoUsuario != "1"'>
+                  <i class="zmdi zmdi-account-add zmdi-hc-fw"></i> 
+                  Registrar Usuario
+          </button> &nbsp;
+        </div>
+
+
+
+
+        <div class="table-responsive">
+            <div class="text-center">
+            </div>
+            <table id="dt-vendedores" class="table table-bordered" style="width: 100%">
+                <thead class="thead-default">
+                    <tr>
+                        <!-- <th class="td-option">Nombre</th> -->
+                        <th class="td-option">Correo</th>
+                        <th class="td-option">Rol</th>
+                        <td class="td-option">Opciones</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor='let usu of listVendedores'>
+                        <!-- <td class="text-center h5"> {{ usu.nombreEmpleado ? usu.nombreEmpleado : 'N/A'  }} </td> -->
+                        <td class="text-center">{{usu.email}}</td>
+                        <td class="text-center">{{usu.tipo == 1 ? 'ADMINISTRADOR' : usu.tipo == 2 ? 'CAJERO' : usu.tipo == 3 ? 'MESERO' : usu.tipo == 4 ? 'SUPERVISOR' : '' }}</td>
+                        <td class="tableoption anchoColumnaOpciones">
+                            <!-- <button (click)='setVendedorLiquidar(usu)' class="btn btn-success btn--icon" [disabled]='tipoUsuario != 1'
+                data-toggle="tooltip" title="Liquidar Vendedor">
+                <i class="zmdi zmdi-money zmdi-hc-fw"></i>
+              </button>&nbsp; -->
+                            <!-- <button (click)='setActualizarVendedor(usu)' class="btn btn-primary btn--icon"
+                [disabled]='tipoUsuario != 1' data-title="Edit" data-toggle="tooltip" title="Editar">
+                <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+              </button> &nbsp; -->
+                            <button type="button" class="btn btn-outline-primary" (click)='userToEdit = usu' [disabled]='tipoUsuario != 1' data-toggle="modal" data-target="#modal-editUser" title="Editar usuario {{usu.email}}">
+                    <i class="fas fa-cog"></i>
+              </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+        </div>
+    </div>
+</div>
+
+<!--Modal Nuevo Usuario-->
+<div class="modal fade" id="modal-usuarioNuevo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <header class="price-table__header bg-blue">
+                <div class="row">
+                    <div class="price-table__title col-10"> Agregar usuario </div>
+                    <div class="col-2">
+                        <button class="btn btn-info btn--icon float-right" type="reset" data-dismiss="modal">
+                          <i class="zmdi zmdi-close"></i>
+                  </button>
+                    </div>
+                </div>
+            </header>
+            <form #formusuarioNuevos='ngForm' (ngSubmit)='crearUsuarioNuevo()'>
+                <div class="modal-body">
+
+
+                    <div class="form-group" [ngClass]="{'invalid': (usuEmailc?.errors?.required || usuEmailc?.errors?.minlength) && usuEmailc.touched}">
+                        <label>Correo</label>
+                        <input [(ngModel)]='usuarioNuevo.email' type="email" class="form-control" minlength="2" required name="usuEmailc" #usuEmailc="ngModel">
+                        <i class="form-group__bar"></i>
+                        <div class="litle-text" *ngIf="usuEmailc.touched">
+                            <span *ngIf="usuEmailc?.errors?.required">El email es requerido</span>
+                            <span *ngIf="usuEmailc?.errors?.minlength">Se requieren minimo  2 caracteres</span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group" [ngClass]="{'invalid': (usuCedula?.errors?.required || usuCedula?.errors?.minlength) && usuCedula.touched}">
+                        <label>Contraseña</label>
+                        <input [(ngModel)]='contrasena' type="password" class="form-control" maxlength="30" minlength="6" required name="usuCedula" #usuCedula="ngModel">
+                        <i class="form-group__bar"></i>
+                        <div class="litle-text" *ngIf="usuCedula.touched">
+                            <span *ngIf="usuCedula?.errors?.required">Es requerida una contraseña</span>
+                            <span *ngIf="usuCedula?.errors?.minlength">Se requieren minimo  6 caracteres</span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group" [ngClass]="{'invalid': (usuCedula2?.errors?.required || usuCedula2?.errors?.minlength) && usuCedula2.touched}">
+                        <label>Confirmar Contraseña</label>
+                        <input [(ngModel)]='confirmarContrasena' type="password" class="form-control" minlength="6" maxlength="30" required name="usuCedula2" #usuCedula2="ngModel">
+                        <i class="form-group__bar"></i>
+                        <div class="litle-text" *ngIf="usuCedula2.touched">
+                            <span *ngIf="usuCedula2?.errors?.required">Es requerida la confirmación de la contraseña</span>
+                            <span *ngIf="usuCedula2?.errors?.minlength">Se requieren minimo  6 caracteres</span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group" [ngClass]="{'invalid':  usuarioNuevoRol?.errors?.required && usuarioNuevoRol.touched}">
+                        <label>Rol de usuario</label>
+                        <select class="form-control form-control-lg" [(ngModel)]='usuarioNuevo.tipo' name="usuarioNuevoRol" #usuarioNuevoRol="ngModel" required>
+              <option *ngFor='let r of listRoles' [ngValue]='r.valor'>{{r.nombre}}</option>
+            </select>
+                        <i class="form-group__bar"></i>
+                        <div class="litle-text" *ngIf="usuarioNuevoRol.touched">
+                            <span *ngIf="usuarioNuevoRol?.errors?.required">Debe elegir un rol</span>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer modalMargenInferior">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                        <button [disabled]="usuEmailc.invalid || usuCedula.invalid || usuCedula2.invalid || usuarioNuevoRol.invalid" type="submit" class="btn btn-success">
+              Registrar
+            </button>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--Modal Liquidar Vendedor-->
+<!-- <div class="modal fade" id="modal-liquidar-vendedor">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Liquidar a {{usuarioLiquidar.Nombre}}</div>
+      </header>
+      <form #formLiquidar='ngForm' ngNativeValidate (ngSubmit)='liquidarUsuario()'>
+        <div class="modal-body">
+          <label>Concepto de pago</label>
+          <select class="form-control form-control-lg" [(ngModel)]='liquidacion.tipo' name="liquiTipo">
+            <option value="1">PAGO DE SUELDO MES</option>
+            <option value="2">PAGO DE QUINCENA</option>
+            <option value="2">PAGO DE SALUD</option>
+            <option value="2">PAGO DE ARL</option>
+            <option value="2">PAGO DE PENSIÓN</option>
+            <option value="3">ADELANTO</option>
+          </select>
+          <div class="form-group">
+            <label>Valor</label>
+            <input [(ngModel)]='liquidacion.valor' type="number" class="form-control form-control-lg" min="1000"
+              required name="liquiValor">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> -->
+<!--Modal Editar Vendedor-->
+
+
+<!--Modal Editar Vendedor-->
+<!-- <div class="modal fade" id="modal-usuariov">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Liquidar a {{usuarioLiquidar.Nombre}}</div>
+      </header>
+      <form #formLiquidar='ngForm' ngNativeValidate (ngSubmit)='liquidarUsuario()'>
+        <div class="modal-body">
+            <label>Correo electrónico</label> <br>
+          <label>Empleados</label>
+          <select class="form-control form-control-lg" [(ngModel)]='liquidacion.tipo' name="liquiTipo">
+            <option *ngFor="let e of listaEmpleados" >{{e.nombreEmpleado}}</option>
+           
+          </select>
+         
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> -->
+
+
+
+<!-- Modal eitar ususario -->
+<div class="modal fade" id="modal-editUser">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <header class="price-table__header bg-blue">
+                <div class="row">
+                    <div class="price-table__title col-10"> Editar usuario {{ userToEdit.email }} </div>
+                    <div class="col-2">
+                        <button class="btn btn-info btn--icon float-right" type="reset" data-dismiss="modal">
+                            <i class="zmdi zmdi-close"></i>
+                    </button>
+                    </div>
+                </div>
+            </header>
+            <form #formusuarioNuevos='ngForm' (ngSubmit)='editUser(userToEdit)'>
+                <div class="modal-body">
+
+
+                    <div class="form-group" [ngClass]="{'invalid': (usuEmail?.errors?.required || usuEmail?.errors?.minlength) && usuEmail.touched}">
+                        <label>Correo</label>
+                        <input [(ngModel)]='userToEdit.email' type="email" class="form-control" minlength="2" required name="usuEmail" #usuEmail="ngModel">
+                        <i class="form-group__bar"></i>
+                        <div class="litle-text" *ngIf="usuEmail.touched">
+                            <span *ngIf="usuEmail?.errors?.required">El email es requerido</span>
+                            <span *ngIf="usuEmail?.errors?.minlength">Se requieren minimo  2 caracteres</span>
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-group" [ngClass]="{'invalid': (password?.errors?.required || password?.errors?.minlength) && password.touched}">
+                        <label> Ingresar nueva contraseña</label>
+                        <input [(ngModel)]='contrasena' type="password" class="form-control" maxlength="30" minlength="6" required name="password" #password="ngModel">
+                        <i class="form-group__bar"></i>
+                        <div class="litle-text" *ngIf="password.touched">
+                            <span *ngIf="password?.errors?.required">Una nueva contraseña es necesaria</span>
+                            <span *ngIf="password?.errors?.minlength">Se requieren minimo  6 caracteres</span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group" [ngClass]="{'invalid': editUserTipo?.errors?.required  && editUserTipo.touched}">
+                        <label>Rol de usuario</label>
+                        <select class="form-control form-control-lg" [(ngModel)]='userToEdit.tipo' name="editUserTipo" required #editUserTipo="ngModel">
+                <option *ngFor='let r of listRoles' [ngValue]='r.valor'>{{r.nombre}}</option>
+              </select>
+                        <i class="form-group__bar"></i>
+                        <div class="litle-text" *ngIf="editUserTipo.touched">
+                            <span *ngIf="editUserTipo?.errors?.required">Es necesario elegir un rol</span>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer modalMargenInferior">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                        <button [disabled]="usuEmail.invalid  || password.invalid ||  editUserTipo.invalid " type="submit" class="btn btn-success">
+               <span *ngIf="usuEmail.valid && password.valid &&  editUserTipo.valid" >Actualizar usuario</span> 
+               <span *ngIf="usuEmail.invalid  || password.invalid ||  editUserTipo.invalid" >Debe completar todos los datos</span> 
+              </button>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- termina modal editar usuario -->

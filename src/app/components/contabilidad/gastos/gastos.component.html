@@ -1,0 +1,107 @@
+<div class="row">
+  <div class="col-md-4">
+    <header class="content__title">
+      <h1>Egresos y gastos del mes de {{nombreMes}} del {{anio}}</h1>
+    </header>
+  </div>
+  <div class="col-md-2">
+      <button class="btn btn-primary btn--icon-text" data-toggle="modal" data-target="#modal-insertar-gasto"><i
+        class="zmdi zmdi-file-plus zmdi-hc-fw"></i>Registrar Egreso</button> &nbsp;
+  </div>
+  <div class="col-md-2">
+      <div class="btn-group" dropdown>
+          <button id="split-button" type="button" class="btn btn-primary">{{nombreMesBuscar}}</button>
+          <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+            <span class="caret"></span>
+          </button>
+      
+          <ul class="dropdown-menu">
+            <li *ngFor='let m of meses'><a class="dropdown-item" (click)='setMesBuscar(m.valor)'>{{m.nombre}}</a></li>
+          </ul>
+      
+        </div>
+  </div>
+  
+  <form #formBuscarCompras='ngForm' ngNativeValidate (ngSubmit)='consultarGastosPorMes()' class="row">
+    
+    <div class="form-group">
+        <input [(ngModel)]='anio' type="number" class="form-control form-control-lg" name="buscarAnio" min="2000"
+        max="2040" required placeholder="Año">
+      <i class="form-group__bar"></i>
+    </div>
+    <div class="form-group">
+    <button type="submit" class="btn btn-success btn--icon-text"><i class="zmdi zmdi-search"></i>Buscar</button>
+
+    </div>
+
+  </form>
+</div>
+<div class="card">
+  <div class="card-body">
+    <h1 class="display-4 color-margen-ganancia-rojo" style="text-align: right">Total: {{total | currency: 'USD'}}</h1>
+    <div class="table-responsive">
+      <table id="dt-gastos" class="table table-bordered" style="width: 100%">
+        <thead class="thead-default">
+          <tr>
+            <th class="td-option">Concepto</th>
+            <th class="td-option">Fecha</th>
+            <td class="td-option">Descripción</td>
+            <td class="td-option">Total</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let g of listGastos'>
+            <td class="anchoceldas">{{g.concepto}}</td>
+            <td class="anchoColumnaCodigo anchoceldas">{{g.fecha}}</td>
+            <td class="anchoceldas">{{g.descripcion}}</td>
+            <td class="anchoceldas"><h5>{{g.valor | currency: 'USD'}}</h5></td>
+            
+          </tr>
+        </tbody>
+      </table><br>
+    </div>
+  </div>
+</div>
+
+<!--Modal insertar gastos-->
+<div class="modal fade" id="modal-insertar-gasto" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Registrar Egreso</div>
+      </header>
+      <form #formGastos='ngForm' ngNativeValidate (ngSubmit)='insertarGastos()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <div class="select">
+              <label>Concepto</label>
+              <select [(ngModel)]='gastoNuevo.tipo' class="form-control" name="tipoGastoNuevo" required>
+                <option [ngValue]='t.valor' *ngFor='let t of listTiposGastos'>
+                  {{t.nombre}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <input [(ngModel)]='gastoNuevo.descripcion' type="text" class="form-control" minlength="2" required
+              maxlength="200" name="gastoNuevoDes">
+            <i class="form-group__bar"></i>
+          </div>
+
+
+          <div class="form-group">
+            <label>Valor</label>
+            <input [(ngModel)]='gastoNuevo.valor' type="number" class="form-control" minlength="2" step="0.01"
+              max="999999.99" required name="gastoNuevoVal">
+            <i class="form-group__bar"></i>
+          </div>
+
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

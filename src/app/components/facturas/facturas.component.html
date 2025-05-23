@@ -1,0 +1,433 @@
+<header class="content__title">
+  <h1 class="text-themecolor">FACTURAS</h1>
+  <div class="actions">
+    <div class="dropdown actions__item">
+      <i data-toggle="dropdown" class="zmdi zmdi-more-vert"></i>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item"><b>Ver Facturas anuladas</b></a>
+        <a class="dropdown-item"><b>Ver Facturas con descuento</b></a>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="card">
+  <div class="card-body">
+    <div class="buttomheaderright">
+      <button
+        class="btn btn-success btn--icon-text"
+        data-toggle="modal"
+        (click)="consultarReporte()"
+      >
+        <i class="fa fa-file-excel-o"></i>
+        Exportar
+      </button>
+      <br />
+    </div>
+    <!--Busqueda de facturas-->
+    <div class="row mb-4">
+      <!-- <div class="col-md-2">
+          <label>Buscar por </label>
+          <select [(ngModel)]='searchByDate' class="browser-default custom-select" (change)='cambiarTipo()'>
+              <option selected [value]='2'>Número</option>
+              <option [value]='1'>Fecha</option>
+              <option [value]='3'>Cliente</option>
+          </select>
+      </div> -->
+      <div class="col-md-2">
+        <label>Buscar por </label>
+        <select
+          class="browser-default custom-select"
+          (change)="cambiarTipo($event.target.value)"
+        >
+          <option selected value="1">Número</option>
+          <option value="2">Fecha</option>
+          <option value="3">Cliente</option>
+          <option value="4">Factura anuladas</option>
+          <option value="5">Factura con descuento</option>
+          <!-- <option value='6'>Caja </option> -->
+        </select>
+      </div>
+      <!-- Busqueda por fecha -->
+      <div class="form-group animated fadeIn col-5" *ngIf="searchInvoiceByDate">
+        <form>
+          <div class="row">
+            <div class="col-12 col-md-4">
+              <label for="dateTo">Desde: </label>
+              <input
+                [(ngModel)]="dateToSend.fechaInicio"
+                name="fechaInicio"
+                class="proper-dateInput"
+                type="date"
+              />
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label for="dateTo">Hasta: </label>
+              <input
+                [(ngModel)]="dateToSend.fechaFin"
+                name="fechaFin"
+                class="proper-dateInput"
+                type="date"
+              />
+            </div>
+
+            <div class="col-12 col-md-2 mt-4">
+              <button class="btn btn-info" (click)="findByImplicitDate()">
+                Buscar <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- Busqeda por número-->
+      <div
+        class="form-group animated fadeIn col-5 mt-4"
+        *ngIf="searchInvoiceByNumber"
+        style="margin: 0px !important"
+      >
+        <div class="row">
+          <div class="form-group col-8">
+            <label for="usr">Numero de factura:</label>
+            <input
+              [(ngModel)]="sNumero"
+              name="sNumero"
+              type="text"
+              class="form-control"
+              id="usr"
+              minlength="1"
+              maxlength="20"
+            />
+          </div>
+
+          <div class="col-12 col-md-2 mt-4">
+            <button class="btn btn-info" (click)="buscarPorNumero()">
+              Buscar <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Termina busqueda por numero-->
+
+      <!-- Busqueda por cliente -->
+      <div
+        class="form-group animated fadeIn col-5 mt-4"
+        *ngIf="searchInvoiceByCustomer"
+        style="margin: 0px !important"
+      >
+        <div class="row">
+          <div class="col-12 col-md-2 mt-4">
+            <button
+              class="btn btn-info"
+              (click)="activeCustomerList = true"
+              data-toggle="modal"
+              data-target="#modal-selectCustomer"
+            >
+              Seleccionar cliente <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Termina busqueda por cliente -->
+
+      <!-- Busqueda de facturas anuladas -->
+      <div class="form-group animated fadeIn col-5" *ngIf="searcVoidedInvocies">
+        <form>
+          <div class="row">
+            <div class="col-12 col-md-4">
+              <label for="dateTo">Desde: </label>
+              <input
+                [(ngModel)]="dateToSend.fechaInicio"
+                name="fechaInicio"
+                class="proper-dateInput"
+                type="date"
+              />
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label for="dateTo">Hasta: </label>
+              <input
+                [(ngModel)]="dateToSend.fechaFin"
+                name="fechaFin"
+                class="proper-dateInput"
+                type="date"
+              />
+            </div>
+
+            <div class="col-12 col-md-2 mt-4">
+              <button class="btn btn-info" (click)="getVoidedInvocies()">
+                Buscar <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Busqueda de facturas con descuento -->
+      <div
+        class="form-group animated fadeIn col-5"
+        *ngIf="searchDiscountedInvoices"
+      >
+        <form>
+          <div class="row">
+            <div class="col-12 col-md-4">
+              <label for="dateTo">Desde: </label>
+              <input
+                [(ngModel)]="dateToSend.fechaInicio"
+                name="fechaInicio"
+                class="proper-dateInput"
+                type="date"
+              />
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label for="dateTo">Hasta: </label>
+              <input
+                [(ngModel)]="dateToSend.fechaFin"
+                name="fechaFin"
+                class="proper-dateInput"
+                type="date"
+              />
+            </div>
+
+            <div class="col-12 col-md-2 mt-4">
+              <button class="btn btn-info" (click)="getDiscountedInvoices()">
+                Buscar <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- <div class="form-group col-md-2">
+              <label for="">fecha desde: </label>
+              <input class="form-control form-control-lg" [(ngModel)]='fechaDesde' type="datetime-local"
+              name="valNuevoMov">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="">fecha Hasta: </label>
+                <input class="form-control form-control-lg" [(ngModel)]='fechaHasta' type="datetime-local"
+                name="valNuevoMov">
+              </div>
+            <div class="col-md-2">
+                <button class="btn btn-success btn--icon-text" (click)='consultarReporte()' >
+                    <i class="zmdi zmdi-search zmdi-hc-fw"></i> Buscar</button>
+            </div> -->
+      <!--Busqueda por fecha-->
+      <!-- <form role="form" #formFecha='ngForm' ngNativeValidate (ngSubmit)='buscar()'>
+          <div class="form-group">
+              <label>{{txtFecha}}</label>
+              <input [(ngModel)]="sFecha" [type]="tipo" class="form-control" name="buscar" id="busqueda"
+                  class="form-control form-control-lg" required>
+              <i class="form-group__bar"></i>
+          </div>
+          <button class="btn btn-primary btn--icon-text" type="submit">
+              <i class="zmdi zmdi-search zmdi-hc-fw"></i>Buscar</button>
+      </form> -->
+
+      <div class="col-5">
+        <div class="row">
+          <div class="col-md-3">
+            Cant. Ventas
+            <h2 class="display-4 color-margen-ganancia-verde">
+              {{ cantVentas }}
+            </h2>
+          </div>
+          <div class="col-9">
+            Total:
+            <h2 class="display-4 color-margen-ganancia-verde">
+              {{ totalVentas | currency: "USD" }}
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Lista de facturas-->
+    <div class="col">
+      <app-facturas-list [listFacturas]="listFacturas"></app-facturas-list>
+    </div>
+  </div>
+</div>
+
+<!-- modal Factura encontrada -->
+<div
+  *ngIf="facturaExist"
+  class="modal fade"
+  id="modal-detalles-e"
+  tabindex="-1"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10">
+            Factura numero {{ invoiceFound.codigo }}
+          </div>
+          <div class="col-2">
+            <button
+              class="btn btn-info btn--icon float-right"
+              type="reset"
+              data-dismiss="modal"
+              (click)="setFacturaExists(false)"
+            >
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <div *ngIf="invoiceFound" class="modal-body">
+        <div class="accordion" role="tablist">
+          <div class="card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table id="dt-proveedor" class="table table-bordered">
+                  <thead class="thead-default">
+                    <tr class="text-center">
+                      <td>Producto</td>
+                      <td>Cantidad</td>
+                      <td>Valor Unitario</td>
+                      <td>Total</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      style="
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        font-size: 15px;
+                      "
+                      *ngFor="let det of invoiceFound.listDetallesFactura"
+                    >
+                      <td>{{ det.nombre }}</td>
+                      <td class="text-center">{{ det.cantidad }}</td>
+                      <td class="text-center">
+                        {{ det.precioProducto | currency: "USD" }}
+                      </td>
+                      <td class="text-center">
+                        {{ det.total | currency: "USD" }}
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot class="thead-default">
+                    <tr>
+                      <td
+                        style="
+                          background-color: #2196f3;
+                          color: #fff;
+                          font-weight: bold;
+                          text-transform: uppercase;
+                          border-right-color: #2196f3;
+                        "
+                      >
+                        Total
+                      </td>
+                      <td
+                        style="
+                          background-color: #2196f3;
+                          border-right-color: #2196f3;
+                        "
+                      ></td>
+                      <td style="background-color: #2196f3"></td>
+                      <td
+                        style="
+                          font-weight: bold;
+                          background-color: #2196f3;
+                          font-size: 19px;
+                          color: #fff;
+                          text-align: center;
+                        "
+                      >
+                        {{ invoiceFound.valor | currency: "USD" }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style="
+                          background-color: #2196f3;
+                          color: #fff;
+                          font-weight: bold;
+                          text-transform: uppercase;
+                          border-right-color: #2196f3;
+                        "
+                      >
+                        Recibe
+                      </td>
+                      <td
+                        style="
+                          background-color: #2196f3;
+                          border-right-color: #2196f3;
+                        "
+                      ></td>
+                      <td style="background-color: #2196f3"></td>
+                      <td
+                        style="
+                          font-weight: bold;
+                          background-color: #2196f3;
+                          font-size: 19px;
+                          color: #fff;
+                          text-align: center;
+                        "
+                      >
+                        {{ invoiceFound.recibido | currency: "USD" }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style="
+                          background-color: #2196f3;
+                          color: #fff;
+                          font-weight: bold;
+                          text-transform: uppercase;
+                          border-right-color: #2196f3;
+                        "
+                      >
+                        Cambio
+                      </td>
+                      <td
+                        style="
+                          background-color: #2196f3;
+                          border-right-color: #2196f3;
+                        "
+                      ></td>
+                      <td style="background-color: #2196f3"></td>
+                      <td
+                        style="
+                          font-weight: bold;
+                          background-color: #2196f3;
+                          font-size: 19px;
+                          color: #fff;
+                          text-align: center;
+                        "
+                      >
+                        {{ invoiceFound.cambio | currency: "USD" }}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-success"
+            data-dismiss="modal"
+            (click)="setFacturaExists(false)"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- teminal modal factura encontrada -->
+
+<!-- Modal to select custmer -->
+<app-customer-list
+  *ngIf="activeCustomerList"
+  (customerSelected)="buscarPorCliente($event)"
+>
+</app-customer-list>
+<!-- end modal to select cusomer -->

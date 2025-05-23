@@ -1,0 +1,427 @@
+<div *ngIf="!ShowcashRegisterList && !activeCashOpenings" >
+<div class="row">
+  <div class="col-md-4">
+    <header class="content__title">
+      <h1 class="text-themecolor" >Movimientos caja</h1>
+    </header>
+  </div>
+</div>
+<div class="card">
+  <div class="card-body">
+    <div class="buttomheaderright">
+      <button class="btn btn-primary btn--icon-text"
+              (click)="ShowcashRegisterList = true">
+              <i class="fa fa-list"></i>  Ver cajas registradas
+      </button> &nbsp;  
+      
+        <button class="btn btn-primary btn--icon-text" 
+                data-toggle="modal"
+                data-target="#modal-openCashRegister"
+                (click)="openCashRegister = true"
+                [disabled]='tipoUsuario != "1"'>
+                <i class="far fa-folder-open mr-1"></i> Gestionar cajas
+        </button>    
+      &nbsp;
+      <button class="btn btn-primary btn--icon-text" 
+              data-toggle="modal" 
+              data-target="#modal-agregarMovimiento"
+              [disabled]='tipoUsuario != "1"'>
+              <i class="fas fa-plus mr-1"></i>  Registrar Movimiento
+      </button>
+      &nbsp;
+
+      <button class="btn btn-success btn--icon-text" 
+              data-toggle="modal" 
+              data-target="#modal-cuadredecaja"
+              [disabled]='tipoUsuario != "1"'>
+              <i class="fas fa-file-contract mr-1"></i> Cuadre de caja
+      </button> &nbsp;
+      <button class="btn btn-success btn--icon-text" data-toggle="modal" data-target="#modal-validarcuadre"
+        [disabled]='tipoUsuario != "1"'><i class="far fa-check-square mr-1"></i> Validar Cuadre</button>&nbsp;
+      <button class="btn btn-success btn--icon-text" data-toggle="modal" data-target="#modal-agregarConcepto"
+        [disabled]='tipoUsuario != "1"'><i class="fas fa-plus mr-1"></i> Agregar Concepto</button>&nbsp;
+
+
+      <button class="btn btn-success btn--icon-text" data-toggle="modal" (click)='consultarReporte()'
+        [disabled]='tipoUsuario != "1"'><i class="fas fa-file-export mr-1"></i> Exportar</button>&nbsp;
+    </div>
+    <h1 class="display-4 color-margen-ganancia-verde" style="text-align: right">Efectivo:
+      {{caja.efectivo | currency: 'USD'}}
+    </h1>
+    <div class="row">
+        <div class="form-group col-md-2">
+            <label for="">Fecha desde: </label>
+            <input placeholder="selecciona fecha"
+                   class="form-control form-control-lg" 
+                   [(ngModel)]='dateFrom' 
+                   type="date" 
+                   value="ok"
+
+            name="valNuevoMov">
+          </div>
+          <div class="form-group col-md-2">
+              <label for="">Fecha Hasta: </label>
+              <input class="form-control form-control-lg" [(ngModel)]='dateTo' type="date" 
+              name="valNuevoMov">
+            </div>   
+          <div class="col-md-3">
+              <button (click)="consularMovimientosFecha()" class="btn btn-success btn--icon-text mt-4"  [disabled]='tipoUsuario != "1"'>
+                  <i class="zmdi zmdi-search zmdi-hc-fw"></i> Buscar</button>
+          </div>
+
+    </div>
+
+    <div class="table-responsive">
+      <table id="dt-mov-caja" class="table table-bordered" style="width: 100%">
+        <thead class="thead-default">
+          <tr>
+            <th class="td-option">Tipo de Movimiento</th>
+            <th class="td-option">Fecha del movimiento</th>
+            <th class="td-option">Empleado</th>
+            <th class="td-option">Concepto</th>
+            <th class="td-option">Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let mov of listaMovimientosCaja'>
+            <td>{{mov.tipoNombre}}</td>
+            <td>{{mov.fecha}}</td>
+            <td>{{mov.empleado}}</td>
+            <td>{{mov.concepto}}</td>
+            <td><b>{{mov.valor | currency : 'USD'}}</b></td>
+          </tr>
+        </tbody>
+      </table>
+      <br><br>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-agregarMovimiento" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+        <header class="price-table__header bg-blue ">
+            <div class="row">
+                <div class="price-table__title col-10"> Agregar movimiento  </div>
+                <div class="col-2">
+                    <button class="btn btn-info btn--icon float-right"
+                            type="reset"
+                            data-dismiss="modal">
+                            <i class="zmdi zmdi-close"></i>
+                    </button>
+                </div>
+            </div>
+          </header>      
+      <form #formNuevoMoc='ngForm' ngNativeValidate (ngSubmit)='nuevoMovimiento()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Tipo de Movimiento</label>
+            <select class="form-control form-control-lg" [(ngModel)]='movimientocaja.tipo' name="CajTipMovim"
+              (change)='setConceptoCaja()'>
+              <option *ngFor='let r of listTipoMovimiento' [(ngValue)]='r.valor'>{{r.nombre}}</option>
+            </select>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Concepto</label>
+            <select class="form-control form-control-lg" [(ngModel)]='movimientocaja.idConcepto' name="EditEmp">
+              <option *ngFor='let r of listaConceptosCaja' [(ngValue)]='r.id'>{{r.nombre}}</option>
+            </select>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Cantidad</label>
+            <input class="form-control form-control-lg" [(ngModel)]='movimientocaja.valor' type="number"
+              name="valNuevoMov">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>            
+            <button type="submit" class="btn btn-success">Registrar Movimiento</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- modal cuadre de caja-->
+<div class="modal fade" id="modal-cuadredecaja" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <header class="price-table__header bg-blue ">
+            <div class="row">
+                <div class="price-table__title col-10"> Cuadre de caja  </div>
+                <div class="col-2">
+                    <button class="btn btn-info btn--icon float-right"
+                            type="reset"
+                            data-dismiss="modal">
+                            <i class="zmdi zmdi-close"></i>
+                    </button>
+                </div>
+            </div>
+          </header>
+      <form #formCuadre='ngForm'  (ngSubmit)='cuadrarCaja()'>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Denominación</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Cantidad</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Moneda de $50 </label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantMoneda50' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Moneda de $100</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantMoneda100' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Moneda de $200</label>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <input [(ngModel)]='nuevoCuadre.cantMoneda200' type="text" class="form-control form-control-lg"
+                    name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                  <i class="form-group__bar"></i>
+                </div>
+              </div>
+
+
+
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Moneda de $500</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantMoneda500' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Moneda de $1000</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantBill1000' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Billete de $2000</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantBill2000' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Billete de $5000</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantBill5000' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Billete de $10.000</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantBill10000' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Billete de $20.000</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantBill20000' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Billete de $50.000</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantBill50000' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Billete de $100.000</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input [(ngModel)]='nuevoCuadre.cantBill100000' type="text" class="form-control form-control-lg"
+                  name="empeNuevaNombre" maxlength="45" minlength="2" required>
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>              
+            <button type="submit" class="btn btn-success">Registrar Cuadre</button>            
+          
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-validarcuadre" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue ">
+        <div class="row">
+            <div class="price-table__title col-10"> Validar cuadre </div>
+            <div class="col-2">
+                <button class="btn btn-info btn--icon float-right"
+                        type="reset"
+                        data-dismiss="modal">
+                        <i class="zmdi zmdi-close"></i>
+                </button>
+            </div>
+        </div>
+      </header>
+      <form #formProductos='ngForm'>
+        <div class="modal-body">
+          <div class="row">
+
+            <div class="col-sm-6">
+              <label for="">Total Conteo</label>
+            </div>
+            <div class="col-sm-6">
+              <label for="">{{totalActualEnCaja | currency:'USD' }}</label>
+            </div>
+            <div class="col-sm-6">
+              <label for="">Efectivo de caja en Sistema</label>
+            </div>
+            <div class="col-sm-6">
+              <label for=""> {{ caja.efectivo | currency:'USD' }} </label>
+            </div>
+            <div class="col-sm-6">
+              <label for="">Diferencia</label>
+            </div>
+            <div class="col-sm-6">
+              <label for="">{{ diferenciaCaja | currency:'USD' }}</label>
+            </div>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <!-- <button type="submit" class="btn btn-primary">Registrar Movimiento</button> -->
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- modal nuevo concepto-->
+<div class="modal fade" id="modal-agregarConcepto" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <header class="price-table__header bg-blue ">
+            <div class="row">
+                <div class="price-table__title col-10"> Registrar concepto de caja  </div>
+                <div class="col-2">
+                    <button class="btn btn-info btn--icon float-right"
+                            type="reset"
+                            data-dismiss="modal">
+                            <i class="zmdi zmdi-close"></i>
+                    </button>
+                </div>
+            </div>
+          </header>
+      <form #formNuevoMoc='ngForm' ngNativeValidate (ngSubmit)='registrarConcepto()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Tipo de Concepto</label>
+            <select class="form-control form-control-lg" [(ngModel)]='nuevoConcepto.tipo' name="CajTipConc" required>
+              <option *ngFor='let r of listTipoMovimiento' [(ngValue)]='r.valor'>{{r.nombre}}</option>
+            </select>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Concepto</label>
+            <input class="form-control form-control-lg" type="text" [(ngModel)]='nuevoConcepto.nombre'
+              name="nuevoConceNombre" minlength="6">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success">Registrar Concepto</button>            
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+<app-cash-register-list 
+(closeCashRegister)="closeCashRegister($event)" 
+*ngIf="ShowcashRegisterList">
+</app-cash-register-list>
+
+
+
+<app-open-cash-register *ngIf="openCashRegister"
+(openDone)="openCahsRegisterDone($event)" 
+(closeDone)="closeCahsRegisterDone($event)">
+</app-open-cash-register>

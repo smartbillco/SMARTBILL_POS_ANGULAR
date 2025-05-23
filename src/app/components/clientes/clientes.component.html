@@ -1,0 +1,450 @@
+<div class="row">
+  <div class="col-md-4">
+    <header class="content__title">
+      <h1 class="text-themecolor">CLIENTES</h1>
+    </header>
+  </div>
+  <div class="buttomheaderright"></div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="buttomheaderright">
+      <button
+        class="btn btn-primary btn--icon-text"
+        data-toggle="modal"
+        data-target="#modal-cliente"
+        [disabled]="tipoUsuario != '1'"
+      >
+        <i class="zmdi zmdi-account-add zmdi-hc-fw"></i> Agregar Cliente
+      </button>
+      &nbsp;
+      <!-- <button class="btn btn-success btn--icon-text" data-toggle="modal" data-target="#modal-inputCliente"
+                [disabled]='tipoUsuario != "1"'><i class="zmdi zmdi-upload zmdi-hc-fw"></i> Cargar Archivo</button> &nbsp; -->
+      <app-export-file-buttons
+        (pdfExportEmitter)="exportClientsListToPdf($event)"
+        (excelExportEmitter)="exportClientsListToExcel($event)"
+      ></app-export-file-buttons>
+    </div>
+    <div class="text-center"></div>
+    <div class="table-responsive">
+      <table id="dt-cliente" class="table table-bordered" style="width: 100%">
+        <thead class="thead-default">
+          <tr>
+            <th class="td-option">Código</th>
+            <th class="td-option">Nombre</th>
+            <th class="td-option">Celular</th>
+            <th class="td-option">Dirección</th>
+            <td class="td-option">Opciones</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cli of listaClientes">
+            <td>{{ cli.identificacion }}</td>
+            <td>{{ cli.nombre }}</td>
+            <td>{{ cli.celular }}</td>
+            <td>{{ cli.direccion }}</td>
+            <td class="tableoption anchoColumnaOpciones">
+              <button
+                (click)="setClienteActualizar(cli)"
+                class="btn btn-outline-primary"
+                title="Editar"
+                data-title="Edit"
+                data-toggle="modal"
+                data-target="#modal-editarcliente"
+                [disabled]="tipoUsuario != 1"
+              >
+                <i class="fas fa-cog"></i>
+              </button>
+              &nbsp;
+              <button
+                (click)="eliminarCliente(cli)"
+                class="btn btn-outline-danger"
+                data-title="Delete"
+                data-toggle="modal"
+                data-target="#delete"
+                title="Eliminar"
+                [disabled]="tipoUsuario != 1"
+              >
+                <i class="far fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br />
+  </div>
+</div>
+
+<!-- Agregar cliente -->
+<div class="modal fade" id="modal-cliente" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10">Agregar cliente</div>
+          <div class="col-2">
+            <button
+              class="btn btn-info btn--icon float-right"
+              type="reset"
+              data-dismiss="modal"
+            >
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <form #formClientes="ngForm" (ngSubmit)="crearCliente()">
+        <div class="modal-body row">
+          <div
+            class="form-group col-12"
+            [ngClass]="{
+              invalid:
+                (cliNombre?.errors?.required || cliNombre?.errors?.minlength) &&
+                cliNombre.touched
+            }"
+          >
+            <label>Nombre</label>
+            <input
+              [(ngModel)]="cliente.nombre"
+              type="text"
+              class="form-control form-control-lg"
+              maxlength="45"
+              minlength="2"
+              required
+              name="cliNombre"
+              #cliNombre="ngModel"
+            />
+            <div class="litle-text" *ngIf="cliNombre.touched">
+              <span *ngIf="cliNombre?.errors?.required"
+                >El nombre es requerido</span
+              >
+              <span *ngIf="cliNombre?.errors?.minlength"
+                >Se requieren minimo 2 caracteres</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid: ClienteTipo?.errors?.required && ClienteTipo.touched
+            }"
+          >
+            <div class="select">
+              <label>Tipo de identificación</label>
+              <select
+                class="form-control form-control-lg"
+                [(ngModel)]="cliente.tipoIdentificacion"
+                name="ClienteTipo"
+                required
+                #ClienteTipo="ngModel"
+              >
+                <option *ngFor="let t of listTipos" [(ngValue)]="t">
+                  {{ t }}
+                </option>
+              </select>
+            </div>
+
+            <div class="litle-text" *ngIf="ClienteTipo.touched">
+              <span *ngIf="ClienteTipo?.errors?.required"
+                >El tipo de identificación es requerido</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (cliIdenti?.errors?.required || cliIdenti?.errors?.minlength) &&
+                cliIdenti.touched
+            }"
+          >
+            <label>Número de identificación</label>
+            <input
+              [(ngModel)]="cliente.identificacion"
+              type="text"
+              class="form-control form-control-lg"
+              maxlength="45"
+              minlength="5"
+              required
+              name="cliIdenti"
+              #cliIdenti="ngModel"
+            />
+            <div class="litle-text" *ngIf="cliIdenti.touched">
+              <span *ngIf="cliIdenti?.errors?.required"
+                >El numero de identificación es requerido</span
+              >
+              <span *ngIf="cliIdenti?.errors?.minlength"
+                >Se requieren minimo 5 caracteres</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (cliCelular?.errors?.required ||
+                  cliCelular?.errors?.minlength) &&
+                cliCelular.touched
+            }"
+          >
+            <label>Celular</label>
+            <input
+              [(ngModel)]="cliente.celular"
+              type="text"
+              class="form-control form-control-lg"
+              minlength="10"
+              maxlength="10"
+              pattern="\d*"
+              required
+              name="cliCelular"
+              #cliCelular="ngModel"
+            />
+            <div class="litle-text" *ngIf="cliCelular.touched">
+              <span *ngIf="cliCelular?.errors?.required"
+                >El numero de celular es requerido</span
+              >
+              <span *ngIf="cliCelular?.errors?.minlength"
+                >Se requieren minimo 10 caracteres</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (cliDireccion?.errors?.required ||
+                  cliDireccion?.errors?.minlength) &&
+                cliDireccion.touched
+            }"
+          >
+            <label>Dirección</label>
+            <input
+              [(ngModel)]="cliente.direccion"
+              type="text"
+              class="form-control form-control-lg"
+              maxlength="45"
+              minlength="5"
+              required
+              name="cliDireccion"
+              #cliDireccion="ngModel"
+            />
+
+            <div class="litle-text" *ngIf="cliDireccion.touched">
+              <span *ngIf="cliDireccion?.errors?.required"
+                >La dirección es requerida</span
+              >
+              <span *ngIf="cliDireccion?.errors?.minlength"
+                >Se requieren minimo 5 caracteres</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12"
+            [ngClass]="{
+              invalid:
+                (fechaNacimiento?.errors?.required ||
+                  fechaNacimiento?.errors?.minlength) &&
+                fechaNacimiento.touched
+            }"
+          >
+            <label>fecha de Nacimiento</label>
+            <input
+              [(ngModel)]="cliente.fechaNacimiento"
+              type="date"
+              class="form-control form-control-lg"
+              maxlength="45"
+              minlength="5"
+              name="fechaNacimiento"
+              #fechaNacimiento="ngModel"
+              required
+            />
+
+            <div class="litle-text" *ngIf="fechaNacimiento.touched">
+              <span *ngIf="fechaNacimiento?.errors?.required"
+                >La fecha de nacimiento es requerida</span
+              >
+              <span *ngIf="fechaNacimiento?.errors?.minlength"
+                >Se requieren minimo 5 caracteres</span
+              >
+            </div>
+          </div>
+
+          <div class="modal-footer modalMargenInferior col-12">
+            <button
+              type="button"
+              data-dismiss="modal"
+              class="btn btn-outline-secondary"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-success">
+              Agregar Cliente
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Termina modal agragar cliente -->
+
+<!-- Modal editar cliente -->
+<div
+  class="modal fade"
+  id="modal-editarcliente"
+  tabindex="-1"
+  data-backdrop="static"
+  data-keyboard="false"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10">
+            Editar cliente {{ clienteActualizar.nombre }}
+          </div>
+          <div class="col-2">
+            <button
+              class="btn btn-info btn--icon float-right"
+              type="reset"
+              data-dismiss="modal"
+            >
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <form #formClientes="ngForm" (ngSubmit)="actualizarCliente()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Identificación</label>
+            <input
+              type="number"
+              class="form-control form-control-lg"
+              name="cliEditCodigo"
+              [(ngModel)]="clienteActualizar.identificacion"
+              required
+              maxlength="10"
+              minlength="5"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Nombre</label>
+            <input
+              [(ngModel)]="clienteActualizar.nombre"
+              type="text"
+              maxlength="45"
+              minlength="2"
+              class="form-control form-control-lg"
+              required
+              name="cliEditNombre"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Celular</label>
+            <input
+              type="text"
+              class="form-control form-control-lg"
+              maxlength="10"
+              minlength="10"
+              [(ngModel)]="clienteActualizar.celular"
+              required
+              name="cliEditCel"
+              #cliEditCel="ngModel"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Dirección</label>
+            <input
+              type="text"
+              class="form-control form-control-lg"
+              maxlength="45"
+              minlength="5"
+              [(ngModel)]="clienteActualizar.direccion"
+              required
+              name="dirEditCliente"
+              #dirEditCliente="ngModel"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>fecha de Nacimiento</label>
+            <input
+              [(ngModel)]="clienteActualizar.fechaNacimiento"
+              type="date"
+              class="form-control form-control-lg"
+              maxlength="45"
+              minlength="5"
+              required
+              name="cliDireccion"
+            />
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+              (click)="cerrarModalEditar()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-success">
+              Editar Cliente
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Termina modal editar cliente -->
+
+<div class="modal fade" id="modal-inputCliente" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Carga de clientes</div>
+      </header>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="estiloinputfile">
+            <p class="subir">Subir archivo</p>
+            <input
+              type="file"
+              size="20"
+              (change)="onFileAdded($event.target.files)"
+              name="fileClientes"
+              class="form-control form-control-sm"
+              accept=".csv"
+              id="upfilecli"
+            />
+            <i class="form-group__bar"></i>
+          </div>
+        </div>
+        <div class="modal-footer modalMargenInferior">
+          <button
+            type="button"
+            (click)="subirArchivo()"
+            data-dismiss="modal"
+            class="btn btn-primary"
+          >
+            Subir
+          </button>
+          <button type="button" class="btn btn-success" data-dismiss="modal">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

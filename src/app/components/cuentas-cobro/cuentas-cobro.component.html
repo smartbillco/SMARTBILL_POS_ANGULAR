@@ -1,0 +1,267 @@
+<div class="animated fadeIn">
+    <header class="content__title">
+        <h1 class="text-themecolor">CUENTAS DE COBRO</h1>
+        <div class="actions">
+            <div class="dropdown actions__item">
+                <i data-toggle="dropdown" class="zmdi zmdi-more-vert"></i>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item"><b>Buscar Por Mes</b></a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="buttomheaderright">
+                <button class="btn btn-success btn--icon-text">
+                    <i class="fas fa-file-export"></i> Exportar</button>&nbsp;<br>
+            </div>
+
+
+            <!-- Filtrso de busqueda -->
+            <div class="row">
+                <div class="col-12">
+
+                    <div class="row mt-3">
+                        <div class="form-group col-4">
+                            <div class="select">
+                                <select class="browser-default  pointer custom-select"
+                                    (change)="filterBalidate($event.target.value)">
+                                    <option value="0">Aplicar filtro por:</option>
+                                    <option value="1">Cliente</option>
+                                    <!-- <option value="2" >Pendiente de pago</option> -->
+                                    <option value="3">Fecha</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group col-4 animated fadeIn" *ngIf="filterByClient">
+                            <div class="select">
+                                <button data-toggle="modal" data-target="#modal-selectCustomer"
+                                    (click)="activeSelectCustomer = true" class="btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                    Seleccionar cliente
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-8 animated fadeIn" *ngIf="filterByDate">
+                            <div class="row">
+                                <div class="col-12 col-md-4">
+                                    <label for="dateTo">Desde: </label>
+                                    <input class="proper-dateInput " type="date" [(ngModel)]="currentDate.fechaInicio"
+                                        palceolder="dd/mm/yyyy">
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label for="dateTo">Hasta: </label>
+                                    <input class="proper-dateInput" type="date" [(ngModel)]="currentDate.fechaFin"
+                                        placeholder="dd/mm/yyyy">
+                                </div>
+
+                                <div class="col-12 col-md-2">
+                                    <button (click)="getAccountsReceivable()" class="btn btn-info">
+                                        Buscar <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- Terminan filtros de busqueda -->
+            <!--Busqueda de CC-->
+
+            <!--Lista de facturas-->
+            <div class="table-responsive">
+                <table id="dt-cuentasCobro" class="table table-bordered" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th class="td-option">Factura</th>
+                            <th class="td-option">Vendido por</th>
+                            <th class="td-option">Cliente</th>
+                            <th class="td-option">Total</th>
+                            <th class="td-option">Saldo</th>
+                            <th class="td-option">Estado</th>
+                            <th class="td-option">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor='let fac of listFacturas'>
+                            <td>{{fac.idFactura}}</td>
+                            <td>{{fac.nombreEmpleado}}</td>
+                            <td>{{fac.nombreCliente}}</td>
+                            <td>{{(fac.valor | currency: 'USD') || 0}}</td>
+                            <td>{{(fac.saldo | currency: 'USD' ) || 0}}</td>
+                            <td>
+                                <span style="color: white" class="badge"
+                                    [ngClass]="{'badge-success': fac.estado === 'PAGADO', 'badge-danger': fac.estado === 'PENDIENTE'}">
+                                    {{fac.estado}}
+                                </span>
+                            </td>
+                            <td>
+                                <button type="button" data-toggle="modal" data-target="#modal-detalles-factura"
+                                    (click)='verDetalles(fac)' class="btn btn-success btn--icon" title="Ver Detalles">
+                                    <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
+                                </button>
+                                <button *ngIf="fac.estado != 'PAGADO'" (click)='setAddAbonoCC(fac)'
+                                    class="btn btn-primary btn--icon" title="Registrar Abonos">
+                                    <i class="zmdi zmdi-money zmdi-hc-fw"></i>
+                                </button>
+                                <button (click)='verAbonos(fac)' class="btn btn-warning btn--icon" title="Ver Abonos">
+                                    <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Detalles CC-->
+    <div class="modal fade" id="modal-detalles-factura">
+        <div class="modal-dialog" id="noname">
+            <!-- style="width: 158%;" -->
+            <div class="modal-content">
+                <header class="price-table__header bg-blue">
+                    <div class="price-table__title">Cuenta de cobro No. {{cuentaCobro.codigo}}</div>
+                </header>
+                <div class="modal-body">
+                    <div class="accordion" role="tablist">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="dt-proveedor" class="table table-bordered">
+                                        <thead class="thead-default">
+                                            <tr class="text-center">
+                                                <td>Producto</td>
+                                                <td>Cantidad</td>
+                                                <td>Valor Unitario</td>
+                                                <td>Total</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="font-weight: bold; text-transform:uppercase; font-size: 15px;"
+                                                *ngFor="let det of cuentaCobro.listDetallesFactura">
+                                                <td>{{det.nombre}}</td>
+                                                <td class="text-center">{{det.cantidad}}</td>
+                                                <td class="text-center">{{det.precioProducto | currency:'USD'}}</td>
+                                                <td class="text-center">{{det.total | currency:'USD'}}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot class="thead-default">
+                                            <tr>
+                                                <td
+                                                    style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#2196f3">
+                                                    Total</td>
+                                                <td style="background-color: #2196f3; border-right-color:#2196f3">
+                                                </td>
+                                                <td style="background-color: #2196f3"></td>
+                                                <td
+                                                    style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center">
+                                                    {{cuentaCobro.valor | currency:'USD'}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td
+                                                    style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#2196f3">
+                                                    Recibe</td>
+                                                <td style="background-color: #2196f3; border-right-color:#2196f3">
+                                                </td>
+                                                <td style="background-color: #2196f3"></td>
+                                                <td
+                                                    style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center">
+                                                    {{cuentaCobro.recibido | currency:'USD'}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td
+                                                    style="background-color: #2196f3; color: #fff;font-weight: bold;text-transform: uppercase; border-right-color:#2196f3">
+                                                    Cambio</td>
+                                                <td style="background-color: #2196f3; border-right-color:#2196f3">
+                                                </td>
+                                                <td style="background-color: #2196f3"></td>
+                                                <td
+                                                    style="font-weight: bold; background-color: #2196f3; font-size:19px; color: #fff; text-align: center">
+                                                    {{cuentaCobro.cambio | currency:'USD'}}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn--icon-text" data-dismiss="modal">
+                            <i class="zmdi zmdi-print"></i>Imprimir</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--Modal insertar abonos CC-->
+    <div class="modal fade" id="modal-add-abono-cc" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <header class="price-table__header bg-blue">
+                    <div class="price-table__title">Registrar abono a cuenta No. {{cuentaCobro.codigo}}</div>
+                    <div class="price-table__title">Perteneciente a {{cuentaCobro.cliente}}</div>
+                </header>
+                <div class="modal-body">
+                    <form #formAddAbonos='ngForm' ngNativeValidate (ngSubmit)='registrarNuevoAbono()'>
+                        <div class="form-group">
+                            <label>Valor</label>
+                            <input [(ngModel)]='nuevoAbono.valor' type="number" class="form-control" minlength="2"
+                                required min="1" max="100000000" name="valorNuevoAbono">
+                            <i class="form-group__bar"></i>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" type="submit" class="btn btn-primary">Aceptar</button>
+                            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Modal abonos CC-->
+    <div class="modal fade" id="modal-abonos-cc" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <header class="price-table__header bg-blue">
+                    <div class="price-table__title">Abonos a cuenta No. {{cuentaCobro.codigo}}</div>
+                </header>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table id="dt-consulta-abonos" class="table table-bordered" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th class="td-option">Fecha</th>
+                                    <th class="td-option">Total Abonado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor='let ab of listAbonos'>
+                                    <td>{{ab.fecha}}</td>
+                                    <td><b>{{ab.valor}}</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<app-customer-list *ngIf="activeSelectCustomer" (customerSelected)="setCustomer($event)"></app-customer-list>

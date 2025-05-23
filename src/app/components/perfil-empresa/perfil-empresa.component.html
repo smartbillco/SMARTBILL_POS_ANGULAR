@@ -1,0 +1,157 @@
+<header class="content__title">
+    
+
+  <div class="actions">
+
+    <div class="dropdown actions__item">
+      <!-- <i data-toggle="dropdown" class="zmdi zmdi-more-vert"></i>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item">Editar Perfil</a>
+      </div> -->
+    </div>
+
+  </div>
+</header>
+
+<div class="card profile row">
+
+  <div class="col-12 col-md-2">
+  <div class="profile__img">
+    <img [src]="empresa.logo ? empresa.logo : 'assets/profile-menu.png'">
+  </div>    
+  </div>
+  
+  <div class="col-12 col-md-6">
+  <div class="profile__info">
+      <h1>{{empresa.nombre}}</h1>
+      <p>Nit. {{empresa.nit}}</p>
+      <p>{{empresa.descripcion}}</p>
+    <p><b>Razón Social:</b> Régimen contributivo</p>
+    <button type="submit" 
+            class="btn btn-outline-info" 
+            data-toggle="modal" 
+            data-target="#modal-editarempresa">
+            <i class="fas fa-cog"></i>
+            Editar Datos
+
+    </button>
+  </div>
+  </div>    
+  </div>
+  <div class="col-12 col-md-1">
+
+
+
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-body__title mb-4">Datos de contacto</h4>
+    <ul class="icon-list">
+      <li><i class="zmdi zmdi-phone"></i>{{empresa.telefono}}</li>
+      <li><i class="zmdi zmdi-email"></i>{{empresa.correo}}</li>
+      <li><i class="zmdi zmdi-pin"></i>{{empresa.direccion}}</li>
+      <li><i class="zmdi zmdi-pin"></i>{{empresa.ciudad}}</li>
+    </ul>
+  </div>
+
+</div>
+
+
+
+  <div class="modal fade" id="modal-editarempresa" data-backdrop="static" data-keyboard="false" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <header class="price-table__header bg-blue">
+              <div class="row">
+                  <div class="price-table__title col-10"> Editar empresa  </div>
+                  <div class="col-2">
+                      <button class="btn btn-info btn--icon float-right"
+                              type="reset"
+                              data-dismiss="modal">
+                              <i class="zmdi zmdi-close"></i>
+                      </button>
+                  </div>
+              </div>
+          </header>
+          <div class="modal-body">
+              <form #formEditempleado='ngForm' (ngSubmit)='actualizarEmpresa(empresa)'>
+                <div class="form-group">
+                  <label>Nit</label>
+                  <input type="text" [(ngModel)]='empresa.nit' class="form-control " name="idEditempe">
+                  <i class="form-group__bar"></i>
+                </div>
+                <div class="form-group">
+                  <label>Nombre</label>
+                  <input [(ngModel)]='empresa.nombre' type="text" class="form-control" required
+                    maxlength="45" name="nombreEditempe" minlength="3">
+                  <i class="form-group__bar"></i>
+                </div>
+                <div class="form-group">
+                    <label>Telefono</label>
+                    <input [(ngModel)]='empresa.telefono' type="text" class="form-control" required
+                      maxlength="45" name="telefonoEditEmp" minlength="3">
+                    <i class="form-group__bar"></i>
+                  </div>
+                  <div class="form-group">
+                      <label>Direccion</label>
+                      <input [(ngModel)]='empresa.direccion' type="text" class="form-control" required
+                        maxlength="45" name="direccionEditEmp" minlength="3">
+                      <i class="form-group__bar"></i>
+                    </div>
+                    <div class="form-group">
+                        <label>Correo</label>
+                        <input [(ngModel)]='empresa.correo' type="text" class="form-control" required
+                          maxlength="45" name="correoEditEmp" minlength="3">
+                        <i class="form-group__bar"></i>
+                      </div>
+                      <div class="form-group">
+                          <label>Ciudad</label>
+                          <input [(ngModel)]='empresa.ciudad' type="text" class="form-control" required
+                            maxlength="45" name="ciudadEditEmp" minlength="3">
+                          <i class="form-group__bar"></i>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <input [(ngModel)]='empresa.descripcion' type="text" class="form-control" required
+                              maxlength="45" name="nombreEditempe" minlength="3">
+                            <i class="form-group__bar"></i>
+                          </div>
+
+                          <div class="form-group">
+                              <label>Tipo de Negocio</label>
+                              <select class="form-control form-control-lg" 
+                                      [(ngModel)]='empresa.tipoNegocio'
+                                      name="EditEmp">
+                                <option *ngFor='let r of listtipoNeg' [(ngValue)]='r'>{{r.nombre}}</option>
+                              </select>
+                              <i class="form-group__bar"></i>
+                          </div>
+
+
+                            <div class="form-group">
+                                <label>Régimen</label>
+                                <select class="form-control form-control-lg" [(ngModel)]='empresa.regimen'
+                                    name="regEditEmp">
+                                    <option *ngFor='let r of listRegimen' [(ngValue)]='r'>{{r}}</option>
+                                </select>
+                                <i class="form-group__bar"></i>
+                            </div>
+                <div class="modal-footer modalMargenInferior">
+                    <button type="button"
+                            class="btn btn-primary"
+                            data-dismiss="modal">
+                            Cerrar
+                    </button>
+
+                  <button type="submit"
+                          class="btn btn-success">
+                          Editar datos
+                  </button>
+                </div>
+              </form>
+
+            </div>
+        </div>
+      </div>
+      </div>

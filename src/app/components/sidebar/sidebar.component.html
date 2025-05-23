@@ -1,0 +1,207 @@
+<div class="main">
+    <header class="header blue" style="height: 57px;">
+        <div class="navigation-trigger hidden-xl-up" data-ma-action="aside-open" data-ma-target=".sidebar">
+            <div class="navigation-trigger__inner">
+                <i class="navigation-trigger__line"></i>
+                <i class="navigation-trigger__line"></i>
+                <i class="navigation-trigger__line"></i>
+            </div>
+        </div>
+        <base href="/">
+        <div class="header__logo hidden-sm-down">
+            <h1><a routerLink="/home" > <img src="assets/logo.png" style="width:35px" alt="">Smartbill POS</a></h1>
+        </div>
+
+        <ul class="top-nav">
+
+                <li class="dropdown hidden-xs-down">
+                        <a href="" data-toggle="dropdown"><i class="zmdi zmdi-more-vert"></i></a>
+        
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-item theme-switch">
+                                Cambiar Tema
+        
+                                <div class="btn-group btn-group-toggle btn-group--colors" data-toggle="buttons">
+                                    <label class="btn bg-green"><input type="radio" value="green" autocomplete="off"
+                                            checked></label>
+                                    <label class="btn bg-blue active"><input type="radio" value="blue" autocomplete="off"></label>
+                                    <label class="btn bg-red"><input type="radio" value="red" autocomplete="off"></label>
+                                    <label class="btn bg-orange"><input type="radio" value="orange" autocomplete="off"></label>
+                                    <label class="btn bg-teal"><input type="radio" value="teal" autocomplete="off"></label>
+        
+                                    <div class="clearfix mt-2"></div>
+        
+                                    <label class="btn bg-cyan"><input type="radio" value="cyan" autocomplete="off"></label>
+                                    <label class="btn bg-blue-grey"><input type="radio" value="blue-grey" autocomplete="off"></label>
+                                    <label class="btn bg-purple"><input type="radio" value="purple" autocomplete="off"></label>
+                                    <label class="btn bg-indigo"><input type="radio" value="indigo" autocomplete="off"></label>
+                                    <label class="btn bg-brown"><input type="radio" value="brown" autocomplete="off"></label>
+                                </div>
+                            </div>
+        
+                        </div>
+                    </li>
+
+            <li class="dropdown top-nav__notifications">
+                <a href="" data-toggle="dropdown"   class="">
+                    <i class="zmdi zmdi-notifications"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-menu--block">
+                    <div class="listview listview--hover">
+                        <div class="listview__header">
+                            Notifications
+
+                            <div class="actions">
+                                <a href="" class="actions__item zmdi zmdi-check-all"
+                                    data-ma-action="notifications-clear"></a>
+                            </div>
+                        </div>
+
+                        <div class="p-1"></div>
+                    </div>
+                </div>
+            </li>
+
+            <li class="dropdown top-nav__notifications">
+                    <a href="" data-toggle="dropdown"   class="">
+                        <i style="font-size: 18px" class="fas fa-user"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu--block">
+                        <div class="listview listview--hover">
+                            <div style="text-transform: lowercase !important" class="listview__header">
+                                <a class="dropdown-item"> <i class="fas fa-user mr-3 "></i> {{ usuario.email }} </a>
+                                <a class="dropdown-item" (click)='cerrarSesion()'> Cerrar Sesión <i class="fas fa-times ml-3 "></i></a>
+    
+                                <!-- <div class="actions">
+                                    <a href="" class="actions__item zmdi zmdi-check-all"
+                                        data-ma-action="notifications-clear"></a>
+                                </div> -->
+                            </div>
+    
+                            <div class="p-1"></div>
+                        </div>
+                    </div>
+                </li>
+
+        </ul>
+    </header>
+
+<!--   <aside class="sidebar" style="background-color: white">
+        <div class="scrollbar-inner">
+            <div class="user">
+                <div class="user__info" data-toggle="dropdown">
+                    <img class="user__img" src="https://cdn3.iconfinder.com/data/icons/vector-icons-6/96/256-512.png"
+                        alt="">
+                    <div>
+                        <div class="user__name"><b>{{usuario.nombreEmpleado}}</b></div>
+                        <div class="user__email">{{usuario.Email}}</div>
+                        <div class="user__email">{{usuario.rol}}</div>
+                    </div>
+                </div>
+
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" (click)='cerrarSesion()'>Cerrar Sesión</a>
+                </div>
+            </div>
+
+            <ul class="navigation">
+                <li><a routerLink='/home'><i class="zmdi zmdi-home"></i> Inicio</a></li>
+
+                <li><a routerLink='/home/ventas'><i class="zmdi zmdi-shopping-cart zmdi-hc-fw"></i>Ventas</a></li>
+
+                <li><a routerLink='/home/restaurante'><i class="fas fa-utensils"></i>Restaurante</a></li>
+
+                <li><a routerLink='/home/perfil'><i class="zmdi zmdi-money-box zmdi-hc-fw"></i>Mi Empresa</a></li>
+
+                <li class="navigation__sub">
+                    <a><i class="zmdi zmdi-view-list"></i> Administración</a>
+                    <ul>
+                        <li><a routerLink='/home/categorias'>Categorías</a></li>
+                        <li><a routerLink='/home/proveedores'>Proveedores</a></li>
+                        <li><a routerLink='/home/clientes'>Clientes</a></li>
+                        <li><a routerLink='/home/empleados'>Empleados</a></li>
+                        <li><a routerLink='/home/productos'>Productos</a></li>
+                        <li><a routerLink='/home/recetas'>Recetas</a></li>
+                        <li><a routerLink='/home/insumos'>Insumos</a></li>
+                        <li><a routerLink='/home/caja'>Caja</a></li>
+                        <li><a routerLink='/home/facturas'>Consultar Facturas</a></li>
+                        <li><a routerLink='/home/admRestaurantes'>Restaurantes</a></li>
+                        <li *ngIf='tipoUsuario == "1"'><a routerLink='/home/rangosDian'>Rangos DIAN</a></li>
+                    </ul>
+                </li>
+                <li class="navigation__sub">
+                    <a><i class="zmdi zmdi-money"></i> Contabilidad</a>
+                    <ul>
+                        <li><a routerLink='/home/cuentas-cobrar'>Consultar Cuentas Por Cobrar</a></li>
+                        <li><a routerLink='/home/compras'>Facturas Proveedores</a></li>
+
+                    </ul>
+                </li>
+                <li><a routerLink='/home/quickreport'><i class="zmdi zmdi-chart zmdi-hc-fw"></i>
+                    Reportes</a>
+                </li>
+                <li class="navigation__sub">
+                    <a><i class="fas fa-layer-group"></i> Kardex</a>
+                    <ul>
+
+                        <li><a routerLink='/home/productos-kardex'>Productos</a></li>
+                        <li><a routerLink='/home/insumos-kardex'>Insumos</a></li>
+                    </ul>
+                </li>
+                <li class="navigation__sub">
+                        <a><i class="fa fa-lock"></i> Seguridad</a>
+                        <ul>
+                            <li><a routerLink='/home/vendedores'>Usuarios</a></li>
+                            <li><a routerLink='/home/roles'>Roles</a></li>
+                            <li><a routerLink='/home/permisos'>Permisos</a></li>
+                        </ul>
+                    </li>
+            </ul>
+        </div>
+    </aside> -->
+
+
+<!-- <section class="" style="margin-top: 85px;" >
+
+</section> -->
+
+        <!--div class="content__inner" style="padding-left: 22px;">
+                <header class="content__title">
+                    <h1>{{titulo}}</h1>
+                    <div class="actions" *ngIf='activeItem == 1 || activeItem == 3'>
+                        <a class="actions__item zmdi zmdi-refresh-alt" (click)='resetProductosLista()' data-toggle="tooltip" title="Ver todos los productos"></a>
+                    </div>
+                </header>
+
+                <div class="card" style="margin-left: 20px">
+                    <app-home *ngIf="ruta == '/home'"></app-home>
+                    <app-ventas *ngIf="ruta == '/ventas'"></app-ventas>
+                    <app-categorias *ngIf="ruta == '/categorias'"></app-categorias>
+                    <app-productos *ngIf="ruta == '/productos'"></app-productos>
+                    <app-clientes *ngIf="ruta == '/clientes'"></app-clientes>
+                    <app-proveedores *ngIf="ruta == '/proveedores'"></app-proveedores>
+                    <app-quickreport *ngIf="ruta == '/quickreport'"></app-quickreport>
+                    <app-facturas *ngIf="ruta == '/facturas'"></app-facturas>
+                    <app-vendedores *ngIf="ruta == '/vendedores'"></app-vendedores>
+                    <app-perfil-empresa *ngIf="ruta == '/perfil'"></app-perfil-empresa>
+                    <app-compras *ngIf="ruta == '/compras'"></app-compras>
+                    <app-liquidaciones *ngIf="ruta == '/liquidaciones'"></app-liquidaciones>
+                    <app-gastos *ngIf="ruta == '/gastos'"></app-gastos>
+                </div>
+            </div-->
+
+
+          </div>
+<!-- <footer class="footer hidden-xs-down">
+    <p id="allright">© Smartbill. Todos los derechos reservados.</p>
+
+    <ul class="nav socialIcons footer__nav">
+        <li class="facebook"><a href="#"><i class="fa fa-fw fa-facebook"></i>Facebook</a></li>
+        <li class="twitter"><a href="#"><i class="fa fa-fw fa-twitter"></i>Twitter</a></li>
+        <li class="instagram"><a href="#"><i class="fa fa-fw fa-instagram"></i>Instagram</a></li>
+    </ul>
+</footer> -->
+
+<div class="leftMenu">
+
+  </div>

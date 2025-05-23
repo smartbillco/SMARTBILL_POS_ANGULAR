@@ -1,0 +1,107 @@
+<div class="row">
+    <div class="col-md-4">
+      <header class="content__title">
+        <h1>Ingresos del mes de {{nombreMes}} del {{anio}}</h1>
+      </header>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary btn--icon-text" data-toggle="modal" data-target="#modal-insertar-ingresos"><i
+          class="zmdi zmdi-file-plus zmdi-hc-fw"></i>Registrar Ingreso</button> &nbsp;
+    </div>
+    <div class="col-md-2">
+        <div class="btn-group" dropdown>
+            <button id="split-button" type="button" class="btn btn-primary">{{nombreMesBuscar}}</button>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+              <span class="caret"></span>
+            </button>
+        
+            <ul class="dropdown-menu">
+              <li *ngFor='let m of meses'><a class="dropdown-item" (click)='setMesBuscar(m.valor)'>{{m.nombre}}</a></li>
+            </ul>
+        
+          </div>
+    </div>
+    
+    <form #formBuscarIngresos='ngForm' ngNativeValidate (ngSubmit)='consultarIngresosPorMes()' class="row">
+      
+      <div class="form-group">
+          <input [(ngModel)]='anio' type="number" class="form-control form-control-lg" name="buscarAnio" min="2000"
+          max="2040" required placeholder="Año">
+        <i class="form-group__bar"></i>
+      </div>
+      <div class="form-group">
+      <button type="submit" class="btn btn-success btn--icon-text"><i class="zmdi zmdi-search"></i>Buscar</button>
+  
+      </div>
+  
+    </form>
+  </div>
+
+  <div class="card">
+      <div class="card-body">
+        <h1 class="display-4 color-margen-ganancia-verde" style="text-align: right">Total: {{total | currency: 'USD'}}</h1>
+        <div class="table-responsive">
+          <table id="dt-ingresos" class="table table-bordered" style="width: 100%">
+            <thead class="thead-default">
+              <tr>
+                <th class="td-option">Concepto</th>
+                <th class="td-option">Fecha</th>
+                <td class="td-option">Descripción</td>
+                <td class="td-option">Total</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let ing of listIngresos'>
+                <td class="anchoceldas">{{ing.concepto}}</td>
+                <td class="anchoColumnaCodigo anchoceldas">{{ing.fecha}}</td>
+                <td class="anchoceldas">{{ing.descripcion}}</td>
+                <td class="anchoceldas"><h5>{{ing.valor | currency: 'USD'}}</h5></td>                
+              </tr>
+            </tbody>
+          </table><br>
+        </div>
+      </div>
+    </div>
+    
+    <!--Modal insertar ingresos-->
+    <div class="modal fade" id="modal-insertar-ingresos" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <header class="price-table__header bg-blue">
+            <div class="price-table__title">Registrar Ingreso</div>
+          </header>
+          <form #formIngresos='ngForm' ngNativeValidate (ngSubmit)='registrarIngreso()'>
+            <div class="modal-body">
+              <div class="form-group">
+                <div class="select">
+                  <label>Concepto</label>
+                  <select [(ngModel)]='ingresoNuevo.concepto' class="form-control form-control-lg" name="tipoingresoNuevo" required>
+                    <option [ngValue]='t' *ngFor='let t of listConceptoIngreso'>
+                      {{t}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Descripción</label>
+                <input [(ngModel)]='ingresoNuevo.descripcion' type="text" class="form-control form-control-lg" minlength="2" required
+                  maxlength="200" name="ingresoNuevoDes">
+                <i class="form-group__bar"></i>
+              </div>
+    
+    
+              <div class="form-group">
+                <label>Valor</label>
+                <input [(ngModel)]='ingresoNuevo.valor' type="number" class="form-control form-control-lg" minlength="2" step="0.01"
+                  max="9999999.99" required name="ingresoNuevoVal">
+                <i class="form-group__bar"></i>
+              </div>
+    
+              <div class="modal-footer modalMargenInferior">
+                <button type="submit" class="btn btn-primary">Aceptar</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>

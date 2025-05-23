@@ -1,0 +1,41 @@
+Productos :
+- No funciona exportar excel
+- Nuevo producto: maxlength de 7 en codigo 
+- Nuevo producto: no guarda la imagen 
+- Editar producto: no muestra el codigo de barras
+- Nueva factura proveedor: no se registra la fecha de vencimiento de la factura
+
+Facturas Proveedor 
+- No muestra el saldo
+- No se muestra la fecha de vencimiento
+- No funciona exportar excel
+
+Empresa 
+- Editar empresa: los inputs tienen la letra muy pequeña 
+- Editar empresa: no se muestran el tipo de negocio y el régimen
+- Editar empresa: en la descripción se muestra el nombre
+- Editar empresa: sale error al actualizar la empresa
+
+Kardex: 
+- Comentar opción de insumos en el menu
+- No funciona filtro de fechas
+- No funciona exportar excel
+
+Empleados: 
+- Editar empleado: no se muestra el numero de identificacion
+
+Consultar Facturas
+- Al entrar a esta vista deben verse las facturas del día en curso
+- No funciona exportar excel
+
+Clientes: 
+- No funciona exportar excel
+
+Cajas: 
+- LISTADO DE CAJAS REGISTRADAS : No debe dejar registrar mas de una caja principal
+- Botón Consultar aperturas no funciona
+- Movimientos caja : hace falta un select que indique sobre cual caja se esta trabajando
+
+Otros:
+- No se ha implementado la vista de ganancias
+- Se debe quitar la opcion de insumos de la vista principal

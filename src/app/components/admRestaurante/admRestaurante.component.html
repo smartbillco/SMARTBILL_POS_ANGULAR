@@ -1,0 +1,293 @@
+<div class="row">
+    <div class="col-md-4">
+      <header class="content__title">
+          <h1>RESTAURANTES</h1>
+      </header>
+    </div>    
+</div>
+<div class="card">
+    <div class="card-body">
+
+        <div class="buttomheaderright">
+          <button class="btn btn-primary btn--icon-text" data-toggle="modal" data-target="#modal-restaurante"
+                [disabled]='tipoUsuario != "1"'><i class="zmdi zmdi-file-plus zmdi-hc-fw"></i> Agregar Restaurante</button> &nbsp;          
+        </div>
+        
+        <div class="table-responsive">
+          <table id="dt-restaurante" class="table table-bordered" style="width: 100%">
+            <thead class="thead-default">
+              <tr>
+                <th class="td-option">Código</th>
+                <th class="td-option">Nombre</th>
+                <th class="td-option">Dirección</th>
+                <td class="td-option">Opciones</td>             
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let rest of listaRestaurantes'>
+                <td class="anchoColumnaCodigo">{{rest.id}}</td>
+                <td>{{rest.nombre}}</td>
+                <td>{{rest.direccion}}</td>
+                <td class="tableoption anchoColumnaOpciones">                  
+                  <button (click)='setActualizarRestaurante(rest)' class="btn btn-primary btn--icon"
+                    [disabled]='tipoUsuario != 1' data-title="Edit" data-toggle="modal" data-target="#modal-editarrestaurante"
+                    title="Editar">
+                    <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                  </button> &nbsp;
+                  <button (click)='setZonas(rest)' class="btn btn-success btn--icon"
+                    [disabled]='tipoUsuario != 1' data-title="Edit" data-toggle="modal" data-target="#modal-zonas" title="Zonas">
+                    <i class="fa fa-share-alt zmdi-hc-fw"></i>
+                  </button> &nbsp;
+                  <button (click)='setMesas(rest)' class="btn btn-info btn--icon"
+                    [disabled]='tipoUsuario != 1' data-title="Edit" data-toggle="modal" data-target="#modal-mesas"
+                    title="Mesas">
+                    <i class="fa fa-cutlery zmdi-hc-fw"></i>
+                  </button> &nbsp;
+                  <button (click)='eliminarRestaurante(rest)' class="btn btn-danger btn--icon" data-title="Delete"
+                    [disabled]='tipoUsuario != 1' title="Eliminar" data-toggle="modal" data-target="#delete">
+                    <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br><br>
+        </div>
+        
+      </div>    
+  </div>
+
+<div class="modal fade" id="modal-restaurante" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Agregar Restaurante</div>
+      </header>
+      <form #formRestaurantes='ngForm' ngNativeValidate (ngSubmit)='crearRestaurante()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Código</label>
+            <input [(ngModel)]='restaurante.id' type="text" class="form-control" maxlength="7" minlength="2"
+              pattern="^(0|[1-9][0-9]*)$" required name="restId">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Nombre</label>
+            <input [(ngModel)]='restaurante.nombre' type="text" class="form-control" minlength="2" required maxlength="45"
+              name="restNombre">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Dirección</label>
+            <input [(ngModel)]='restaurante.direccion' type="text" class="form-control" minlength="2" required maxlength="100"
+              name="restDireccion">
+            <i class="form-group__bar"></i>
+          </div>          
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Agregar Restaurante</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-editarrestaurante" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Editar Restaurante</div>
+      </header>
+      <form #formeditarRestaurantes='ngForm' ngNativeValidate (ngSubmit)='editarRestaurante()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Código</label>
+            <input [(ngModel)]='restauranteActualizar.id' maxlength="7" minlength="2" readonly type="text"
+              class="form-control" required name="restEditId">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Nombre</label>
+            <input [(ngModel)]='restauranteActualizar.nombre' minlength="2" maxlength="45" type="text" class="form-control"
+              required name="restEditNombre">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Dirección</label>
+            <input [(ngModel)]='restauranteActualizar.direccion' minlength="2" maxlength="45" type="text" class="form-control"
+              required name="restEditDireccion">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Editar Restaurante</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal"
+              (click)='cerrarModalEditar()'>Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-zonas" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Detalle de Zonas</div>
+      </header>
+      <div class="modal-body">
+        
+        <br/>                   
+        <h4 class="card-title">{{restauranteDetalle.id}} - {{restauranteDetalle.nombre}}</h4>
+        
+        <form #formInsuumoProd='ngForm' ngNativeValidate (ngSubmit)="addZona()">
+          <div class="row">
+            <div class="col-sm-11">
+              <div class="form-group">
+                <label>Nombre</label>
+                <input [(ngModel)]='nuevaZona.nombre' minlength="2" maxlength="45" type="text" class="form-control"
+                  required name="zonaNombre">
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-1">
+              <div class="form-group botonAccion">
+                <button type="submit" class="btn btn-success btn--icon" title="Agregar Zona">
+                  <i class="zmdi zmdi-plus zmdi-hc-fw"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <br/>
+        <h3 class="card-title">Zonas Registradas</h3>
+        <!-- Tabla Zonas -->
+        <div style="margin-bottom: -1%">
+          <div class="table-responsive">
+            <table id="dt-zonas" class="table table-bordered">
+              <thead class="thead-default">
+                <tr class="text-center">
+                  <td>Zona</td>
+                  <td>Acción</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="text-transform:uppercase; font-size: 14px" *ngFor="let zona of restauranteDetalle.listaZonas">
+                  <td style="text-align: left; width:80%">{{zona.nombre}}</td>
+                  <td style="text-align: center; width:20%">                    
+                    <button (click)="eliminarZona(zona)" class="btn btn-danger btn--icon btnaccion"
+                      [disabled]='tipoUsuario != 1' data-title="Eliminar" title="Eliminar">
+                      <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                    </button>                      
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-footer modalMargenInferior">
+          <button type="button" class="btn btn-success" data-dismiss="modal"
+            (click)='cerrarModalZonas()'>Cerrar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-mesas" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <header class="price-table__header bg-blue">
+          <div class="price-table__title">Mesas por Zona</div>
+        </header>
+        <div class="modal-body">
+          
+          <br/>                   
+          <h4 class="card-title">{{restauranteDetalle.id}} - {{restauranteDetalle.nombre}}</h4>
+                      
+          <form #formMesa='ngForm' ngNativeValidate (ngSubmit)="addMesa()">
+            <div class="form-group">
+              <label>Zona</label>
+              <select [(ngModel)]='nuevaMesa.idZona' class="form-control" name="zona" required (change)="setZona()">
+                <option [ngValue]='zona.id' *ngFor='let zona of restauranteDetalle.listaZonas' >
+                  {{zona.nombre}}</option>
+                </select>
+              </div>
+              <div class="row">
+                <div class="col-sm-11">
+                  <div class="form-group">
+                    <label>Nombre</label>
+                    <input [(ngModel)]='nuevaMesa.nombre' minlength="2" maxlength="45" type="text" class="form-control"
+                      required name="nuevaMesaNombre">
+                    <i class="form-group__bar"></i>
+                  </div>
+                </div>
+                <div class="col-sm-1">
+                  <div class="form-group botonAccion">
+                    <button type="submit" class="btn btn-success btn--icon" title="Agregar Mesa">
+                      <i class="zmdi zmdi-plus zmdi-hc-fw"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label>Cantidad de Personas</label>                      
+                    <input [(ngModel)]='nuevaMesa.cantidadPersonas' type="text" class="form-control" minlength="1" maxlength="4"
+                      pattern="^(0|[1-9][0-9]*)$" required name="nuevaMesaCantPers">
+                    <i class="form-group__bar"></i>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label>Estado</label>
+                    <select [(ngModel)]='nuevaMesa.estado' class="form-control" name="nuevaMesaEstado"
+                      required>
+                      <option [ngValue]='t.valor' *ngFor='let t of listaEstados'>
+                        {{t.nombre}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </form>
+  
+            <br/>
+            <h3 class="card-title">Mesas Registradas</h3>
+            <!-- Tabla Mesas -->
+            <div style="margin-bottom: -1%">
+              <div class="table-responsive">
+                <table id="dt-mesas" class="table table-bordered">
+                  <thead class="thead-default">
+                    <tr class="text-center">
+                      <td>Mesa</td>
+                      <td>Cant. Personas</td>
+                      <td>Estado</td>
+                      <td>Acción</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="text-transform:uppercase; font-size: 14px" *ngFor="let mesa of listaMesas">
+                      <td style="text-align: left; width:50%">{{mesa.nombre}}</td>
+                      <td style="text-align: left; width:20%">{{mesa.cantidadPersonas}}</td>
+                      <td style="text-align: left; width:18%">{{mesa.estado == 1 ? 'ACTIVO' : 'INACTIVO'}}</td>
+                      <td style="text-align: center; width:12%">                        
+                        <button (click)="eliminarMesa(mesa)" class="btn btn-danger btn--icon btnaccion"
+                          [disabled]='tipoUsuario != 1' data-title="Eliminar" title="Eliminar">
+                          <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="modal-footer modalMargenInferior">
+              <button type="button" class="btn btn-success" data-dismiss="modal"
+                (click)='cerrarModalMesas()'>Cerrar</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>

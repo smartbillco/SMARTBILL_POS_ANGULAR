@@ -1,0 +1,94 @@
+<div class="row">
+  <div class="col-md-6">
+    <header class="content__title">
+      <h1>CONSULTA DE INGRESOS A INVENTARIO</h1>
+    </header>
+  </div>
+  <div class="col-sm-2">
+      <div class="btn-group" dropdown>
+        <button id="split-button" type="button" class="btn btn-primary">{{nombreMes}}</button>
+        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+          <span class="caret"></span>
+        </button>
+
+        <ul class="dropdown-menu">
+          <li *ngFor='let m of meses'><a class="dropdown-item" (click)='setMesBuscar(m.valor)'>{{m.nombre}}</a></li>
+        </ul>
+
+      </div>
+    </div>
+  <form #formBuscarCompras='ngForm' ngNativeValidate (ngSubmit)='consultarComprasMes()' class="form-row">
+    
+    <div class="col-md-6">
+      <input [(ngModel)]='anio' type="number" class="form-control form-control-lg" name="buscarAnio" min="2000"
+        max="2040" required placeholder="Año">
+      <i class="form-group__bar"></i>
+    </div>
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-success btn--icon-text"><i class="zmdi zmdi-search"></i>Buscar</button>
+    </div>
+
+  </form>
+</div>
+<div class="card">
+  <div class="card-body">
+      <h1 class="display-4 color-margen-ganancia-rojo" style="text-align: right">Total: {{total | currency: 'USD'}}</h1>
+    <div class="table-responsive">
+      <table id="dt-compras" class="table table-bordered" style="width: 100%">
+        <thead class="thead-default">
+          <tr>
+            <th class="td-option">Fecha</th>
+            <th class="td-option">Producto</th>
+            <td class="td-option">Cantidad</td>
+            <td class="td-option">Medida</td>
+            <td class="td-option">Total</td>
+            <td class="td-option">Opciones</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let c of listCompras'>
+            <td class="anchoColumnaCodigo anchoceldas">{{c.fecha}}</td>
+            <td class="anchoceldas">{{c.producto}}</td>
+            <td class="anchoceldas">{{c.cantidad}}</td>
+            <td class="anchoceldas">{{c.medida}}</td>
+            <td class="anchoceldas">{{c.valor | currency: 'USD'}}</td>
+            <td class="tableoption anchoColumnaOpciones">
+              <button class="btn btn-primary btn--icon " (click)='verDetalles(c)' title="Ver Detalles"
+                data-toggle="tooltip">
+                <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table><br>
+    </div>
+    
+  </div>
+</div>
+
+<!--Modal detalle compra-->
+<div class="modal fade" id="modal-detallecompra" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Detalle de compra</div>
+      </header>
+      <div class="modal-body">
+        <div class="form-group">
+          <p>Fecha: <b>{{detCompra.fecha}}</b></p>
+          <p>Producto: <b>{{detCompra.producto}}</b></p>
+          <p>Cantidad: <b>{{detCompra.cantidad}}</b></p>
+          <p>Medida: <b>{{detCompra.medida}}</b></p>
+          <p>Unidades por <b>{{detCompra.medida}} : {{detCompra.cantUnidadesMedida}}</b></p>
+
+          <p>Valor por <b>{{detCompra.medida}}: {{detCompra.valorUnitario | currency: 'USD'}}</b></p>
+          <p>Total unidades ingresadas a inventario: <b>{{detCompra.totalUnidades}}</b></p>
+          <h4>Total: <b>{{detCompra.valor| currency: 'USD'}}</b></h4>
+          <div class="modal-footer modalMargenInferior">
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

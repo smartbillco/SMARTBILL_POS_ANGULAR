@@ -1,0 +1,63 @@
+<div class="row">
+  <div class="col-md-4">
+    <header class="content__title">
+      <h1>Pagos a empleados del mes de {{nombreMes}} del {{anio}}</h1>
+    </header>
+  </div>
+  <div class="col-md-2">
+    <div class="btn-group" dropdown>
+      <button id="split-button" type="button" class="btn btn-primary">{{nombreMesBuscar}}</button>
+      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+        <span class="caret"></span>
+      </button>
+
+      <ul class="dropdown-menu">
+        <li *ngFor='let m of meses'><a class="dropdown-item" (click)='setMesBuscar(m.valor)'>{{m.nombre}}</a></li>
+      </ul>
+
+    </div>
+  </div>
+
+  <form #formBuscarLiquidacionesMes='ngForm' ngNativeValidate (ngSubmit)='consultarLiquidacionesPorMes()' class="row">
+
+    <div class="form-group">
+      <input [(ngModel)]='anio' type="number" class="form-control form-control-lg" name="buscarAnio" min="2000"
+        max="2040" required placeholder="Año">
+      <i class="form-group__bar"></i>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-success btn--icon-text"><i class="zmdi zmdi-search"></i>Buscar</button>
+
+    </div>
+
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h1 class="display-4 color-margen-ganancia-rojo" style="text-align: right">Total: {{total | currency: 'USD'}}</h1>
+    <div class="table-responsive">
+      <table id="dt-liquidaciones" class="table table-bordered" style="width: 100%">
+        <thead class="thead-default">
+          <tr>
+            <th class="td-option">Nombre</th>
+            <th class="td-option">Concepto</th>
+            <th class="td-option">Fecha</th>
+            <td class="td-option">Total</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let p of listLiquidaciones'>
+            <td class="anchoceldas">{{p.usuario}}</td>
+            <td class="anchoceldas">{{p.concepto}}</td>
+            <td class="anchoColumnaCodigo anchoceldas">{{p.fecha}}</td>
+            <td class="anchoceldas">
+              <h5>{{p.valor | currency: 'USD'}}</h5>
+            </td>
+
+          </tr>
+        </tbody>
+      </table><br>
+    </div>
+  </div>
+</div>

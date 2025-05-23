@@ -1,0 +1,210 @@
+<header class="content__title">
+  <h1>REPORTES</h1>
+  <div class="actions">
+    <div class="dropdown actions__item">
+      <i data-toggle="dropdown" class="zmdi zmdi-more-vert"></i>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item" data-toggle="modal" data-target="#modal-balance-anio"><b>Consultar Por Año</b></a>
+        <a class="dropdown-item" data-toggle="modal" data-target="#modal-balance-mes"><b>Consultar Por Mes</b></a>
+        <a class="dropdown-item"><b>Consultar Últimos seis meses</b></a>
+        <a class="dropdown-item" data-toggle="modal" data-target="#modal-balance-fechas"><b>Consultar Por rango de fechas</b></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="card">
+
+  <div class="card-header" [ngSwitch]="flagBusqueda">
+    <h4 *ngSwitchCase="0">BALANCE {{nombreMesBuscar}} DE {{anioBuscar}}</h4>
+    <h4 *ngSwitchCase="1">BALANCE {{anioBuscar}}</h4>
+    <h4 *ngSwitchCase="2">BALANCE {{fechaInicio}} A {{fechaFin}}</h4>
+    <h4></h4>
+  </div>
+
+  <div class="card-body">
+    <div class="row quick-stats">
+      <div class="col-sm-6 col-md-3">
+        <div class="quick-stats__item bg-blue">
+          <div class="quick-stats__info">
+            <h3>{{reportesHoy.cantVentas}}</h3>
+            <small>Total Cantidad de ventas</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="quick-stats__item bg-amber">
+          <div class="quick-stats__info">
+            <h3>{{reportesHoy.totalVentas | currency:'USD'}}</h3>
+            <small>Total Ventas</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="quick-stats__item bg-green">
+          <div class="quick-stats__info">
+            <h3>{{reportesHoy.totalIngresos | currency:'USD'}}</h3>
+            <small>Total Ingresos</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="quick-stats__item bg-purple">
+          <div class="quick-stats__info">
+            <h3>{{reportesHoy.totalInversiones| currency:'USD'}}</h3>
+            <small>Total Inversiones</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="quick-stats__item bg-red">
+          <div class="quick-stats__info">
+            <h3>{{reportesHoy.utilidad | currency:'USD'}}</h3>
+            <small>Total Utilidades</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="text-align: right">Margen de utilidad:</p>
+    <h1 class="display-4" style="text-align: right" [ngClass]="getColorMargen(reportesHoy.margen)">
+      {{reportesHoy.margen | number}}%</h1>
+  </div>
+</div>  
+
+  <div class="card-header">
+    <h2>Detalle Mensual</h2>
+    <p>Mes Actual: Junio 2019</p>
+    <p>Mes Anterior: Mayo 2019</p>
+  </div>
+  <div class="card-body">
+    <div class="row quick-stats">
+      <div class="col-sm-6 col-md-4">
+        <div class="quick-stats__item bg-cyan">
+          <div class="info-box-icon"><i class="fa fa-dollar" style="color:white; font-size:30px !important"></i></div>
+          <div class="quick-stats__info">
+            <small><b>Cantidad de Ventas</b></small>
+            <h2>{{10101010}}</h2>
+            <small>{{10101010}} Mes Anterior</small>
+          </div>
+          < <div class="quick-stats__chart sparkline-bar-stats">6,4,8,6,5,6,7,8,3,5,9,5
+        </div> >
+      </div>
+    </div>
+  
+    <div class="col-sm-6 col-md-4">
+      <div class="quick-stats__item bg-purple">
+        <div class="info-box-icon"><i class="fa fa-dollar" style="color:white; font-size:30px !important"></i></div>
+        <div class="quick-stats__info">
+          <small><b>Valor ventas</b></small>
+          <h2>{{10101010 | currency:'USD'}}</h2>
+          <small>{{10101010 | currency:'USD'}} Mes Anterior</small>
+  
+        </div>
+  
+      </div>
+    </div>
+  
+    <div class="col-sm-6 col-md-4">
+      <div class="quick-stats__item bg-orange">
+        <div class="info-box-icon"><i class="fa fa-cart-plus" style="color:white; font-size:30px !important"></i></div>
+  
+        <div class="quick-stats__info">
+  
+          <small><b>Utilidad Netas</b></small>
+          <h2>{{10101010 | currency:'USD'}}</h2>
+          <small>{{10101010 | currency:'USD'}} Mes Anterior</small>
+  
+        </div>
+  
+        <div class="quick-stats__chart sparkline-bar-stats">9,4,6,5,6,4,5,7,9,3,6,5</div>
+      </div>
+    </div>
+  </div>
+  
+ <!--Modal Año-->
+ <div class="modal fade" id="modal-balance-anio">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Consultar Balance Anual</div>
+      </header>
+      <form #formbalanceanio='ngForm' ngNativeValidate (ngSubmit)='consultarBalanceAnual()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Año</label>
+            <input [(ngModel)]='anioBuscar' type="number" class="form-control form-control-lg" min="2000"
+              [max]='anioBuscar' required name="anio-buscar">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 
+
+
+<!--Modal Mes-->
+<div class="modal fade" id="modal-balance-mes">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Consultar Balance Mensual</div>
+      </header>
+      <form #formbalancemes='ngForm' ngNativeValidate (ngSubmit)='consultarBalanceMes()'>
+        <div class="modal-body">
+            <div class="form-group">
+                <div class="select">
+                  <label>Seleccionar Mes</label>
+                  <select [(ngModel)]='mesBuscar' class="form-control form-control-lg" name="mes-buscar">
+                    <option [ngValue]='m.valor' *ngFor='let m of meses'>{{m.nombre}}</option>
+                  </select>
+                </div>
+              </div>
+          <div class="form-group">
+            <label>Año</label>
+            <input [(ngModel)]='anioBuscar' type="number" class="form-control form-control-lg" min="2000"
+              [max]='anioBuscar' required name="anio-buscar">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 
+
+<!--Modal Rango de fechas-->
+<div class="modal fade" id="modal-balance-fechas">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Consultar Balance Por Rango de fechas</div>
+      </header>
+      <form #formbalanceanio='ngForm' ngNativeValidate (ngSubmit)='consultarBalanceFechas()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Fecha Inicial</label>
+            <input [(ngModel)]='fechaInicio' type="date" class="form-control form-control-lg"  required name="fecha-ini-buscar">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+              <label>Fecha Fin</label>
+              <input [(ngModel)]='fechaFin' type="date" class="form-control form-control-lg"  required name="fecha-fin-buscar">
+              <i class="form-group__bar"></i>
+            </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

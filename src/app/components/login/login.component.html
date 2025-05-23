@@ -1,0 +1,85 @@
+<div data-ma-theme="green" class="login">
+
+    <!-- Login -->
+    <div class="login__block active" id="l-login">
+            <img src="assets/logo.png" style="width:50px" alt="">
+            <br/>
+            <br/>
+            <br/>
+            <div class="login__block__header">
+            <i class="zmdi zmdi-account-circle"></i>
+            Iniciar Sesión
+
+            <div class="actions actions--inverse login__block__actions">
+                <div class="dropdown">
+                    <i data-toggle="dropdown" class="zmdi zmdi-more-vert actions__item"></i>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" data-ma-action="login-switch" data-ma-target="#l-forget-password"
+                            href="">Olvidé mi contraseña</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="login__block__body">
+
+            <form role="form" #formLogin='ngForm'  (ngSubmit)='login()'>
+                <div class="form-group form-group--centered">
+                    <label>Correo Electrónico</label>
+                    <input [(ngModel)]="usuario.email" type="email" class="form-control" name="email" id="email"
+                        minlength="8" maxlength="45" required>
+                    <i class="form-group__bar"></i>
+                </div>
+    
+                <div class="form-group form-group--centered">
+                    <label>Contraseña</label>
+                    <input [(ngModel)]="usuario.password" type="password" class="form-control" name="password" id="password"
+                        maxlength="20" minlength="6" required>
+                    <i class="form-group__bar"></i>
+                </div>
+                <!----div class="custom-control custom-checkbox" style="position: relative;
+                display: initial;
+                min-height: 0.5rem;
+                padding-left: 27px;">
+                    <input type="checkbox" class="custom-control-input" id="customCheck1" (click)='loginInvitado()'>
+                    <label class="custom-control-label" for="customCheck1">Iniciar como invitado</label>
+                </div-->
+                <button type="submit" class="btn btn--icon login__block__btn"><i
+                        class="zmdi zmdi-long-arrow-right"></i></button>
+            </form>
+            
+        </div>
+    </div>
+
+    <!-- Forgot Password -->
+    <div class="login__block" id="l-forget-password">
+        <div class="login__block__header palette-Purple bg">
+            <i class="zmdi zmdi-account-circle"></i>
+            Olvidé mi contraseña
+
+            <div class="actions actions--inverse login__block__actions">
+                <div class="dropdown">
+                    <i data-toggle="dropdown" class="zmdi zmdi-more-vert actions__item"></i>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" data-ma-action="login-switch" data-ma-target="#l-login" href="">Tengo
+                            una cuenta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="login__block__body">
+
+            <div class="form-group form-group--centered">
+                <input type="text" class="form-control" [(ngModel)]='correoOlvidado' maxlength="45" minlength="8">
+                <label>Correo electrónico</label>
+                <i class="form-group__bar"></i>
+            </div>
+            <p class="mt-4">A su bandeja de entrada le estará llegando una información para restablecer su contraseña,
+                de no ser así revise su carpeta de Spam.</p>
+
+            <button (click)='resetPassword()' class="btn btn--icon login__block__btn"><i
+                    class="zmdi zmdi-check"></i></button>
+        </div> 
+    </div>
+</div>

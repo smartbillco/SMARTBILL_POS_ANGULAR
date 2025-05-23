@@ -1,0 +1,688 @@
+<div class="row">
+  <div class="col-md-4">
+    <header class="content__title">
+      <h1 class="text-themecolor">PROVEEDORES</h1>
+    </header>
+  </div>
+  <div class="buttomheaderright"></div>
+</div>
+<div class="card">
+  <div class="card-body">
+    <div class="buttomheaderright">
+      <button
+        class="btn btn-primary"
+        data-toggle="modal"
+        data-target="#modal-proveedor"
+        [disabled]="tipoUsuario != '1'"
+      >
+        <i class="fas fa-plus"></i> Agregar proveedor
+      </button>
+      &nbsp;
+      <!-- <button class="btn btn-success btn--icon-text"
+                data-toggle="modal"
+                data-target="#modal-inputProveedor"
+                [disabled]='tipoUsuario != "1"'>
+              <i class="zmdi zmdi-upload zmdi-hc-fw"></i> Cargar archivo
+          </button> &nbsp; -->
+      <button
+        class="btn btn-success btn--icon-text"
+        data-toggle="modal"
+        (click)="consultarReporte()"
+        [disabled]="tipoUsuario != '1'"
+      >
+        <i class="fa fa-file-excel-o"></i> Exportar</button
+      ><br />
+      <app-export-file-buttons
+        (pdfExportEmitter)="exportProveedoresListToPdf($event)"
+        (excelExportEmitter)="exportProveedoresListToExcel($event)"
+      ></app-export-file-buttons>
+    </div>
+    <div class="text-center"></div>
+    <div class="table-responsive">
+      <table id="dt-proveedor" class="table table-bordered">
+        <thead class="thead-default">
+          <tr>
+            <th class="td-option">Código</th>
+            <th class="td-option">Nombre</th>
+            <th class="td-option">Celular</th>
+            <th class="td-option">Dirección</th>
+            <th class="td-option">Contacto</th>
+            <th class="td-option">Tipo ID.</th>
+            <th class="td-option">Regimen</th>
+            <th class="td-option">Correo</th>
+            <td class="td-option">Opciones</td>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let prov of listaProveedores">
+            <td class="anchoColumnaCodigo">{{ prov.identificacion }}</td>
+            <td>{{ prov.nombre }}</td>
+            <td>{{ prov.telefono }}</td>
+            <td>{{ prov.direccion }}</td>
+            <td>{{ prov.contacto }}</td>
+            <td>{{ prov.tipoIdentificacion }}</td>
+            <td>{{ prov.regimen }}</td>
+            <td>{{ prov.correo }}</td>
+            <td class="tableoption anchoColumnaOpciones">
+              <button
+                (click)="setProveedorActulaizar(prov)"
+                class="btn btn-outline-primary"
+                [disabled]="tipoUsuario != 1"
+                data-title="Edit"
+                data-toggle="modal"
+                data-target="#modal-editarproveedor"
+                title="Editar proveedor {{ prov.nombre }} "
+              >
+                <i class="fas fa-cog"></i>
+              </button>
+              &nbsp;
+              <button
+                (click)="setProveedorAeliminar(prov)"
+                class="btn btn-outline-danger"
+                title="Eliminar proveedor {{ prov.nombre }}"
+                [disabled]="tipoUsuario != 1"
+                data-title="Delete"
+                data-toggle="modal"
+                data-target="#delete"
+              >
+                <i class="far fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br />
+  </div>
+</div>
+
+<!-- Modal agregar proveedor -->
+<div class="modal fade" id="modal-proveedor" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10">Agregar proveedor</div>
+          <div class="col-2">
+            <button
+              class="btn btn-info btn--icon float-right"
+              type="reset"
+              data-dismiss="modal"
+            >
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <form #formProveedor="ngForm" (ngSubmit)="nuevoProveedor()">
+        <div class="modal-body row">
+          <div class="form-group col-12 col-md-6">
+            <div class="select">
+              <label>Tipo de identificación</label>
+              <select class="form-control">
+                [(ngModel)]='proveedor.tipoIdentificacion' name="ProveedorTipo">
+                <option *ngFor="let t of listTipos" [(ngValue)]="t">
+                  {{ t }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (proIdentificacion?.errors?.required ||
+                  proIdentificacion?.errors?.minlength) &&
+                proIdentificacion.touched
+            }"
+          >
+            <label>Identificacion</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedor.identificacion"
+              class="form-control"
+              maxlength="45"
+              minlength="5"
+              required
+              name="proIdentificacion"
+              #proIdentificacion="ngModel"
+            />
+
+            <div class="litle-text" *ngIf="proIdentificacion.touched">
+              <span *ngIf="proIdentificacion?.errors?.required"
+                >La identificación es requerida</span
+              >
+              <span *ngIf="proIdentificacion?.errors?.minlength"
+                >Se requieren minimo 5 caracteres</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (proNombre?.errors?.required || proNombre?.errors?.minlength) &&
+                proNombre.touched
+            }"
+          >
+            <label>Nombre</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedor.nombre"
+              class="form-control"
+              required
+              maxlength="45"
+              minlength="3"
+              name="proNombre"
+              #proNombre="ngModel"
+            />
+            <div class="litle-text" *ngIf="proNombre.touched">
+              <span *ngIf="proNombre?.errors?.required"
+                >El nombre es requerido</span
+              >
+              <span *ngIf="proNombre?.errors?.minlength"
+                >Se requieren minimo 5 caracteres</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (proCorreo?.errors?.required ||
+                  proCorreo?.errors?.pattern ||
+                  proCorreo?.errors?.minlength) &&
+                proCorreo.touched
+            }"
+          >
+            <label>Correo</label>
+            <input
+              type="email"
+              [(ngModel)]="proveedor.correo"
+              class="form-control"
+              maxlength="45"
+              minlength="5"
+              required
+              name="proCorreo"
+              pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}"
+              #proCorreo="ngModel"
+            />
+            <div class="litle-text" *ngIf="proCorreo.touched">
+              <span *ngIf="proCorreo?.errors?.required"
+                >El correo es requerido.</span
+              >
+              <span *ngIf="proCorreo?.errors?.minlength"
+                >Se requieren minimo 5 caracteres.
+              </span>
+              <span *ngIf="proCorreo?.errors?.pattern">
+                Debe ser un correo valido.</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (proCelular?.errors?.required ||
+                  proCelular?.errors?.minlength) &&
+                proCelular.touched
+            }"
+          >
+            <label>Celular</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedor.telefono"
+              class="form-control"
+              required
+              maxlength="10"
+              minlength="10"
+              name="proCelular"
+              #proCelular="ngModel"
+            />
+            <div class="litle-text" *ngIf="proCelular.touched">
+              <span *ngIf="proCelular?.errors?.required"
+                >El Numero de telefono es requerido</span
+              >
+              <span *ngIf="proCelular?.errors?.minlength"
+                >Se requieren minimo 5 caracteres
+              </span>
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (proDireccion?.errors?.required ||
+                  proDireccion?.errors?.minlength) &&
+                proDireccion.touched
+            }"
+          >
+            <label>Dirección</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedor.direccion"
+              class="form-control"
+              maxlength="45"
+              minlength="5"
+              required
+              name="proDireccion"
+              #proDireccion="ngModel"
+            />
+            <div class="litle-text" *ngIf="proDireccion.touched">
+              <span *ngIf="proDireccion?.errors?.required"
+                >La dirección es necesaria</span
+              >
+              <span *ngIf="proDireccion?.errors?.minlength"
+                >Se requieren minimo 5 caracteres
+              </span>
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                ProveedorRegimen?.errors?.required && ProveedorRegimen.touched
+            }"
+          >
+            <div class="select">
+              <label>Régimen</label>
+              <select
+                class="form-control"
+                [(ngModel)]="proveedor.regimen"
+                name="ProveedorRegimen"
+                required
+                #ProveedorRegimen="ngModel"
+              >
+                <option *ngFor="let r of listRegimen" [(ngValue)]="r">
+                  {{ r }}
+                </option>
+              </select>
+            </div>
+
+            <div class="litle-text" *ngIf="proDireccion.touched">
+              <span *ngIf="ProveedorRegimen?.errors?.required"
+                >El regimen es necesario</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (procontacto?.errors?.required ||
+                  procontacto?.errors?.minlength) &&
+                procontacto.touched
+            }"
+          >
+            <label>Nombre de Contacto</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedor.contacto"
+              class="form-control"
+              maxlength="45"
+              minlength="5"
+              required
+              name="procontacto"
+              #procontacto="ngModel"
+            />
+            <div class="litle-text" *ngIf="procontacto.touched">
+              <span *ngIf="procontacto?.errors?.required"
+                >Es necesario un nombre de contacto</span
+              >
+              <span *ngIf="procontacto?.errors?.minlength"
+                >Se requieren minimo 5 caracteres
+              </span>
+            </div>
+          </div>
+          <div class="modal-footer modalMargenInferior col-12">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              [disabled]="formProveedor.invalid"
+              type="submit"
+              class="btn btn-success"
+            >
+              Agregar Proveedor
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Termina modal agregar proveedor -->
+
+<!-- Modal editar proveedor -->
+<div
+  class="modal fade"
+  id="modal-editarproveedor"
+  tabindex="-1"
+  data-backdrop="static"
+  data-keyboard="false"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10">
+            Editar proveedor {{ proveedorAactualizar.nombre }}
+          </div>
+          <div class="col-2">
+            <button
+              class="btn btn-info btn--icon float-right"
+              type="reset"
+              data-dismiss="modal"
+            >
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <form #formProveedores="ngForm" noValidate (ngSubmit)="editarProveedor()">
+        <div class="modal-body row">
+          <div class="form-group col-12 col-md-6">
+            <div class="select">
+              <label>Tipo de identificación</label>
+              <select
+                class="form-control"
+                [(ngModel)]="proveedorAactualizar.tipoIdentificacion"
+                name="editProveedorTipo"
+              >
+                <option *ngFor="let t of listTipos" [(ngValue)]="t">
+                  {{ t }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (editproIdentificacion?.errors?.required ||
+                  editproIdentificacion?.errors?.minlength) &&
+                editproIdentificacion.touched
+            }"
+          >
+            <label>Identificacion</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedorAactualizar.identificacion"
+              class="form-control"
+              maxlength="45"
+              minlength="5"
+              required
+              name="editproIdentificacion"
+              #editproIdentificacion="ngModel"
+            />
+
+            <div class="litle-text" *ngIf="editproIdentificacion.touched">
+              <span *ngIf="editproIdentificacion?.errors?.required"
+                >La identificación es requerida</span
+              >
+              <span *ngIf="editproIdentificacion?.errors?.minlength"
+                >Se requieren minimo 5 caracteres</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (proNombreEdit?.errors?.required ||
+                  proNombreEdit?.errors?.minlength) &&
+                proNombreEdit.touched
+            }"
+          >
+            <label>Nombre</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedorAactualizar.nombre"
+              class="form-control"
+              required
+              maxlength="45"
+              minlength="3"
+              name="proNombreEdit"
+              #proNombreEdit="ngModel"
+            />
+            <div class="litle-text" *ngIf="proNombreEdit.touched">
+              <span *ngIf="proNombreEdit?.errors?.required"
+                >El nombre es requerido</span
+              >
+              <span *ngIf="proNombreEdit?.errors?.minlength"
+                >Se requieren minimo 5 caracteres</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (proNombreEdit?.errors?.required ||
+                  proNombreEdit?.errors?.pattern ||
+                  proNombreEdit?.errors?.minlength) &&
+                proCorreo.touched
+            }"
+          >
+            <label>Correo</label>
+            <input
+              type="email"
+              [(ngModel)]="proveedorAactualizar.correo"
+              class="form-control"
+              maxlength="45"
+              minlength="5"
+              required
+              name="proCorreoEdit"
+              pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}"
+              #proNombreEdit="ngModel"
+            />
+            <div class="litle-text" *ngIf="proNombreEdit.touched">
+              <span *ngIf="proNombreEdit?.errors?.required"
+                >El correo es requerido.</span
+              >
+              <span *ngIf="proNombreEdit?.errors?.minlength"
+                >Se requieren minimo 5 caracteres.
+              </span>
+              <span *ngIf="proNombreEdit?.errors?.pattern">
+                Debe ser un correo valido.</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (proCelularEdit?.errors?.required ||
+                  proCelularEdit?.errors?.minlength) &&
+                proCelularEdit.touched
+            }"
+          >
+            <label>Celular</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedorAactualizar.telefono"
+              class="form-control"
+              required
+              maxlength="10"
+              minlength="10"
+              name="proCelularEdit"
+              #proCelularEdit="ngModel"
+            />
+            <div class="litle-text" *ngIf="proCelularEdit.touched">
+              <span *ngIf="proCelularEdit?.errors?.required"
+                >El Numero de telefono es requerido</span
+              >
+              <span *ngIf="proCelularEdit?.errors?.minlength"
+                >Se requieren minimo 5 caracteres
+              </span>
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (proDireccionEdit?.errors?.required ||
+                  proDireccionEdit?.errors?.minlength) &&
+                proDireccionEdit.touched
+            }"
+          >
+            <label>Dirección</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedorAactualizar.direccion"
+              class="form-control"
+              maxlength="45"
+              minlength="5"
+              required
+              name="proDireccionEdit"
+              #proDireccionEdit="ngModel"
+            />
+            <div class="litle-text" *ngIf="proDireccionEdit.touched">
+              <span *ngIf="proDireccionEdit?.errors?.required"
+                >La dirección es necesaria</span
+              >
+              <span *ngIf="proDireccionEdit?.errors?.minlength"
+                >Se requieren minimo 5 caracteres
+              </span>
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                ProveedorRegimenEdit?.errors?.required &&
+                ProveedorRegimenEdit.touched
+            }"
+          >
+            <div class="select">
+              <label>Régimen</label>
+              <select
+                class="form-control"
+                [(ngModel)]="proveedorAactualizar.regimen"
+                name="ProveedorRegimenEdit"
+                required
+                #ProveedorRegimenEdit="ngModel"
+              >
+                <option *ngFor="let r of listRegimen" [(ngValue)]="r">
+                  {{ r }}
+                </option>
+              </select>
+            </div>
+            <div class="litle-text" *ngIf="ProveedorRegimenEdit.touched">
+              <span *ngIf="ProveedorRegimenEdit?.errors?.required"
+                >El regimen es necesario</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="form-group col-12 col-md-6"
+            [ngClass]="{
+              invalid:
+                (procontactoEdit?.errors?.required ||
+                  procontactoEdit?.errors?.minlength) &&
+                procontactoEdit.touched
+            }"
+          >
+            <label>Nombre de Contacto</label>
+            <input
+              type="text"
+              [(ngModel)]="proveedorAactualizar.contacto"
+              class="form-control"
+              maxlength="45"
+              minlength="5"
+              required
+              name="procontactoEdit"
+              #procontactoEdit="ngModel"
+            />
+            <div class="litle-text" *ngIf="procontactoEdit.touched">
+              <span *ngIf="procontactoEdit?.errors?.required"
+                >Es necesario un nombre de contacto</span
+              >
+              <span *ngIf="procontactoEdit?.errors?.minlength"
+                >Se requieren minimo 5 caracteres
+              </span>
+            </div>
+          </div>
+          <div class="modal-footer modalMargenInferior col-12">
+            <button
+              (click)="cerrarModalEditar()"
+              type="button"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              [disabled]="formProveedores.invalid"
+              type="submit"
+              class="btn btn-success"
+            >
+              Editar Proveedor
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Termina modal editar proveedor -->
+
+<div class="modal fade" id="modal-inputProveedor" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Carga de Proveedores</div>
+      </header>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="estiloinputfile">
+            <p class="subir">Subir archivo</p>
+            <input
+              type="file"
+              (change)="onFileAdded($event.target.files)"
+              name="fileProveedores"
+              size="20"
+              class="form-control"
+              accept=".csv"
+              id="upfileprov"
+            />
+            <i class="form-group__bar"></i>
+          </div>
+        </div>
+        <div class="modal-footer modalMargenInferior">
+          <button
+            type="button"
+            (click)="subirArchivo()"
+            data-dismiss="modal"
+            class="btn btn-primary"
+          >
+            Subir
+          </button>
+          <button type="button" class="btn btn-success" data-dismiss="modal">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

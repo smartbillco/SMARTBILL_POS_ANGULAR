@@ -1,0 +1,28 @@
+.grid-content {
+    width: 100%;
+    display: grid;
+    padding: 30px;
+    height: 100px;
+    // grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(13%, auto));
+    grid-template-rows: 100px;
+    gap: 5px;
+}
+
+.gridcontent__item {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gridcontent__item--card-title {
+    color: white;
+    font-size: 30px;
+    padding-top: 10px !important;
+}
+
+.gridcontent__item--card-text {
+    color: white;
+    padding-top: 10px !important;
+}

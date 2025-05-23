@@ -1,0 +1,498 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+  background-color: #f3f3f3;
+  margin: 0px;
+}
+
+.table-bordered thead th,
+.table-bordered thead td {
+  border-bottom-width: 2px;
+  background-color: #2196f3;
+  color: #fff !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.dataTables_wrapper .table>thead>tr>th:hover {
+  color: #757171 !important;
+}
+
+.info-box-icon {
+  padding-right: 20px;
+}
+
+td.tableoption {
+  //padding-top: 2px;
+  /*padding-bottom: 2px;*/
+  text-align: center;
+}
+
+.table td {
+  padding: 3px;
+  vertical-align: middle;
+  border-top: 1px solid #f2f4f5;
+}
+
+.btnaccion {
+  color: #FFFFFF;
+  height: 28px;
+  width: 28px;
+}
+
+td.anchoceldas {
+  border: 1px solid #f2f4f5;
+  padding-bottom: 8px;
+  padding-top: 5px;
+}
+
+.sinbordes {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+
+.sidebar {
+  margin: 102px 2rem 0.5rem 2rem;
+  padding: 0px 0px 0px 0px;
+}
+
+
+.content__title {
+
+  padding-top: 0px;
+}
+
+.col-sm-2 .col-xs-2 .col-md-2 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.user__info {
+  background-image: url(assets/profile-menu2.png);
+  height: 127px;
+}
+
+.user__name {
+  color: #fff;
+}
+
+.user__email {
+  color: #fff;
+}
+
+// CSS Personalizados Celulares
+@media (min-width: 728px) {
+  .td-option {
+    width: 130px !important;
+    text-align: center;
+    color: fff;
+  }
+
+  .col-md-2 {
+    flex: 0 0 16.6666666667%;
+    max-width: 33.666667%;
+  }
+
+}
+
+
+@media (min-width: 576px) {
+  .col-sm-2 {
+    flex: 0 0 16.6666666667%;
+    max-width: 33.6%;
+  }
+
+}
+
+// CSS Personalizados Escritorio & Tablets Horizontales
+@media (min-width: 1024px) {
+  .td-option {
+    width: 130px !important;
+    text-align: center;
+    color: fff;
+  }
+}
+
+//CSS Personalizados Escritorios anchos
+@media (min-width: 1200px) {
+  .td-option {
+    width: 130px !important;
+    text-align: center;
+    color: fff;
+  }
+}
+
+.badge {
+  cursor: pointer;
+}
+
+//Iconos Personalizados
+
+ul.socialIcons {
+  padding: 0;
+  text-align: center;
+}
+
+.socialIcons li {
+  background: yellow;
+  list-style: none;
+  display: inline-block;
+  margin: 15px;
+  margin-top: 1%;
+  border-radius: 2em;
+  overflow: hidden;
+}
+
+.socialIcons li a {
+  display: block;
+  padding: .5em;
+  max-width: 2.3em;
+  min-width: 2.3em;
+  height: 2.3em;
+  white-space: nowrap;
+  line-height: 1.5em;
+  transition: .5s;
+  text-decoration: none;
+  font-family: arial;
+  color: #fff !important;
+}
+
+.socialIcons li i {
+  margin-right: .5em;
+}
+
+.socialIcons li:hover a {
+  max-width: 200px;
+  padding-right: 1em;
+}
+
+.socialIcons .facebook {
+  background: #3b5998;
+  box-shadow: 0 0 16px #3b5998;
+}
+
+.socialIcons .twitter {
+  background: #00aced;
+  box-shadow: 0 0 16px #00aced;
+}
+
+.socialIcons .instagram {
+  background: #cd486b;
+  box-shadow: 0 0 16px #cd486b;
+}
+
+.socialIcons .pinterest {
+  background: #c92228;
+  box-shadow: 0 0 16px #c92228;
+}
+
+.socialIcons .steam {
+  background: #666666;
+  box-shadow: 0 0 16px #666666;
+}
+
+#allright {
+  font-weight: bold;
+}
+
+.product {
+  height: 90px;
+  width: 120px;
+  border-radius: 8px;
+  text-align: center;
+  background-size: cover;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  padding: 3px;
+  color: #fff;
+  overflow: hidden;
+
+}
+
+.product h5 {
+  color: #fff;
+}
+
+.color00 {
+  background-color: #00aced;
+}
+
+.color01 {
+  background-color: #3b5998;
+}
+
+.color02 {
+  background-color: #cd486b;
+}
+
+.color03 {
+  background-color: blueviolet;
+}
+
+.color04 {
+  background-color: darkgreen;
+}
+
+.color04 {
+  background-color: rgb(153, 6, 6);
+}
+
+.anchoColumnaCodigo {
+  width: 12%;
+}
+
+.anchoColumnaOpciones {
+  width: 18%;
+}
+
+.modalMargenInferior {
+  margin-bottom: -3%;
+}
+
+#scroll {
+  width: 600px;
+  overflow: auto;
+}
+
+#scrollprod {
+  height: 331px;
+  width: 600px;
+  overflow: auto;
+}
+
+#scrollcat {
+  height: 110px;
+  overflow: auto;
+}
+
+
+.modal-body {
+  padding-top: 5px;
+}
+
+.price-table__header {
+  margin-bottom: 0.5rem;
+}
+
+
+.estiloinputfile {
+  padding: 5px;
+  background-color: #2196F3;
+  width: 180px;
+  position: relative;
+}
+
+.subir {
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
+}
+
+#upfilecat {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  width: 100%;
+  opacity: 0;
+}
+
+#upfilecli {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  width: 100%;
+  opacity: 0;
+}
+
+#upfileprod {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  width: 100%;
+  opacity: 0;
+}
+
+#upfileprov {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  width: 100%;
+  opacity: 0;
+}
+
+// .delfloating{
+//     floatLabel:never;
+// }
+
+/*.vertical-center{
+    vertical-align: middle;
+}*/
+
+.centrarmp {
+  padding-left: 80px !important;
+  padding-right: 150px !important;
+}
+
+.dataTables_wrapper .table {
+  margin: 8px 0 20px;
+}
+
+.cardmenu {
+  height: 90px;
+  width: 140px;
+  border-radius: 8px;
+  text-align: center;
+  background-size: cover;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  padding: 3px;
+  color: #fff !important;
+  overflow: hidden;
+}
+
+.modal-footer {
+  padding-bottom: 10px !important;
+  padding-top: 0px !important;
+}
+
+.buttomheaderright {
+  text-align: right;
+  padding-bottom: 10px;
+
+}
+
+.card {
+  margin-left: 20px;
+}
+
+.quick-stats__info>h3 {
+  color: #FFFFFF;
+}
+
+.color-margen-ganancia-verde {
+  color: green;
+}
+
+.color-margen-ganancia-amarillo {
+  color: #ffff00;
+}
+
+.color-margen-ganancia-rojo {
+  color: red;
+}
+
+.ancho-input-nombre {
+  width: 400px;
+}
+
+.botonAccion {
+  margin-left: -15px;
+  margin-top: 10px;
+}
+
+.text-themecolor {
+  font-size: 19px !important;
+  color: #128FF2 !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px !important;
+
+}
+
+#l-login {
+  -webkit-box-shadow: 5px 5px 15px -2px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 5px 5px 15px -2px rgba(0, 0, 0, 0.75);
+  box-shadow: 5px 5px 15px -2px rgba(0, 0, 0, 0.75);
+}
+
+.text__edit--a {
+  margin: 0px !important;
+
+}
+
+.proper-dateInput {
+  padding: 5px;
+  margin: 5px;
+  color: gray;
+  border-radius: 4px;
+  border: 1px solid gray;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.invalid {
+  border: 1px solid lightcoral;
+  border-radius: 3px;
+}
+
+.litle-text {
+  font-size: 12px;
+  color: lightcoral;
+}
+
+
+.productSelected {
+  cursor: pointer;
+}
+
+.productSelected:hover {
+  color: #128FF2;
+  text-decoration: underline;
+}
+
+.small-text {
+  font-size: 12px !important;
+}
+
+.productDetail__img {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img__procuct {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover
+  }
+}
+
+
+.no-index {
+  z-index: 0;
+}
+
+.td_edit {
+  height: 50px;
+}
+
+.pointer {
+  cursor: pointer !important;
+}
+
+td,
+th {
+  text-align: center;
+}
+
+.modal-backdrop {
+  position: relative;
+}

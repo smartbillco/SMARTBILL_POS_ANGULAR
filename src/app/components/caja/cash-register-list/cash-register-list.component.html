@@ -1,0 +1,68 @@
+<div class="row">
+    <div class="col-md-4">
+      <header class="content__title">
+        <button (click)="closeCashRegister.emit(true)" class="btn btn-outline-info mb-3">  <i class="fa fa-arrow-alt-circle-left" ></i>  Atras</button>
+        <h1 class="text-themecolor" > Listado de cajas registradas </h1>
+      </header>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="buttomheaderright">
+        <!-- <button class="btn btn-primary btn--icon-text" 
+                data-toggle="modal" 
+                data-target="#modal-agregarMovimiento"
+                >
+                <i class="fa fa-list"></i>  Ver cajas registradas
+        </button>      
+        &nbsp; -->
+        <button class="btn btn-primary btn--icon-text" 
+                (click)="openCashRegisterInsert = true"
+                data-toggle="modal" 
+                data-target="#modal-cash-register-insert"
+                >
+                <i class="fas fa-plus mr-1"></i>  Agregar caja
+        </button>
+        &nbsp;
+  
+        <button class="btn btn-success btn--icon-text" 
+                data-toggle="modal" 
+                data-target="#modal-cuadredecaja"
+                (click)="activeCashOpenings = true">
+                <i class="fas fa-list mr-1"></i> Consular aperturas
+        </button> &nbsp;
+
+      </div>  
+      <div class="table-responsive">
+        <table id="dt-mov-caja" class="table table-bordered" style="width: 100%">
+          <thead class="thead-default">
+            <tr>
+              <th class="td-option"> Nombre </th>
+              <th class="td-option"> Efectivo </th>
+              <th class="td-option">Estado actual</th>
+              <th class="td-option">Tipo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cashRegister of cashRegistersList" >
+              <td > {{ cashRegister.nombre }}</td>
+              <td> <button class="btn btn-outline-success"> {{ cashRegister.efectivo | currency: "USD" }} </button>  </td>
+              <td>
+                  <span *ngIf="cashRegister.estado == 0" style="color: white" class="badge badge-danger"> Cerrada </span>
+                  <span *ngIf="cashRegister.estado == 1" class="badge badge-success"> Activa </span>
+              </td>
+              <td>
+                <button *ngIf="cashRegister.tipo == 2" class="btn btn-outline-warning"> Secundaria </button>
+                <button *ngIf="cashRegister.tipo == 1" class="btn btn-outline-primary"> Principal </button>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+        <br><br>
+      </div>
+    </div>
+  </div>
+
+<app-cash-register-insert (insertDone)="isertDone($event)" *ngIf="openCashRegisterInsert"></app-cash-register-insert>
+<app-check-openings *ngIf="activeCashOpenings"></app-check-openings>

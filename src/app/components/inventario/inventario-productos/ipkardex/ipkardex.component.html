@@ -1,0 +1,117 @@
+<header class="content__title">
+    <h1 class="text-themecolor"> KARDEX PRODUCTOS </h1>
+    <div class="actions">
+        <div class="dropdown actions__item">
+            <i data-toggle="dropdown" class="zmdi zmdi-more-vert"></i>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" (click)='consultarMovimientos()'><b>Consultar todos por Mes</b></a>
+                <a class="dropdown-item" data-toggle="modal" data-target="#modal-consulta-fechas"><b>Consultar Por rango
+                        de
+                        fechas</b></a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="card">
+    <div class="card-body">
+
+        <div class="buttomheaderright">
+            <button class="btn btn-success btn--icon-text" (click)='exportProductListToExcel()' data-toggle="modal">
+                <i class="fa fa-file-excel-o"></i> Exportar
+            </button> &nbsp;&nbsp;
+            <button class="btn btn-success btn--icon-text" (click)='exportProductListToPdf()' data-toggle="modal">
+                <i class="fa fa-file-pdf-o"></i> Pdf
+            </button>
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-12 col-md-12">
+                <div class="row">
+                    <div class="col-12 col-md-4">
+                        <select (change)="optionFilter($event.target.value)" class="browser-default custom-select">
+                            <option value="0" selected>Filtrar por: </option>
+                            <option value="1"> Fecha </option>
+                            <option value="2">Movimientos</option>
+                            <!-- <option value="3">Concepto</option> -->
+                        </select>
+                    </div>
+
+                    <div [ngSwitch]="filterParam" class="col-12 col-md-8">
+
+
+                        <div class="col-12 animated fadeIn" *ngSwitchCase="2">
+                            <div class="row">
+                                <div class="col-6">
+                                    <select (change)="filterByMovementType($event.target.value)" class="browser-default custom-select">
+                                        <option value="0" selected>ENTRADAS </option>
+                                        <option value="1"> SALIDAS </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 animated fadeIn" *ngSwitchCase="1">
+                            <div class="row">
+                                <div class="col-12 col-md-5">
+                                    <input [(ngModel)]="dateFilterValues.startDate" type="date" required="required">
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    <input [(ngModel)]="dateFilterValues.endDate" type="date" required="required">
+                                </div>
+                                <div class="col-4" style="margin-top: 10px;">
+                                    <button (click)="filterByDates()" type="button" class="btn btn-success btn--icon-text">
+                                        <i class="zmdi zmdi-search"></i>
+                                        Buscar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- filtro por fecha -->
+            <div style="margin-top: 15px;" class="table-responsive">
+                <table id="dt-mov-inv-productos" class="table table-bordered" style="width: 100%">
+                    <thead class="thead-default">
+                        <tr>
+                            <th class="td-option">Producto</th>
+                            <th class="td-option">Tipo</th>
+                            <th class="td-option">Cantidad</th>
+                            <th class="td-option">Empleado</th>
+                            <td class="td-option">Fecha</td>
+                            <td class="td-option">Concepto</td>
+                            <td class="td-option">Observación</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor='let mov of listaMovimientos'>
+                            <td>{{mov.idProducto}}</td>
+                            <td>
+                                <div [ngSwitch]="mov.tipo">
+                                    <span *ngSwitchCase="0" class="badge badge-success">
+                                        Entrada
+                                    </span>
+
+                                    <span *ngSwitchCase="1" class="badge text-white badge-danger">
+                                        Salida
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-secondary"> {{ mov.cantidad }} </span>
+                            </td>
+                            <td>{{mov.nombreEmpleado}}</td>
+                            <td>{{mov.fecha | date: 'dd-MM-yyyy'}}</td>
+                            <td>{{mov.concepto}}</td>
+                            <td>{{mov.observacion}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br><br>
+            </div>
+        </div>
+    </div>

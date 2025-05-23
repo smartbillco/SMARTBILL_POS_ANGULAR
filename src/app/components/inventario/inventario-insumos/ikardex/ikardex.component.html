@@ -1,0 +1,186 @@
+<header class="content__title">
+    <h1 class="text-themecolor">KARDEX INSUMOS</h1>
+    <!----div class="col-sm-2"-->
+
+    <!--/div-->
+    <div class="actions">
+        <div class="dropdown actions__item">
+            <i data-toggle="dropdown" class="zmdi zmdi-more-vert"></i>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" (click)='consultarMovimientos()'><b>Consultar todos por Mes</b></a>
+                <a class="dropdown-item" data-toggle="modal" data-target="#modal-consulta-fechas"><b>Consultar Por rango de
+            fechas</b></a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="card">
+    <div class="card-body">
+
+        <div class="buttomheaderright">
+            <button class="btn btn-success btn--icon-text">
+                  <i class="fa fa-file-excel-o"></i> Exportar
+          </button>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <select (change)="optionFilter($event.target.value)" class="browser-default custom-select">
+              <option value="0" selected>Filtrar por:  </option>
+              <option value="1"> Fecha </option>
+              <option value="2">Movimientos de inventario</option>
+            </select>
+
+            </div>
+
+            <!-- Filtro por fecha -->
+            <div class="col-12 col-md-6 animated fadeIn" *ngIf="filterByDate">
+                <div class="row">
+                    <div class="col-4">
+                        <select class="browser-default custom-select">
+                  <option selected> Mes </option>
+                  <option *ngFor="let m of meses" value=""> {{m.nombre}} </option>
+                </select>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-control" type="number" [value]="yearToday">
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-success btn--icon-text"><i class="zmdi zmdi-search"></i>Buscar</button> &nbsp;
+                    </div>
+                </div>
+            </div>
+            <!-- termina filtro por fecha -->
+
+            <!-- Filtro por movimiento -->
+            <div class="col-12 col-md-6" *ngIf="filterByMotion">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="btn-group" dropdown2>
+                            <button id="split-button" type="button" class="btn btn-primary">Tipo de movimiento</button>
+                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+                    <span class="caret"></span>
+                  </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" (click)='filtrarPorTipo(0)'>ENTRADAS</a></li>
+                                <li><a class="dropdown-item" (click)='filtrarPorTipo(1)'>SALIDAS</a></li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="btn-group" dropdown3>
+                            <button id="split-button" type="button" class="btn btn-primary">{{nombreConcepto}}</button>
+                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+                    <span class="caret"></span>
+                  </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" (click)='filtrarPorConcepto()'>ENTRADAS</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Termina filtro por movimiento -->
+        </div>
+
+
+        <!-- <div class="row" style="text-align: center">
+      <div class="col">
+        <div class="btn-group" dropdown>
+          <button id="split-button" type="button" class="btn btn-primary">{{nombreMes}}</button>
+          <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li *ngFor='let m of meses'><a class="dropdown-item" (click)='setMesBuscar(m.valor)'>{{m.nombre}}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col">
+        <form #formBuscarMovMes='ngForm' ngNativeValidate (ngSubmit)='consultarMovimientos()' class="row">
+
+          <div class="form-group">
+              <input [(ngModel)]='anio' type="number" class="form-control form-control-lg" name="buscarAnio" min="2000"
+              max="2040" required placeholder="Año">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+          <button type="submit" class="btn btn-success btn--icon-text"><i class="zmdi zmdi-search"></i>Buscar</button>&nbsp;
+          <button class="btn btn-success btn--icon-text" data-toggle="modal" (click)='consultarReporte()'
+          ><i class="fa fa-file-excel-o"></i> Exportar</button>
+
+          </div>
+
+        </form>
+      </div>
+      <div class="col">
+
+      </div>
+
+
+    </div> -->
+
+
+        <div class="table-responsive">
+            <table id="dt-mov-inv-insumos" class="table table-bordered" style="width: 100%">
+                <thead class="thead-default">
+                    <tr>
+                        <th class="td-option">Insumo</th>
+                        <th class="td-option">Unidad</th>
+                        <th class="td-option">Tipo</th>
+                        <th class="td-option">Cantidad</th>
+                        <th class="td-option">Empleado</th>
+                        <td class="td-option">Fecha</td>
+                        <td class="td-option">Concepto</td>
+                        <td class="td-option">Observación</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor='let mov of listaMovimientos'>
+                        <td>{{mov.producto}}</td>
+                        <td>{{mov.unidadMedida}}</td>
+                        <td>{{mov.nombreTipo}}</td>
+                        <td>{{mov.cantidad}}</td>
+                        <td>{{mov.empleado}}</td>
+                        <td>{{mov.fecha}}</td>
+                        <td>{{mov.concepto}}</td>
+                        <td>{{mov.observacion}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br><br>
+        </div>
+
+    </div>
+</div>
+
+<!--Modal Rango de fechas-->
+<div class="modal fade" id="modal-consulta-fechas">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <header class="price-table__header bg-blue">
+                <div class="price-table__title">Consultar Balance Por Rango de fechas</div>
+            </header>
+            <form #formconsMovFechas='ngForm' ngNativeValidate (ngSubmit)='consultarMovimientosFecha()'>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Fecha Inicial</label>
+                        <input [(ngModel)]='fechaInicio' type="date" class="form-control form-control-lg" required name="fecha-ini-buscar">
+                        <i class="form-group__bar"></i>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Fin</label>
+                        <input [(ngModel)]='fechaFin' type="date" class="form-control form-control-lg" required name="fecha-fin-buscar">
+                        <i class="form-group__bar"></i>
+                    </div>
+                    <div class="modal-footer modalMargenInferior">
+                        <button type="submit" class="btn btn-primary">Aceptar</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

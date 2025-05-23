@@ -1,0 +1,298 @@
+<div class="row">
+  <div class="col-md-4">
+    <header class="content__title">
+      <h1 class="text-themecolor">Categorías</h1>
+    </header>
+  </div>
+</div>
+<div class="card">
+  <div class="card-body">
+    <div class="buttomheaderright">
+      <button
+        class="btn btn-primary btn--icon-text"
+        data-toggle="modal"
+        data-target="#modal-categoria"
+        [disabled]="tipoUsuario != '1'"
+      >
+        <i class="fas fa-plus"></i> Agregar Categoría
+      </button>
+      &nbsp;
+      <button
+        class="btn btn-success btn--icon-text"
+        data-toggle="modal"
+        data-target="#modal-inputCategoria"
+        [disabled]="tipoUsuario != '1'"
+      >
+        <i class="zmdi zmdi-upload zmdi-hc-fw"></i> Cargar Archivo
+      </button>
+      <app-export-file-buttons
+        (pdfExportEmitter)="exportCategoriesListToPdf($event)"
+        (excelExportEmitter)="exportCategoriesListToExcel($event)"
+      ></app-export-file-buttons>
+    </div>
+    <div class="table-responsive">
+      <table id="dt-categoria" class="table table-bordered" style="width: 100%">
+        <thead class="thead-default">
+          <tr>
+            <th class="td-option">Código</th>
+            <th class="td-option">Nombre</th>
+            <td class="td-option">Opciones</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cat of listaCategorias">
+            <td class="anchoColumnaCodigo anchoceldas text-center">
+              {{ cat.idCategoriaProducto }}
+            </td>
+            <td class="anchoceldas">
+              {{ cat.nombre }}
+            </td>
+            <td class="tableoption anchoColumnaOpciones">
+              <button
+                class="btn btn btn-outline-primary"
+                (click)="setCategoriaActualizar(cat)"
+                title="Editar categoria {{ cat.nombre }}"
+                data-toggle="modal"
+                data-target="#modal-editarcategoria"
+                [disabled]="tipoUsuario != 1"
+              >
+                <i class="fas fa-cog"></i>
+              </button>
+              &nbsp;
+              <button
+                (click)="eliminarCategoria(cat)"
+                class="btn btn-outline-danger"
+                title="Eliminar"
+                data-toggle="modal"
+                data-target="#delete"
+                [disabled]="tipoUsuario != 1"
+              >
+                <i class="far fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br />
+    </div>
+  </div>
+</div>
+
+<!-- Modal agregar categoria -->
+<div class="modal fade" id="modal-categoria" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10">Agregar categoria</div>
+          <div class="col-2">
+            <button
+              class="btn btn-info btn--icon float-right"
+              type="reset"
+              data-dismiss="modal"
+            >
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <form #formCategoria="ngForm" novalidate (ngSubmit)="nuevaCategoria()">
+        <div class="modal-body">
+          <div
+            class="form-group"
+            [ngClass]="{
+              invalid:
+                (cateNuevaNombre?.errors?.required ||
+                  cateNuevaNombre?.minlength?.required) &&
+                cateNuevaNombre.touched
+            }"
+          >
+            <label>Nombre</label>
+            <input
+              [(ngModel)]="categoria.nombre"
+              type="text"
+              class="form-control form-control-lg"
+              name="cateNuevaNombre"
+              maxlength="45"
+              minlength="2"
+              required
+              #cateNuevaNombre="ngModel"
+            />
+            <i class="form-group__bar"></i>
+          </div>
+
+          <div class="litle-text" *ngIf="cateNuevaNombre.touched">
+            <span *ngIf="cateNuevaNombre?.errors?.required"
+              >Debe añadir un nombre</span
+            >
+            <span *ngIf="cateNuevaNombre?.errors?.minlength"
+              >Se requieren minimo 2 caracteres</span
+            >
+          </div>
+
+          <div class="modal-footer modalMargenInferior">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              [disabled]="formCategoria.invalid"
+              type="submit"
+              class="btn btn-success"
+            >
+              Agregar Categoría
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Termina modal agregar categoria -->
+
+<!-- Modal editar categoria -->
+<div
+  class="modal fade"
+  id="modal-editarcategoria"
+  data-backdrop="static"
+  data-keyboard="false"
+  tabindex="-1"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10">
+            Agregar categoria {{ categoriaActualizar.nombre }}
+          </div>
+          <div class="col-2">
+            <button
+              class="btn btn-info btn--icon float-right"
+              type="reset"
+              data-dismiss="modal"
+              (click)="cerrarModalEditar()"
+            >
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <div class="modal-body">
+        <form
+          #formEditCategoria="ngForm"
+          ngNativeValidate
+          (ngSubmit)="actualizarCategoria()"
+        >
+          <div class="form-group">
+            Código:
+            <input
+              type="text"
+              [(ngModel)]="categoriaActualizar.idCategoriaProducto"
+              placeholder="Id"
+              class="form-control form-control-sm"
+              readonly
+              name="idEditCate"
+            />
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Nombre</label>
+            <input
+              [(ngModel)]="categoriaActualizar.nombre"
+              type="text"
+              class="form-control form-control-sm"
+              required
+              maxlength="45"
+              name="nombreEditCate"
+              minlength="3"
+            />
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+              (click)="cerrarModalEditar()"
+            >
+              Cancelar
+            </button>
+
+            <button
+              [disabled]="formEditCategoria.invalid"
+              type="submit"
+              class="btn btn-success"
+            >
+              Editar Categoría
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Termina modal editar categoria -->
+
+<!-- Carga de archivos con categorias -->
+<div class="modal fade" id="modal-inputCategoria" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width: 130%">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <!-- <div class="price-table__title col-10"> Carga de archivo Exel con categorias </div> -->
+          <div class="col-2">
+            <button
+              class="btn btn-info btn--icon float-right"
+              type="reset"
+              data-dismiss="modal"
+              (click)="cerrarModalEditar()"
+            >
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <div class="modal-body modalMargenInferior">
+        <div class="form-group form-group--float container">
+          <div>
+            <p>Subir archivo</p>
+            <input
+              id="fileCategorias"
+              accept=".csv"
+              (change)="onFileAdded($event.target.files)"
+              type="file"
+              class="file"
+              data-show-preview="false"
+              name="fileCategorias"
+              size="20"
+            />
+            <i class="form-group__bar"></i>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            data-dismiss="modal"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            (click)="subirArchivo()"
+            data-dismiss="modal"
+            class="btn btn-success"
+          >
+            Subir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Termina carga de archivos con categorias -->
+
+<br /><br />

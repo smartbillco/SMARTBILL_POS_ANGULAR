@@ -1,0 +1,223 @@
+<div class="row">
+  <div class="col-md-4">
+    <header class="content__title">
+      <h1 class="text-themecolor">Empleados</h1>
+    </header>
+  </div>
+</div>
+<div class="card">
+  <div class="card-body">
+    <div class="buttomheaderright">
+      <button class="btn btn-primary btn--icon-text" data-toggle="modal" data-target="#modal-empleado"
+        [disabled]='tipoUsuario != "1"'><i class="zmdi zmdi-file-plus zmdi-hc-fw"></i> Agregar Empleado</button> &nbsp;
+      <button class="btn btn-success btn--icon-text" data-toggle="modal" (click)='consultarReporte()'
+        [disabled]='tipoUsuario != "1"'><i class="fa fa-file-excel-o"></i> Exportar</button><br>
+    </div>
+
+    <div class="table-responsive">
+      <table id="dt-empleado" class="table table-bordered" style="width: 100%">
+        <thead class="thead-default">
+          <tr>
+            <th class="td-option">Cédula</th>
+            <th class="td-option">Nombre</th>
+            <td class="td-option">Correo</td>
+            <td class="td-option">Telefono</td>
+            <td class="td-option">Dirección</td>
+            <td class="td-option">Opciones</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let emp of listEmpleados'>
+            <td class="anchoColumnaCodigo anchoceldas">{{emp.identificacion}}</td>
+            <td class="anchoceldas productSelected" title="Editar {{emp.nombre}}" data-toggle="modal"
+              data-target="#modal-editarempleado" (click)='setempleadoActualizar(emp)'>
+              {{emp.nombre}}
+            </td>
+            <td class="anchoceldas">{{emp.email}}</td>
+            <td class="anchoceldas">{{emp.telefono}}</td>
+            <td class="anchoceldas">{{emp.direccion}}</td>
+            <td class="tableoption anchoColumnaOpciones">
+              <button class="btn btn-outline-primary" (click)='setempleadoActualizar(emp)' title="Editar"
+                data-toggle="modal" data-target="#modal-editarempleado" [disabled]='tipoUsuario != 1'>
+                <i class="fas fa-cog"></i>
+              </button> &nbsp;
+              <button (click)='eliminarempleado(emp)' class="btn btn-outline-danger" title="Eliminar"
+                [disabled]='tipoUsuario != 1'>
+                <i class="far fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table><br>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-empleado" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10"> Registrar empleado </div>
+          <div class="col-2">
+            <button class="btn btn-info btn--icon float-right" type="reset" data-dismiss="modal">
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <form #formempleado='ngForm' (ngSubmit)='nuevoEmpleado()'>
+        <div class="modal-body row">
+
+          <div class="form-group col-12 col-md-6"
+            [ngClass]="{'invalid': (empleadoTipo?.errors?.required ) && empleadoTipo.touched} ">
+            <label>Tipo de identificación</label>
+            <select class="form-control" [(ngModel)]='empleadoNuevo.tipoIdentificacion' name="empleadoTipo"
+              #empleadoTipo="ngModel" required>
+              <option *ngFor='let t of listTipos' [(ngValue)]='t'>{{t}}</option>
+            </select>
+            <div class="litle-text" *ngIf="empleadoTipo.touched">
+              <span *ngIf="empleadoTipo?.errors?.required">El tipo de identificación es requerido</span>
+            </div>
+          </div>
+
+          <div class="form-group col-12 col-md-6"
+            [ngClass]="{'invalid': (empeNuevaId?.errors?.required || empeNuevaId?.errors?.minlength ) && empeNuevaId.touched} ">
+            <label>No. Identificacion</label>
+            <input [(ngModel)]='empleadoNuevo.identificacion' type="text" class="form-control form-control-lg"
+              name="empeNuevaId" maxlength="45" minlength="2" required #empeNuevaId="ngModel">
+            <div class="litle-text" *ngIf="empeNuevaId.touched">
+              <span *ngIf="empeNuevaId?.errors?.required">El tipo de identificación es requerido</span>
+              <span *ngIf="empeNuevaId?.errors?.minlength">Se requieren dos caracteres como minimo</span>
+            </div>
+          </div>
+
+          <div class="form-group  col-12 col-md-6"
+            [ngClass]="{'invalid': (empeNuevaNombre?.errors?.required || empeNuevaNombre?.errors?.minlength ) && empeNuevaNombre.touched} ">
+            <label>Nombre</label>
+            <input [(ngModel)]='empleadoNuevo.nombre' type="text" class="form-control form-control-lg"
+              name="empeNuevaNombre" #empeNuevaNombre="ngModel" maxlength="45" minlength="2" required>
+            <div class="litle-text" *ngIf="empeNuevaNombre.touched">
+              <span *ngIf="empeNuevaNombre?.errors?.required">El tipo de identificación es requerido</span>
+              <span *ngIf="empeNuevaNombre?.errors?.minlength">Se requieren dos caracteres como minimo</span>
+            </div>
+          </div>
+
+          <div class="form-group col-12 col-md-6"
+            [ngClass]="{'invalid': (empeNuevoTelefono?.errors?.required || empeNuevoTelefono?.errors?.minlength ) && empeNuevoTelefono.touched} ">
+            <label>Telefono</label>
+            <input [(ngModel)]='empleadoNuevo.telefono' type="text" class="form-control form-control-lg"
+              name="empeNuevoTelefono" #empeNuevoTelefono="ngModel" maxlength="45" minlength="2" required>
+            <div class="litle-text" *ngIf="empeNuevoTelefono.touched">
+              <span *ngIf="empeNuevoTelefono?.errors?.required">El telefono es necesario</span>
+              <span *ngIf="empeNuevoTelefono?.errors?.minlength">Se requieren 2 caracteres como minimo</span>
+            </div>
+          </div>
+
+
+          <div class="form-group col-12"
+            [ngClass]="{'invalid': (empeNuevoCorreo?.errors?.required || empeNuevoCorreo?.errors?.minlength || empeNuevoCorreo?.errors?.pattern ) && empeNuevoCorreo.touched}">
+            <label>Correo</label>
+            <input [(ngModel)]='empleadoNuevo.email' type="email" class="form-control form-control-lg"
+              name="empeNuevoCorreo" #empeNuevoCorreo="ngModel" maxlength="45" minlength="2" required
+              pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}">
+            <div class="litle-text" *ngIf="empeNuevoCorreo.touched">
+              <span *ngIf="empeNuevoCorreo?.errors?.required">El correo es necesario</span>
+              <span *ngIf="empeNuevoCorreo?.errors?.minlength">Se requieren 2 caracteres como minimo</span>
+              <span *ngIf="empeNuevoCorreo?.errors?.pattern">Ingrese un correco valido </span>
+            </div>
+          </div>
+
+          <div class="form-group col-12"
+            [ngClass]="{'invalid': (empeNuevoDireccion?.errors?.required || empeNuevoDireccion?.errors?.minlength) && empeNuevoDireccion.touched}">
+            <label>Direccion</label>
+            <input [(ngModel)]='empleadoNuevo.direccion' type="text" class="form-control form-control-lg"
+              name="empeNuevoDireccion" #empeNuevoDireccion="ngModel" maxlength="45" minlength="2" required>
+            <div class="litle-text" *ngIf="empeNuevoDireccion.touched">
+              <span *ngIf="empeNuevoDireccion?.errors?.required">La direccion es necesaria</span>
+              <span *ngIf="empeNuevoDireccion?.errors?.minlength">Se requieren 2 caracteres como minimo</span>
+            </div>
+          </div>
+
+
+          <div class="modal-footer modalMargenInferior col-12">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success">
+              <i class="fa fa-save"></i>
+              Registrar Empleado
+            </button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal editar empleado -->
+<div class="modal fade" id="modal-editarempleado" data-backdrop="static" data-keyboard="false" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10"> Editar empleado </div>
+          <div class="col-2">
+            <button class="btn btn-info btn--icon float-right" type="reset" data-dismiss="modal"
+              (click)="cerrarModalEditar()">
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <div class="modal-body">
+        <form #formEditempleado='ngForm' ngNativeValidate (ngSubmit)='actualizarEmpleado()'>
+          <div class="form-group">
+            <label>Nombre</label>
+            <input [(ngModel)]='empleadoActualizar.nombre' type="text" class="form-control form-control-lg"
+              name="empeEditNombre" maxlength="45" minlength="2" required>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Correo</label>
+            <input [(ngModel)]='empleadoActualizar.email' type="text" class="form-control form-control-lg"
+              name="empeEditEmail" maxlength="45" minlength="2" required>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Telefono</label>
+            <input [(ngModel)]='empleadoActualizar.telefono' type="text" class="form-control form-control-lg"
+              name="empeEditTelefono" maxlength="45" minlength="2" required>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>No. Identificacion</label>
+            <input [(ngModel)]='empleadoActualizar.cedula' type="text" class="form-control form-control-lg"
+              name="empeEditIdenti" maxlength="45" minlength="2" required>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Tipo Identificacion</label>
+            <input [(ngModel)]='empleadoActualizar.tipoIdentificacion' type="text" class="form-control form-control-lg"
+              name="empeEditTipoId" maxlength="45" minlength="2" required>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Direccion</label>
+            <input [(ngModel)]='empleadoActualizar.direccion' type="text" class="form-control form-control-lg"
+              name="empeEditDireccion" maxlength="45" minlength="2" required>
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
+              (click)='cerrarModalEditar()'>Cancelar</button>
+            <button type="submit" class="btn btn-success">Editar Empleado</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Termina modal de editar empleado -->

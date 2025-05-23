@@ -1,0 +1,373 @@
+<div class="row">
+    <div class="col-md-4">
+      <header class="content__title">
+        <h1 class="h2 text-themecolor" >Platos</h1>
+      </header>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+
+      <div class="buttomheaderright">
+        <button class="btn btn-primary btn--icon-text" 
+                data-toggle="modal" 
+                data-target="#modal-producto"
+                (click)="showCrearReceta=true">
+          <i class="fa fa-plus"></i>
+          Crear receta
+        </button> &nbsp;
+        <button class="btn btn-success btn--icon-text">
+            <i class="fa fa-file-excel-o" aria-hidden="true"></i>Exportar</button>&nbsp;<br>
+      </div>
+
+
+
+          <div class="row mt-3">
+              <div class="form-group col-6">
+                  <div class="select">
+                      <select (change)="filterByCategory($event.target.value)" class="pointer browser-default custom-select">
+                          <option class="pointer" value="0" >Todas las categorias</option>
+                          <option class="pointer" [value]="categoria.idCategoriaProducto" *ngFor="let categoria of listaCategoria"> {{ categoria.nombre }} </option>
+                      </select>
+                  </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table id="dt-producto" class="table table-bordered" style="width: 100%">
+          <thead class="thead-default">
+            <tr>
+              <th class="td-option">Código</th>
+              <th class="td-option">Nombre</th>
+              <th class="td-option">Categoría</th>
+              <th class="td-option">Precio de venta</th>
+              <td class="td-option">Opciones</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let recipe of filteredRecipes">
+              <td> <span class="badge badge-info" > {{ recipe.codigo }} </span> </td>
+
+              <td class="productSelected"
+                  (click)='verDetalleReceta(recipe)'
+                  title="Ver detalle {{ recipe.nombre }}">
+                {{ recipe.nombre }} 
+              </td>
+
+              <td> {{ recipe.categoria }} </td>
+              <td class="highlighted_price-recipe" > {{ recipe.precio | currency:'USD' }} </td>
+
+              <td class="tableoption anchoColumnaOpciones">
+                <button type="button" class="btn btn-outline-primary"
+                        title="Editar"
+                        data-title="Edit"
+                        data-toggle="modal" data-target="#modal-editRecipe"
+                        (click)="selectedRecipe = recipe">
+                      <i class="fas fa-cog"></i>
+                </button> &nbsp;
+                <button type="button" class="btn btn-outline-danger"
+                        title="Eliminar"
+                        data-title="Delete"
+                        (click)="deleteRecipe(recipe)"
+                        data-toggle="modal" data-target="#delete">
+                    <i class="far fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <br><br>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Inicia Detalle de la receta -->
+  <div class="modal fade" id="modal-detallereceta" tabindex="-1" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <header class="price-table__header bg-blue">
+            <!-- <div class="price-table__title">Detalle Producto</div> -->
+            <div class="row">
+                <div class="price-table__title col-10"> Detalle receta - {{ selectedRecipe.nombre }} </div>
+                <div class="col-2">
+                    <button class="btn btn-info btn--icon float-right"
+                            type="reset"
+                            data-dismiss="modal">
+                            <i class="zmdi zmdi-close"></i>
+                    </button>
+                  </div>
+                </div>
+          </header>
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="row">    
+                <div class="col-123 col-md-6">
+                    <table class="table table-bordered">
+                        <thead>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Codigo</td>
+                            <th scope="row"> {{ selectedRecipe.codigo }} </th>
+                          </tr>
+                          <tr>
+                            <td>Nombre</td>
+                            <th scope="row"> {{ selectedRecipe.nombre }} </th>
+                          </tr>
+                          <tr>
+                              <td>Precio de venta</td>
+                              <th class="highlighted_price-recipe" scope="row"> {{ selectedRecipe.precio | currency:'USD'}} </th>
+                          </tr>
+                          <tr>
+                            <td>Categoría</td>
+                            <th scope="row"> {{selectedRecipe.categoria}} </th>
+                          </tr>
+                        </tbody>
+                      </table>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="productDetail__img">
+                      <img [src]="selectedRecipe.foto ? selectedRecipe.foto :  'assets/logo.png'" height="200" width="250" >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- Termina detalle de la receta -->
+
+  <!-- Modal crear receta -->
+  <div class="modal fade" id="modal-producto" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <header class="price-table__header bg-blue ">
+                <div class="row">
+                    <div class="price-table__title col-10"> Crear receta </div>
+
+                    <div class="col-2">
+                        <button
+                                class="btn btn-info btn--icon float-right"
+                                data-dismiss="modal">
+                                <i class="zmdi zmdi-close"></i>
+                        </button>
+                    </div>
+                </div>
+              </header>
+              <form [formGroup]="form">
+                <div class="modal-body">
+                  <div class="row">
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label for="codigo">Código</label>
+                    <input formControlName="codigo" type="text" class="form-control">
+                  </div>
+                  <!-- <span *ngIf="form.controls['codigo'].errors?.minlength" style="font-size: 10px; color: red"> minimo 6 caracteres</span>
+                  <span *ngIf="form.controls['codigo'].errors?.required" style="font-size: 10px; color: red" >El codigo es requerido</span> -->
+                  <div class="litle-text" *ngIf="form.controls['codigo'].touched" >
+                      <span *ngIf="form.controls['codigo'].errors?.required">El codigo es requerido</span>
+                      <span *ngIf="form.controls['codigo'].errors?.minlength">Se requieren minimo  6 caracteres</span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-8">
+                  <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input formControlName="nombre" type="text" class="form-control">
+                  </div>
+                </div>
+
+                <div class="form-group col-12">
+                  <label for="categoria">Categoría</label>
+                  <select formControlName="idCategoria" class="form-control custom-select">
+                  <option *ngFor="let categoria of listaCategoria" 
+                          [ngValue]="categoria.idCategoriaProducto">
+                          {{ categoria.nombre }}
+                  </option>
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label for="precio">Precio de venta</label>
+                    <input formControlName="precio" type="number" class="form-control">
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label for="prprecioMinimoecio">Precio minimo de venta</label>
+                    <input formControlName="precioMinimo" type="number" class="form-control">
+                  </div>
+                </div>
+
+                <div class="form-group col-4">
+                  <label for="impoConsumo">Impuesto al consumo</label>
+                  <select formControlName="impoConsumo" class="form-control custom-select">
+                  <option value="1">Si</option>
+                  <option value="0">No</option>
+                  </select>
+                </div>
+                
+                
+                <div class="form-group col-8">
+                    <label for="idUnidadMedida">Unidad de medida</label>
+                    <select formControlName="idUnidadMedida" class="form-control custom-select">
+                    <!-- <option selected value="1">UNIDAD</option> -->
+                    <option *ngFor="let unidadeDeMedida of listaUnidadesMedida" 
+                            [value]="unidadeDeMedida.id">
+                            {{ unidadeDeMedida.nombre }}
+                    </option>
+                    </select>
+                  </div>
+                  
+                  
+                <div class="col-12 col-md-12">
+                  <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <input formControlName="descripcion" type="text" class="form-control">
+                  </div>
+                </div>
+                <div class="modal-footer modalMargenInferior col-12">
+                  <div class="">
+                    <div class="col-12">
+                        <button (click)="form.reset()" class="btn btn-outline-secondary " data-dismiss="modal">Cancelar</button>
+                        <button type="submit"
+                                class="btn btn-success ml-2"
+                                (click)="crearReceta()"
+                                [disabled]="form.invalid">
+                                <span *ngIf="form.invalid" > <i class="fa fa-warning"></i>  Debe llenar los campos correctamente </span>
+                                <span *ngIf="form.valid" > <i class="fas fa-plus mr-2"></i> Crear receta</span>
+                        </button>                      
+                    </div>
+
+                  </div>
+
+                  </div>                                
+                
+                
+              </div>
+            </div>
+              </form>
+        </div>
+      </div>
+  </div>
+  <!-- Termina modal crear receta -->
+
+
+
+  <!-- start modal to  edit recipe  -->
+  <div class="modal fade" id="modal-editRecipe" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <header class="price-table__header bg-blue ">
+                <div class="row">
+                    <div class="price-table__title col-10"> Editar receta - {{ selectedRecipe.nombre }} </div>
+
+                    <div class="col-2">
+                        <button
+                                class="btn btn-info btn--icon float-right"
+                                data-dismiss="modal">
+                                <i class="zmdi zmdi-close"></i>
+                        </button>
+                    </div>
+                </div>
+              </header>
+              <form>
+                <div class="modal-body">
+                  <div class="row">
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label for="codigo">Código</label>
+                    <input [(ngModel)]="selectedRecipe.codigo" name="codigo" type="text" class="form-control">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-8">
+                  <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input [(ngModel)]="selectedRecipe.nombre" name="nombre" type="text" class="form-control">
+                  </div>
+                </div>
+
+                <div class="form-group col-12">
+                  <label for="categoria">Categoría</label>
+                  <select [(ngModel)]="selectedRecipe.idCategoria" name="idCategoria" class="form-control custom-select">
+                  <option *ngFor="let categoria of listaCategoria" 
+                          [ngValue]="categoria.idCategoriaProducto">
+                          {{ categoria.nombre }}
+                  </option>
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label for="precio">Precio de venta</label>
+                    <input [(ngModel)]="selectedRecipe.precio" name="precio" type="number" class="form-control">
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label for="prprecioMinimoecio">Precio minimo de venta</label>
+                    <input [(ngModel)]="selectedRecipe.precioMinimo" name="precioMinimo" type="number" class="form-control">
+                  </div>
+                </div>
+
+                <div class="form-group col-4">
+                  <label for="impoConsumo">Impuesto al consumo</label>
+                  <select name="impoConsumo" class="form-control custom-select">
+                  <option value="1">Si</option>
+                  <option value="0">No</option>
+                  </select>
+                </div>
+                
+                
+                <div class="form-group col-8">
+                    <label for="idUnidadMedida">Unidad de medida</label>
+                    <select [(ngModel)]="selectedRecipe.idUnidadMedida" name="idUnidadMedida" class="form-control custom-select">
+                    <!-- <option selected value="1">UNIDAD</option> -->
+                    <option *ngFor="let unidadeDeMedida of listaUnidadesMedida" 
+                            [value]="unidadeDeMedida.id">
+                            {{ unidadeDeMedida.nombre }}
+                    </option>
+                    </select>
+                  </div>
+                  
+                  
+                <div class="col-12 col-md-12">
+                  <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <input [(ngModel)]="selectedRecipe.descripcion" name="descripcion" type="text" class="form-control">
+                  </div>
+                </div>
+                <div class="modal-footer modalMargenInferior col-12">
+                  <div class="">
+                    <div class="col-12">
+                        <button (click)="form.reset()" class="btn btn-outline-secondary " data-dismiss="modal">Cancelar</button>
+                        <button type="submit"
+                                class="btn btn-success ml-2"
+                                (click)="editRecipe()">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Editar receta
+                        </button>                      
+                    </div>
+
+                  </div>
+
+                  </div>                                
+                
+                
+              </div>
+            </div>
+              </form>
+        </div>
+      </div>
+  </div>
+  <!-- Finish modal to edit recipe -->
+
+
+

@@ -1,0 +1,465 @@
+
+<div class="row">
+    <div class="col-md-4">
+      <header class="content__title">
+          <h1 class="text-themecolor" >INSUMOS</h1>
+      </header>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row justify-content-end">
+            <button class="btn btn-primary btn--icon-text col-12 col-md-2"
+                    data-toggle="modal" data-target="#modal-insumo"
+                    [disabled]='tipoUsuario != "1"'>
+                    <i class="zmdi zmdi-file-plus zmdi-hc-fw"></i>
+                    Agregar Insumo
+            </button> &nbsp;
+
+            <button class="btn btn-primary btn--icon-text col-12 col-md-2"
+                    data-toggle="modal"
+                    data-target="#modal-nueva-compra"
+                    [disabled]='tipoUsuario != "1"'>
+                    <i class="zmdi zmdi-shopping-cart"></i>
+                    Añadir compra
+            </button> &nbsp;
+
+            <button class="btn btn-primary btn--icon-text col-12 col-md-2"
+                    data-toggle="modal"
+                    data-target="#modal-factura-proveedor"
+                    [disabled]='tipoUsuario != "1"'>
+                    <i class="zmdi zmdi-collection-text"></i>
+                    Añadir factura proveedor
+            </button> &nbsp;
+
+          <button class="btn btn-success btn--icon-text col-12 col-md-2" data-toggle="modal" data-target="#modal-inputInsumo"
+            [disabled]='tipoUsuario != "1"'><i class="zmdi zmdi-upload zmdi-hc-fw"></i> Cargar Archivo</button><br>&nbsp;
+
+            <button class="btn btn-success btn--icon-text col-12 col-md-2" data-toggle="modal" (click)='consultarReporte()'
+              [disabled]='tipoUsuario != "1"'><i class="fas fa-file-export"></i> Exportar</button>&nbsp;
+        </div>
+
+        <div class="table-responsive">
+          <table id="dt-insumo" class="table table-bordered" style="width: 100%">
+            <thead class="thead-default">
+              <tr>
+                <th class="td-option">Código</th>
+                <th class="td-option">Nombre</th>
+                <th class="td-option">Descripción</th>
+                <th class="td-option">Unidad de Medida</th>
+                <th class="td-option">Cantidad</th>
+                <td class="td-option">Opciones</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let insu of listaInsumos'>
+                <td (click)='verDetalles(insu)' data-toggle="tooltip" title="Ver Detalles" class="anchoColumnaCodigo"><span
+                    class="badge" [ngClass]="getColorStock(insu.inventario)">{{insu.codigo}}</span></td>
+                <td>{{insu.nombre}}</td>
+                <td>{{insu.descripcion}}</td>
+                <td>{{insu.unidadMedida}}</td>
+                <td>{{insu.cantidad}}</td>
+                <td class="tableoption anchoColumnaOpciones">
+                  <button (click)='setActualizarInsumo(insu)'
+                          class="btn btn btn-outline-primary"
+                          [disabled]='tipoUsuario != 1'
+                          data-title="Edit"
+                          data-toggle="modal"
+                          data-target="#modal-editarinsumo"
+                          title="Editar insumo">
+
+                         <i class="fas fa-cog"></i>
+                  </button> &nbsp;
+                  <button (click)='eliminarInsumo(insu)'
+                          class="btn btn-outline-danger"
+                          data-title="Delete"
+                          [disabled]='tipoUsuario != 1'
+                          title="Eliminar insumo"
+                          data-toggle="modal"
+                          data-target="#delete">
+
+                        <i class="far fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br><br>
+        </div>
+
+      </div>
+  </div>
+
+
+  <!-- Modal agregar insumo -->
+<div class="modal fade" id="modal-insumo" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <!-- <div class="price-table__title">Agregar Insumo</div> -->
+        <div class="row">
+            <div class="price-table__title col-10"> Agregar insumo </div>
+            <div class="col-2">
+                <button class="btn btn-info btn--icon float-right"
+                        type="reset"
+                        data-dismiss="modal">
+                        <i class="zmdi zmdi-close"></i>
+                </button>
+            </div>
+        </div>
+      </header>
+      <form #formInsumos='ngForm' novalidate (ngSubmit)='crearInsumo(formInsumos)'>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-3">
+              <div class="form-group"
+                  [ngClass]="{'invalid': (insuId?.errors?.required || insuId?.errors?.minlength || insuId?.errors?.pattern) && insuId.touched} ">
+                <label>Código</label>
+                <input [(ngModel)]='insumo.codigo'
+                       type="text"
+                       class="form-control"
+                       maxlength="7"
+                       minlength="2"
+                       pattern="^(0|[1-9][0-9]*)$"
+                       required
+                       name="insuId"
+                       #insuId=ngModel>
+
+                <i class="form-group__bar"></i>
+
+              </div>
+
+              <div class="litle-text" *ngIf="insuId.touched" >
+                  <span *ngIf="insuId?.errors?.required">El codigo es requerido</span>
+                  <span *ngIf="insuId?.errors?.minlength">Se requieren minimo 2 caracteres</span>
+                  <span *ngIf="insuId?.errors?.pattern">Solo puede ingresar numeros</span>
+              </div>
+
+            </div>
+            <div class="col-sm-9">
+              <div class="form-group"
+                   [ngClass]="{'invalid': (insuNombre?.errors?.required || insuNombre?.errors?.minlength) && insuNombre.touched}">
+                <label>Nombre</label>
+                <input [(ngModel)]='insumo.nombre'
+                       type="text"
+                       class="form-control"
+                       minlength="2"
+                       required
+                       maxlength="45"
+                       name="insuNombre"
+                       #insuNombre="ngModel">
+                <i class="form-group__bar"></i>
+              </div>
+
+              <div class="litle-text" *ngIf="insuNombre.touched" >
+                  <span *ngIf="insuNombre?.errors?.required">El nombre es requerido</span>
+                  <span *ngIf="insuNombre?.errors?.minlength">Se requieren minimo 2 caracteres</span>
+              </div>
+
+
+            </div>
+          </div>
+          <div class="form-group"
+               [ngClass]="{'invalid': (insuDescripcion?.errors?.required || insuDescripcion?.errors?.minlength) && insuDescripcion.touched}">
+              <label>Descripción</label>
+              <input [(ngModel)]='insumo.descripcion'
+                     type="text"
+                     class="form-control"
+                     minlength="2"
+                     required
+                     maxlength="100"
+                     name="insuDescripcion"
+                     #insuDescripcion="ngModel">
+
+              <i class="form-group__bar"></i>
+
+            </div>
+
+            <div class="litle-text" *ngIf="insuDescripcion.touched" >
+                <span *ngIf="insuDescripcion?.errors?.required">Es necesaria una descripción del producto</span>
+                <span *ngIf="insuDescripcion?.errors?.minlength">Se requieren minimo 2 caracteres</span>
+            </div>
+
+
+
+          <div class="form-group">
+            <div class="select">
+              <label>Proveedor</label>
+              <select [(ngModel)]='insumo.idProveedor' class="form-control" name="insuProv">
+                <option [ngValue]='prov.idProveedor' *ngFor='let prov of listaProveedores'>
+                  {{prov.nombre}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group"
+                   [ngClass]="{'invalid': (insuInv?.errors?.required || insuInv?.errors?.minlength ||insuInv?.errors?.pattern) && insuInv.touched}">
+                <label>Cantidad</label>
+                <input [(ngModel)]='insumo.cantidad'
+                       type="text"
+                       class="form-control"
+                       minlength="1"
+                       maxlength="4"
+                       pattern="^(0|[1-9][0-9]*)$"
+                       required
+                       name="insuInv"
+                       #insuInv="ngModel">
+                <i class="form-group__bar"></i>
+              </div>
+
+              <div class="litle-text" *ngIf="insuInv.touched" >
+                  <span *ngIf="insuInv?.errors?.required">Es necesaria una descripción del producto</span>
+                  <span *ngIf="insuInv?.errors?.minlength">Se requieren minimo 2 caracteres</span>
+                  <span *ngIf="insuInv?.errors?.pattern">Solo se permiten numeros</span>
+              </div>
+
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group"
+                   [ngClass]="{'invalid': (insuUnidadMedida?.errors?.required) && insuUnidadMedida.touched}">
+                <div class="select">
+                  <label>Unidad de Medida</label>
+                  <select [(ngModel)]='insumo.idUnidadMedida'
+                          class="form-control form-control-lg"
+                          name="insuUnidadMedida"
+                          required
+                          #insuUnidadMedida="ngModel">
+
+                    <option [ngValue]='t.id'
+                            *ngFor='let t of listaUnidadesMedida'>
+                          {{t.nombre}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="litle-text" *ngIf="insuUnidadMedida.touched" >
+                  <span *ngIf="insuUnidadMedida?.errors?.required">Es necesaria una unidad de medida</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+            <button [disabled]="formInsumos.invalid"
+                    type="submit"
+                    class="btn btn-success">
+                    <i class="fas fa-plus"></i>
+                    Agregar Insumo
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- termina modal agregar insumo -->
+<div class="modal fade" id="modal-editarinsumo" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Editar Insumo</div>
+      </header>
+      <form #formeditarInsumos='ngForm' ngNativeValidate (ngSubmit)='editarInsumo()'>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Código</label>
+            <input [(ngModel)]='insumoActualizar.codigo' maxlength="7" minlength="2" readonly type="text"
+              class="form-control" required name="insuEditId">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+            <label>Nombre</label>
+            <input [(ngModel)]='insumoActualizar.nombre' minlength="2" maxlength="45" type="text" class="form-control"
+              required name="insuEditNombre">
+            <i class="form-group__bar"></i>
+          </div>
+          <div class="form-group">
+              <label>Descripción</label>
+              <input [(ngModel)]='insumoActualizar.descripcion' minlength="2" maxlength="45" type="text" class="form-control"
+                required name="insuEditDesc">
+              <i class="form-group__bar"></i>
+            </div>
+          <div class="form-group">
+            <div class="select">
+              <label>Proveedor</label>
+              <select [(ngModel)]='insumoActualizar.idProveedor' class="form-control" name="insuEditProv">
+                <option disabled selected>Proveedor</option>
+                <option [ngValue]="prov.idProveedor" *ngFor='let prov of listaProveedores'>
+                  {{prov.nombre}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+              <div class="select">
+                <label>Unidad de Medida</label>
+                <select [(ngModel)]='insumoActualizar.idUnidadMedida' class="form-control" name="insuEditUnidadMedida">
+                  <option disabled selected>Unidad de Medida</option>
+                  <option [ngValue]="unid.id" *ngFor='let unid of listaUnidadesMedida'>
+                    {{unid.nombre}}</option>
+                </select>
+              </div>
+            </div>
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Editar Insumo</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal"
+              (click)='cerrarModalEditar()'>Cerrar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-detalleinsumo" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Detalle Insumo</div>
+      </header>
+      <div class="modal-body">
+        <div class="form-group">
+          <p>Código: <b>{{insumoDetalle.codigo}}</b></p>
+          <p>Nombre: <b>{{insumoDetalle.nombre}}</b></p>
+          <p>Descripción: <b>{{insumoDetalle.descripcion}}</b></p>
+          <p>Cantidad: <b>{{insumoDetalle.cantidad}}</b> unidades disponibles</p>
+          <p>Unidad de Medida: <b>{{insumoDetalle.unidadMedida}}</b></p>
+          <p>Proveedor: <b>{{insumoDetalle.proveedor}}</b></p>
+          <div class="modal-footer modalMargenInferior">
+            <button type="button" class="btn btn-success" data-dismiss="modal"
+              (click)='cerrarModalEditar()'>Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-inputInsumo" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="price-table__title">Carga de insumos</div>
+      </header>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="estiloinputfile">
+            <p class="subir">Seleccionar archivo</p>
+            <input type="file" size="20" (change)="onFileAdded($event.target.files)" name="fileInsumos"
+              class="form-control" accept=".csv" id="upfileinsu">
+            <!--i class="form-group__bar"></i-->
+          </div>
+          <p>{{nombreArchivo}}</p>
+        </div>
+        <div class="modal-footer modalMargenInferior">
+          <button type="button" (click)='subirArchivo()' data-dismiss="modal" class="btn btn-primary">Aceptar</button>
+          <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal Compra-->
+<div class="modal fade" id="modal-nueva-compra" tabindex="-1"  data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <!-- <div class="price-table__title">Registrar nueva compra para {{compra.insumo}}</div> -->
+        <div class="row">
+            <div class="price-table__title col-10">Añadir compra </div>
+            <div class="col-2">
+                <button class="btn btn-info btn--icon float-right"
+                        data-dismiss="modal">
+                        <i class="zmdi zmdi-close"></i>
+                </button>
+            </div>
+        </div>
+      </header>
+      <div class="container">
+          <div class="alert alert-secondary" role="alert">
+              <i class="fas fa-wrench"></i> Sitio en construcción
+          </div>
+      </div>
+      <!-- <form #formNuevaCompra='ngForm' ngNativeValidate (ngSubmit)='nuevaCompra()'>
+        <div class="modal-body">
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label>Unidad de Medida</label>
+              <select class="form-control" required [(ngModel)]='compra.medida' name="medidaCompra">
+                <option *ngFor='let unidad of listUnidades'>{{unidad}}</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Cantidad de <b>{{compra.medida}}</b></label>
+                <input [(ngModel)]='compra.cantidad' minlength="2" type="number" class="form-control form-control-lg" required
+                  name="compraCantidad">
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Valor por <b>{{compra.medida}}</b></label>
+                <input [(ngModel)]='compra.valorUnitario' minlength="2" type="number" step="0.01" max="99999999.99"
+                  class="form-control form-control-lg" required name="compraValorUni">
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Cantidad de unidades por <b>{{compra.medida}}</b></label>
+                <input [(ngModel)]='compra.cantUnidadesMedida' minlength="2" type="number" step="0.01" max="999999.99"
+                  class="form-control form-control-lg" required name="insuEditPrecioVenta">
+                <i class="form-group__bar"></i>
+              </div>
+            </div>
+          </div>
+          <p>Cantidad en inventario actualmente <b>{{inventarioAnterior}}</b></p>
+          <p>Total de unidades que serán ingresadas a inventario
+            <b><strong>{{compra.cantUnidadesMedida*compra.cantidad}}</strong></b></p>
+          <p>Total inventario <b>{{inventarioAnterior + compra.cantUnidadesMedida*compra.cantidad}}</b></p>
+          <p>Total compra <b>{{compra.valorUnitario*compra.cantidad | currency: 'USD'}}</b></p>
+
+          <div class="modal-footer modalMargenInferior">
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </form> -->
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal añadir factura proveedor -->
+<div class="modal fade" id="modal-factura-proveedor" tabindex="-1"  data-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <header class="price-table__header bg-blue">
+            <div class="row">
+                <div class="price-table__title col-10">Añadir factura proveedor </div>
+                <div class="col-2">
+                    <button class="btn btn-info btn--icon float-right"
+                            data-dismiss="modal">
+                            <i class="zmdi zmdi-close"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <form #formNuevaCompra='ngForm' ngNativeValidate (ngSubmit)='nuevaCompra()'>
+          <div class="container">
+              <div class="alert alert-secondary" role="alert">
+                  <i class="fas fa-wrench"></i> Sitio en construcción
+              </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<!-- termina Modal añadir factura proveedor -->
+
+

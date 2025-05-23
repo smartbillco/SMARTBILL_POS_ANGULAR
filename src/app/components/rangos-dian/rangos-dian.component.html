@@ -1,0 +1,190 @@
+<div class="row">
+  <div class="col-md-4">
+    <header class="content__title">
+      <h1 class="h1 text-themecolor">RANGOS DIAN</h1>
+    </header>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="buttomheaderright mb-5">
+          <button
+            class="btn btn-primary btn--icon-text"
+            data-toggle="modal"
+            data-target="#modal-insertarRango"
+          >
+            <i class="fas fa-plus"></i>
+            Agregar rango
+          </button>
+          &nbsp;
+        </div>
+
+        <div class="table-responsive">
+          <table
+            id="dt-producto"
+            class="table table-bordered"
+            style="width: 100%"
+          >
+            <thead class="thead-default">
+              <tr>
+                <th class="td-option">Prefijo</th>
+                <th class="td-option">Valor inicial</th>
+                <th class="td-option">Valor final</th>
+                <th class="td-option">Resolución</th>
+                <th class="td-option">Fecha de inicio</th>
+                <th class="td-option">Fecha de vencimiento</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rango of listRangosDian">
+                <td
+                  title="Codigo de producto"
+                  class="anchoColumnaCodigo text-center td_edit"
+                >
+                  {{ rango.prefijo }}
+                </td>
+                <td class="text-center td_edit productSelected">
+                  {{ rango.valorInicial }}
+                </td>
+                <td class="text-center td_edit productSelected">
+                  {{ rango.valorFinal }}
+                </td>
+                <td class="text-center td_edit productSelected">
+                  {{ rango.resolucion }}
+                </td>
+
+                <td class="text-center td_edit productSelected">
+                  {{ rango.fechaInicioVigencia | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="text-center td_edit productSelected">
+                  {{ rango.fechaFinVigencia | date: "dd/MM/yyyy" }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br /><br />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inicia modela para crear un rango -->
+<div class="modal fade" id="modal-insertarRango" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <header class="price-table__header bg-blue">
+        <div class="row">
+          <div class="price-table__title col-10">Crear nuevo rango</div>
+
+          <div class="col-2">
+            <button
+              class="btn btn-info btn--icon float-right"
+              data-dismiss="modal"
+            >
+              <i class="zmdi zmdi-close"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      <form [formGroup]="form">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-4 col-md-4">
+              <div class="form-group">
+                <label for="prefijo">Prefijo (opcional)</label>
+                <input
+                  formControlName="prefijo"
+                  type="text"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <label for="valorInicial">Valor inicial</label>
+                <input
+                  formControlName="valorInicial"
+                  type="number"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <label for="valorFinal">Valor final</label>
+                <input
+                  formControlName="valorFinal"
+                  type="number"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-12">
+              <div class="form-group">
+                <label for="resolucion">resolucion</label>
+                <input
+                  formControlName="resolucion"
+                  type="text"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="descripcion">fecha de inicio vigencia</label>
+                <input
+                  formControlName="fechaInicioVigencia"
+                  type="date"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label for="descripcion"
+                  >fecha de finalización de vigencia</label
+                >
+                <input
+                  formControlName="fechaFinVigencia"
+                  type="date"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div
+              class="modal-footer modalMargenInferior col-12 justify-content-end"
+            >
+              <div class="">
+                <button
+                  (click)="form.reset()"
+                  class="btn btn-outline-secondary"
+                  data-dismiss="modal"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  (click)="crearRango()"
+                  class="btn btn-success ml-2"
+                  [disabled]="form.invalid"
+                >
+                  <i class="fas fa-plus"></i> Agregar rango
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Termina modal para insertar rango -->

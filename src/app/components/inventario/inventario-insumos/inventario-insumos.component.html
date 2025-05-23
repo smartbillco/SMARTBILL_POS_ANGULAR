@@ -1,0 +1,88 @@
+<div class="row">
+    <div class="col-md-4">
+        <header class="content__title">
+            <h1>INVENTARIO DE INSUMOS</h1>
+        </header>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="buttomheaderright">
+            <button class="btn btn-success btn--icon-text" data-toggle="modal" (click)='consultarReporte()' [disabled]='tipoUsuario != "1"'><i class="fa fa-file-excel-o"></i> Exportar</button> &nbsp;
+            <button class="btn btn-primary btn--icon-text" routerLink='/home/insumos-kardex' [disabled]='tipoUsuario != "1"'><i class="fa fa-box"></i> Kardex</button>
+        </div>
+        <div class="buttomheaderright">
+            <br>
+        </div>
+        <h4 class="card-title">Insumos</h4>
+
+        <div class="table-responsive">
+            <table id="dt-insumos" class="table table-bordered" style="width: 100%">
+                <thead class="thead-default">
+                    <tr>
+                        <th class="td-option">Código</th>
+                        <th class="td-option">Nombre</th>
+                        <th class="td-option">Existencia</th>
+                        <td class="td-option">Unidad</td>
+                        <td class="td-option">Opciones</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor='let in of listaInsumos'>
+                        <td>{{in.codigo}}</td>
+                        <td>{{in.nombre}}</td>
+                        <td>{{in.cantidad}}</td>
+                        <td>{{in.unidadMedida}}</td>
+                        <td class="tableoption anchoColumnaOpciones">
+                            <button (click)='setInsumoMov(in)' class="btn btn-success btn--icon" [disabled]='tipoUsuario != 1' data-toggle="modal" data-target="#modal-agregarMovimiento" title="Insertar Movimiento">
+                <i class="fa fa-plus"></i>
+              </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br><br>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="modal-agregarMovimiento" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <header class="price-table__header bg-blue">
+                <div class="price-table__title">Registrar Movimiento</div>
+            </header>
+            <form #formProductos='ngForm' ngNativeValidate (ngSubmit)='crearProducto()'>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Tipo de Movimiento</label>
+                        <select class="form-control form-control-lg" [(ngModel)]='movimientoinventario.tipo' name="CajTipMovim">
+              <option *ngFor='let r of listTipoMovimiento' [(ngValue)]='t'>{{r.nombre}}</option>
+            </select>
+                        <i class="form-group__bar"></i>
+                    </div>
+                    <div class="form-group">
+                        <label>Concepto</label>
+                        <select class="form-control form-control-lg" [(ngModel)]='movimientoinventario.concepto' name="EditEmp">
+              <option *ngFor='let r of listTipoMovimiento' [(ngValue)]='t'>{{r.nombre}}</option>
+            </select>
+                        <i class="form-group__bar"></i>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <label>Cantidad</label>
+                            <input class="form-control form-control-lg" [(ngModel)]='movimientoinventario.cantidad' type="number" name="valNuevoMov">
+                            <i class="form-group__bar"></i>
+                        </div>
+                    </div>
+                    <div class="modal-footer modalMargenInferior">
+                        <button type="submit" class="btn btn-primary">Registrar Movimiento</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
