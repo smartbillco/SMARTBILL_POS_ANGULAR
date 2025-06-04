@@ -16,6 +16,7 @@ import { response } from 'express';
 export class LoginComponent implements OnInit {
 
   usuario: Usuario;
+  nuevoUsuario;
   LoginUserData = {};
   correoOlvidado: string;
 
@@ -113,6 +114,21 @@ export class LoginComponent implements OnInit {
   validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
+  }
+
+  registerUser() {
+    if (this.nuevoUsuario.email === '' || this.nuevoUsuario.password == '') {
+      Swal('Campos vacios', 'Verifique si ha escrito su usuario y contraseña', 'error');
+      return;
+    }
+
+    if (!this.validateEmail(this.nuevoUsuario.email)) {
+      Swal('Correo inválido', 'Debe ingresar un correo electrónico válido.', 'warning');
+      return;
+    }
+
+    console.log(`Registrando ${this.nuevoUsuario.email}`);
+
   }
 
 }
