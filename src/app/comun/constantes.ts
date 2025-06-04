@@ -7,9 +7,9 @@ import { throwError } from "rxjs";
 
 @Injectable()
 export class Constantes {
-  // public static HOST = 'http://www.smartbill.us:8086';
   // public static HOST = "http://localhost:8080";
-  public static HOST = "https://www.smartbill.com.co/pos-0.0.1";
+  public static HOST = 'http://213.199.60.150:9090';
+  //public static HOST = "https://www.smartbill.com.co/pos-0.0.1";
 
   // SMARTBILL REMOTO
   public static CONSULTAR_USUARIO_SMARTBILL =
