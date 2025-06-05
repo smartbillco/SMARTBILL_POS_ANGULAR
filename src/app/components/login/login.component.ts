@@ -1,4 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Usuario } from '../../models/usuario';
 import Swal, { SweetAlertType } from 'sweetalert2';
 import { AuthService } from '../../services/auth.service';
@@ -7,6 +9,7 @@ import swal from 'sweetalert2';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Constantes } from 'src/app/comun/constantes';
 import { response } from 'express';
+import { EmpresaService } from 'src/app/services/empresa.service';
 
 
 @Component({
@@ -16,18 +19,31 @@ import { response } from 'express';
 export class LoginComponent implements OnInit {
 
   usuario: Usuario;
-  nuevoUsuario;
+  companyForm: FormGroup;
   LoginUserData = {};
   correoOlvidado: string;
 
   @Output() inicioSesion = new EventEmitter<Usuario>();
 
   constructor(private _auth: AuthService, private router: Router,
-    private userService: AuthService) {
+    private empresaService: EmpresaService,
+    private userService: AuthService, private fb: FormBuilder) {
     this.usuario = new Usuario();
   }
 
   ngOnInit() {
+    this.companyForm = this.fb.group({
+      tipoNegocio: [1],
+      nit: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      nombre: ['', Validators.required],
+      telefono: ['', [Validators.required, Validators.pattern('^[0-9]{7,15}$')]],
+      direccion: ['', Validators.required],
+      correo: ['', [Validators.required, Validators.email]],
+      ciudad: ['', Validators.required],
+      logo: ['logo.png'], // file upload
+      descripcion: [''],
+      regimen: ['', Validators.required]
+    });
 
   }
 
@@ -116,18 +132,29 @@ export class LoginComponent implements OnInit {
     return re.test(String(email).toLowerCase());
   }
 
-  registerUser() {
-    if (this.nuevoUsuario.email === '' || this.nuevoUsuario.password == '') {
-      Swal('Campos vacios', 'Verifique si ha escrito su usuario y contraseña', 'error');
-      return;
-    }
 
-    if (!this.validateEmail(this.nuevoUsuario.email)) {
-      Swal('Correo inválido', 'Debe ingresar un correo electrónico válido.', 'warning');
-      return;
-    }
+  registerCompany() {
+    if (this.companyForm.valid) {
+      const companyData = this.companyForm.value;
+      console.log('Registering user:', companyData);
+    
+      //Creating empresa in backend
+      this.empresaService.registrarNuevaEmpresa(companyData).subscribe({
+        next: (res) => {
+          console.log('Empresa registrada:', res);
+          Swal("Empresa creada");
+          
+        },
+        error: (err) => {
+          console.error('Error al registrar empresa:', err);
+          Swal("Hubo un error registrar tu empresa");
+        }
+      });
 
-    console.log(`Registrando ${this.nuevoUsuario.email}`);
+    } else {
+      console.log('Form is invalid');
+      this.companyForm.markAsTouched(); // Force show errors
+    }
 
   }
 

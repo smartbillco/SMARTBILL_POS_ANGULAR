@@ -74,36 +74,61 @@
     <!--Register Container-->
     <div class="login__block" id="register-component">
 
-        <div class="login__block__body">
+        <div class="login__block__body shadow-lg border">
 
-        <form role="form">
-
-            <div class="form-group form-group--centered">
-                <label>Correo Electrónico</label>
-                <input [(ngModel)]="nuevoUsuario.email" type="email" class="form-control" name="email" id="email" minlength="8" maxlength="45" required>
-                <i class="form-group__bar"></i>
-            </div>
-
-            <div class="form-group form-group--centered">
-                <label>Contraseña</label>
-                <input [(ngModel)]="nuevoUsuario.password" type="password" class="form-control" name="password" id="password" maxlength="20" minlength="6" required>
-                <i class="form-group__bar"></i>
-            </div>
-
-            <div class="form-group form-group--centered">
-                <label>Confirmar contraseña</label>
-                <input [(ngModel)]="nuevoUsuario.password" type="password" class="form-control" name="password" id="password"
-                    maxlength="20" minlength="6" required>
-                <i class="form-group__bar"></i>
-            </div>
+            <form [formGroup]="companyForm" (ngSubmit)="registerCompany()" enctype="multipart/form-data">
 
 
-            <a class="dropdown-item mb-3" data-ma-action="login-switch" data-ma-target="#l-login" href=""
-                style="color:cornflowerblue; text-decoration: underline; cursor: pointer;">Ya tengo una cuenta</a>
+                <div class="form-group form-group--centered">
+                    <label>NIT</label>
+                    <input formControlName="nit" type="text" class="form-control">
+                </div>
 
-            <button (click)="registerUser()" class="btn login__block__btn mr-2">Registrarse</button>
-           
-        </form>
+                <div class="form-group form-group--centered">
+                    <label>Nombre</label>
+                    <input formControlName="nombre" type="text" class="form-control">
+                </div>
+
+                <div class="form-group form-group--centered">
+                    <label>Teléfono</label>
+                    <input formControlName="telefono" type="text" class="form-control">
+                </div>
+
+                <div class="form-group form-group--centered">
+                    <label>Dirección</label>
+                    <input formControlName="direccion" type="text" class="form-control">
+                </div>
+
+                <div class="form-group form-group--centered">
+                    <label>Correo Electrónico</label>
+                    <input formControlName="correo" type="email" class="form-control">
+                </div>
+
+                <div class="form-group form-group--centered">
+                    <label>Ciudad</label>
+                    <input formControlName="ciudad" type="text" class="form-control">
+                </div>
+
+                <div class="form-group form-group--centered">
+                    <label>Descripción</label>
+                    <textarea formControlName="descripcion" class="form-control"></textarea>
+                </div>
+
+                <div class="form-group form-group--centered">
+                    <label>Régimen</label>
+                    <select formControlName="regimen" class="form-control">
+                        <option value="">Seleccione uno</option>
+                        <option value="simplificado">Simplificado</option>
+                        <option value="comun">Común</option>
+                    </select>
+                </div>
+
+                <a class="dropdown-item" data-ma-action="login-switch" data-ma-target="#l-login" href="" style="color:cornflowerblue; text-decoration: underline;">Ya tengo una cuenta</a>
+
+
+                <button type="submit" class="btn btn-primary shadow mt-3">Registrar Empresa</button>
+            </form>
+
 
         </div>
     </div>

@@ -235,6 +235,7 @@ export class Constantes {
   // EMPRESA
   public static GET_INFO_EMPRESA = "/webservice/empresas/getInfoEmpresa/";
   public static PUT_EMPRESA = "/webservice/empresas/actualizar";
+  public static POST_EMPRESA = "/webservice/empresas/nuevaEmpresa";
 
   // COMPRA PRODUCTOS
   public static GET_COMPRAS_BY_MES = "/webservice/comprasProducto/getByMonth/";
