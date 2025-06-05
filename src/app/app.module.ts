@@ -74,6 +74,7 @@ import { LoaderInterceptor } from './interceptors/loader-interceptor';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { ExportFileButtonsComponent } from './comun/components/export-file-buttons/export-file-buttons.component';
+import { RegisterComponent } from './components/register/register.component';
 
 @NgModule({
   declarations: [
@@ -131,7 +132,8 @@ import { ExportFileButtonsComponent } from './comun/components/export-file-butto
     AddProviderInvoiceComponent,
     SelectProviderComponent,
     SelectCusotmerComponent,
-    ExportFileButtonsComponent
+    ExportFileButtonsComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

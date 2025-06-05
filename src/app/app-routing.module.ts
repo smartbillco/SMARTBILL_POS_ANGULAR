@@ -35,52 +35,54 @@ import { RecetasComponent } from './components/recetas/recetas.component';
 import { MainComponent } from './components/main/main.component';
 import { RangosDianComponent } from './components/rangos-dian/rangos-dian.component';
 import { RecetasPlatosComponent } from './components/recetas/recetas-platos/recetas-platos.component';
+import { RegisterComponent } from './components/register/register.component';
 
 
 const routes: Routes = [
-  {path: '', redirectTo: 'login', pathMatch: 'full'},
-    {path: 'login', component: LoginComponent},
-    {path: 'home', component: MainComponent, canActivate: [AuthGuard],
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'register/:id', component: RegisterComponent },
+  {
+    path: 'home', component: MainComponent, canActivate: [AuthGuard],
     // {path: 'home', component: MainComponent,
-    children : [
-      {path: '', component: HomeComponent},
-      {path: 'categorias', component: CategoriasComponent},
-      {path: 'inicio', component: HomeComponent},
-      {path: 'productos', component: ProductosComponent},
-      {path: 'insumos', component: InsumosComponent},
-      {path: 'proveedores', component: ProveedoresComponent},
-      {path: 'clientes', component: ClientesComponent},
-      {path: 'quickreport', component: QuickreportComponent},
-      {path: 'ventas', component: VentasComponent},
-      {path: 'facturas', component: FacturasComponent},
-      {path: 'vendedores', component: VendedoresComponent},
-      {path: 'liquidaciones', component: LiquidacionesComponent},
-      {path: 'compras', component: FacturasProveedorComponent},
-      {path: 'gastos', component: GastosComponent},
-      {path: 'ingresos', component: IngresosComponent},
-      {path: 'perfil', component: PerfilEmpresaComponent},
-      {path: 'roles', component: RolesComponent},
-      {path: 'permisos', component: PermisosComponent},
-      {path: 'empleados', component: EmpleadosComponent},
-      {path: 'admRestaurantes', component: AdmRestauranteComponent},
-      {path: 'restaurante', component: RestauranteComponent},
-      {path: 'inventario-insumos', component: InventarioInsumosComponent},
-      {path: 'inventario-productos', component: InventarioProductosComponent},
-      {path: 'caja', component: CajaComponent},
-      {path: 'productos-kardex', component: IpkardexComponent},
-      {path: 'insumos-kardex', component: IkardexComponent},
-      {path: 'cuentas-cobrar', component: CuentasCobroComponent},
+    children: [
+      { path: '', component: HomeComponent },
+      { path: 'categorias', component: CategoriasComponent },
+      { path: 'inicio', component: HomeComponent },
+      { path: 'productos', component: ProductosComponent },
+      { path: 'insumos', component: InsumosComponent },
+      { path: 'proveedores', component: ProveedoresComponent },
+      { path: 'clientes', component: ClientesComponent },
+      { path: 'quickreport', component: QuickreportComponent },
+      { path: 'ventas', component: VentasComponent },
+      { path: 'facturas', component: FacturasComponent },
+      { path: 'vendedores', component: VendedoresComponent },
+      { path: 'liquidaciones', component: LiquidacionesComponent },
+      { path: 'compras', component: FacturasProveedorComponent },
+      { path: 'gastos', component: GastosComponent },
+      { path: 'ingresos', component: IngresosComponent },
+      { path: 'perfil', component: PerfilEmpresaComponent },
+      { path: 'roles', component: RolesComponent },
+      { path: 'permisos', component: PermisosComponent },
+      { path: 'empleados', component: EmpleadosComponent },
+      { path: 'admRestaurantes', component: AdmRestauranteComponent },
+      { path: 'restaurante', component: RestauranteComponent },
+      { path: 'inventario-insumos', component: InventarioInsumosComponent },
+      { path: 'inventario-productos', component: InventarioProductosComponent },
+      { path: 'caja', component: CajaComponent },
+      { path: 'productos-kardex', component: IpkardexComponent },
+      { path: 'insumos-kardex', component: IkardexComponent },
+      { path: 'cuentas-cobrar', component: CuentasCobroComponent },
       { path: 'platos', component: RecetasComponent },
       { path: 'recetas-platos', component: RecetasPlatosComponent },
       { path: 'rangos-dian', component: RangosDianComponent }
-
-
+      
     ]
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {useHash: true})],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

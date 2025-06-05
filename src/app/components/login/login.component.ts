@@ -132,30 +132,27 @@ export class LoginComponent implements OnInit {
     return re.test(String(email).toLowerCase());
   }
 
-
   registerCompany() {
-    if (this.companyForm.valid) {
-      const companyData = this.companyForm.value;
-      console.log('Registering user:', companyData);
-    
-      //Creating empresa in backend
-      this.empresaService.registrarNuevaEmpresa(companyData).subscribe({
-        next: (res) => {
-          console.log('Empresa registrada:', res);
-          Swal("Empresa creada");
-          
-        },
-        error: (err) => {
-          console.error('Error al registrar empresa:', err);
-          Swal("Hubo un error registrar tu empresa");
-        }
-      });
+  if (this.companyForm.valid) {
+    const companyData = this.companyForm.value;
 
-    } else {
-      console.log('Form is invalid');
-      this.companyForm.markAsTouched(); // Force show errors
-    }
-
+    this.empresaService.registrarNuevaEmpresa(companyData).subscribe({
+      next: (res) => {
+        console.log('Empresa registrada:', res);        
+        const empresaId = res.empresa.id;
+        
+        Swal('Éxito', 'Empresa creada correctamente', 'success').then(() => {
+          this.router.navigate(['/register', empresaId]); // Redirige pasando el id
+        });
+      },
+      error: (err) => {
+        console.error('Error al registrar empresa:', err);
+        Swal('Error', 'Hubo un problema al registrar la empresa', 'error');
+      }
+    });
+  } else {
+    this.companyForm.markAsTouched();
   }
+}
 
 }

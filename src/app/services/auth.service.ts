@@ -33,4 +33,8 @@ export class AuthService {
     return this.http.post(Constantes.HOST + Constantes.POST_ACTUALIZAR_PASSWORD, usuario, { headers: httpHeaders});
   }
 
+  registrarUsuario(data: any) {
+  return this.http.post(`${Constantes.HOST}/webservice/user/addUser`, data); // Usa el endpoint correcto
+}
+
 }
