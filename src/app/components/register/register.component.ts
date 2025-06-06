@@ -26,14 +26,23 @@ userForm: FormGroup;
     this.userForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      tipo: ['', Validators.required],
-      idEmpresa: [this.idEmpresa]
-    });
+      tipo: [1],
+      idEmpresa: [this.idEmpresa],
+      confirmPassword: ['', Validators.required]
+    }, { validators: this.passwordsMatchValidator }); 
+  }
+
+  passwordsMatchValidator(form: FormGroup) {
+    let password = form.get('password').value
+    let confirmPassword = form.get('confirmPassword').value
+    return password === confirmPassword ? null : { mismatch: true }
   }
 
   registerUser(): void {
     if (this.userForm.valid) {
-      this.authService.registrarUsuario(this.userForm.value).subscribe({
+      const {email, password, idEmpresa, tipo} = this.userForm.value;
+
+      this.authService.registrarUsuario({email, password, idEmpresa, tipo}).subscribe({
         next: (res) => {
           swal('Éxito', 'Usuario registrado correctamente', 'success').then(() => {
             this.router.navigate(['/login']);
