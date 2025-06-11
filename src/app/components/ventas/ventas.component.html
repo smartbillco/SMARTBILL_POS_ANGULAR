@@ -11,19 +11,22 @@
 
                         <div class="col-md-8" *ngIf="searchById">
                             <div class="form-group">
-                                <input type="text"
+                                <input [(ngModel)]="searchCliente"
+                                        (ngModelChange)="filtrarClientes()"
+                                        type="text"
                                        id="name"
                                        name="nameC"
                                        class="form-control form-control-lg is-valid"
                                        required
                                        minlength="2"
-                                       pattern="^[-+]?\d*$"
+                                       
                                        [(ngModel)]="cliente.identificacion"
                                        #idCliente
                                        placeholder="Número de celular o documento de cliente" />
                                 <i class="form-group__bar"></i>
                             </div>
                         </div>
+
 
                     <div class="col-md-2">
                         <div class="form-group">
@@ -47,6 +50,13 @@
 
                     </div>
                 </form>
+            </div>
+
+            <!-- Filter Box -->
+            <div *ngIf="filteredClientes.length > 0 && searchCliente" class="filter-box">
+                <div *ngFor="let customer of filteredClientes" class="filter-item" style="text-transform: uppercase;" (click)="addPhone(customer.celular)" style="cursor: pointer;">
+                    {{ customer.nombre }} - {{ customer.celular }}
+                </div>
             </div>
 
           <div class="row" class="clinetContainer">

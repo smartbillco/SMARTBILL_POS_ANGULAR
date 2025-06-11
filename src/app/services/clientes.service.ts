@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Cliente } from '../models/cliente';
 import { Constantes } from '../comun/constantes';
+import { map } from 'jquery';
 
 @Injectable({
   providedIn: 'root'

@@ -41,6 +41,11 @@ export interface Detalleproducto {
   styleUrls: ["./ventas.component.scss"],
 })
 export class VentasComponent implements OnInit {
+  //Filtro clientes
+  clientes: Array<Cliente>;
+  filteredClientes = [];
+  searchCliente = '';
+
   @ViewChild("recibe") recibeElement: ElementRef;
   @ViewChild("idCliente") idClienteElement: ElementRef;
   listaProductos: Array<Producto>;
@@ -119,6 +124,7 @@ export class VentasComponent implements OnInit {
 
   ngOnInit() {
     this.setCashRegisterById();
+    this.fetchClientes();
 
     this.loadStorageProducts();
     this.totalVenta = 0;
@@ -734,6 +740,40 @@ export class VentasComponent implements OnInit {
       }
     });
   }
+
+  public fetchClientes(): void { 
+    this.comClientServices.getListaClientes().subscribe({
+      next: (data) => {
+        // confirm it's an array
+        if (Array.isArray(data)) {
+          this.clientes = data;
+          this.filteredClientes = data;
+          console.log(this.clientes);
+        } else {
+          console.error('Expected array but got:', data);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load customers', err);
+      }
+    })
+
+  }
+
+  public filtrarClientes() {
+    const term = this.searchCliente.toLowerCase();
+    this.filteredClientes = this.clientes.filter(customer =>
+      customer.celular.toLowerCase().includes(term)
+    );
+
+    console.log(this.filteredClientes);
+  }
+
+  addPhone(phone: string) {
+    this.searchCliente = phone
+    
+  }
+
 }
 
 const addFooters = (doc) => {
