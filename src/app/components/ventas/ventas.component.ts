@@ -547,7 +547,7 @@ export class VentasComponent implements OnInit {
 
   searchCustomer() {
     this.comClientServices
-      .getCostumerByMobileNumberOrId(this.cliente.identificacion)
+      .getCostumerByMobileNumberOrId(this.searchCliente)
       .subscribe(
         (data: any) => {
           if (data.length === 0) {
@@ -567,6 +567,7 @@ export class VentasComponent implements OnInit {
             );
             this.idUsuarioSmartbill = this.newCustomer.identificacion;
             this.flagToremoveCustomer = false;
+            this.searchCliente = '';
           }
         },
         (error) => Constantes.handleError(error)
@@ -763,14 +764,14 @@ export class VentasComponent implements OnInit {
   public filtrarClientes() {
     const term = this.searchCliente.toLowerCase();
     this.filteredClientes = this.clientes.filter(customer =>
-      customer.celular.toLowerCase().includes(term)
+      customer.identificacion.toLowerCase().includes(term)
     );
 
     console.log(this.filteredClientes);
   }
 
-  addPhone(phone: string) {
-    this.searchCliente = phone
+  changeSearchCliente(documento: string) {
+    this.searchCliente = documento
     
   }
 

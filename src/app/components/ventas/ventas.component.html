@@ -54,8 +54,8 @@
 
             <!-- Filter Box -->
             <div *ngIf="filteredClientes.length > 0 && searchCliente" class="filter-box">
-                <div *ngFor="let customer of filteredClientes" class="filter-item" style="text-transform: uppercase;" (click)="addPhone(customer.celular)" style="cursor: pointer;">
-                    {{ customer.nombre }} - {{ customer.celular }}
+                <div *ngFor="let customer of filteredClientes" class="filter-item" style="text-transform: uppercase; cursor: pointer;" (click)="changeSearchCliente(customer.identificacion)">
+                    {{ customer.nombre }} - {{ customer.identificacion }}
                 </div>
             </div>
 
