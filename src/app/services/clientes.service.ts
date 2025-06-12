@@ -67,6 +67,6 @@ export class ClientesService {
   }
 
   getCostumerByMobileNumberOrId(value: any) {
-    return this.http.get(Constantes.HOST + Constantes.GET_CUSTOMER + value)
+    return this.http.get(Constantes.HOST + Constantes.GET_CUSTOMER_FILTER + value)
   }
 }

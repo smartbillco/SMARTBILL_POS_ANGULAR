@@ -254,6 +254,7 @@ export class Constantes {
 
   // BUSQUEDAS
   public static GET_CUSTOMER = "/webservice/clientes/buscarPorCedulaCelular/";
+  public static GET_CUSTOMER_FILTER = "/webservice/clientes/buscarPorNombreCedulaCelular/";
 
   // SMARTBILL LOCAL
   // public static CONSULTAR_USUARIO_SMARTBILL = 'http://localhost:8084/SmartBillCoreRS/api/usuario/getUserByDocument/';

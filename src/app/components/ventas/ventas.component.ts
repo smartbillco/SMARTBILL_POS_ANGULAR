@@ -124,7 +124,6 @@ export class VentasComponent implements OnInit {
 
   ngOnInit() {
     this.setCashRegisterById();
-    this.fetchClientes();
 
     this.loadStorageProducts();
     this.totalVenta = 0;
@@ -742,32 +741,43 @@ export class VentasComponent implements OnInit {
     });
   }
 
-  public fetchClientes(): void { 
-    this.comClientServices.getListaClientes().subscribe({
-      next: (data) => {
+
+  //Old filter method
+  //public fetchClientes(): void { 
+    //this.comClientServices.getListaClientes().subscribe({
+      //next: (data) => {
         // confirm it's an array
-        if (Array.isArray(data)) {
-          this.clientes = data;
-          this.filteredClientes = data;
+        //if (Array.isArray(data)) {
+          //this.clientes = data;
+          //this.filteredClientes = data;
+          //console.log(this.clientes);
+        //} else {
+          //console.error('Expected array but got:', data);
+        //}
+      //},
+      //error: (err) => {
+        //console.error('Failed to load customers', err);
+      //}
+    //})
+
+  //}
+
+
+  //NEW FILTER METHOD 
+
+  public async filtrarClientes() {
+    await this.comClientServices.getCostumerByMobileNumberOrId(this.searchCliente).subscribe((data) => {
+      console.log(data);
+      if (Array.isArray(data)) {
+          this.clientes = data
+          this.filteredClientes = data.slice(0, 7);
           console.log(this.clientes);
         } else {
           console.error('Expected array but got:', data);
         }
-      },
-      error: (err) => {
-        console.error('Failed to load customers', err);
-      }
     })
-
-  }
-
-  public filtrarClientes() {
-    const term = this.searchCliente.toLowerCase();
-    this.filteredClientes = this.clientes.filter(customer =>
-      customer.identificacion.toLowerCase().includes(term)
-    );
-
-    console.log(this.filteredClientes);
+    
+    
   }
 
   changeSearchCliente(documento: string) {
