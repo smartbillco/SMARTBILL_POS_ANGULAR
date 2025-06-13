@@ -12,7 +12,7 @@ import swal from 'sweetalert2';
 export class ProductosService {
 
   producto: Producto;
-  listaProductos: Array<Producto>;
+  listaProductos: Array<Producto> = [];
   idEmpresa: string;
 
 
