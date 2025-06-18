@@ -75,6 +75,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { ExportFileButtonsComponent } from './comun/components/export-file-buttons/export-file-buttons.component';
 import { RegisterComponent } from './components/register/register.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   declarations: [
@@ -140,6 +142,7 @@ import { RegisterComponent } from './components/register/register.component';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
+    BrowserAnimationsModule, 
     ReactiveFormsModule,
     NgxSpinnerModule,
     CommonModule
