@@ -97,8 +97,6 @@ export class LoginComponent implements OnInit {
         return;
       }
 
-      this.usuario.email = this.email;
-      this.usuario.password = this.password;
 
       // Llamada a servicio de autenticación de usuario
       this._auth.login(this.usuario).subscribe((res: any) => {
