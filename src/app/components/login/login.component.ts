@@ -43,6 +43,8 @@ export class LoginComponent implements OnInit {
   LoginUserData = {};
   correoOlvidado: string;
 
+  vista: 'login' | 'registroEmpresa' | 'olvidoPassword' = 'login';
+
   emailEmpresa: string = '';
   passwordEmpresa: string = '';
   nit: string = '';
@@ -81,6 +83,12 @@ export class LoginComponent implements OnInit {
   cambiarTipoLogin(tipo: 'usuario' | 'empresa') {
     this.tipoLogin = tipo;
   }
+
+  mostrarAlertaUsuario(): void {
+  alert('registra tu empresa antes de registrar un usuario.');
+  // Puedes cambiar la vista si lo deseas o dejar solo el alert
+  // this.vista = 'login';
+}
 
   login() {
 

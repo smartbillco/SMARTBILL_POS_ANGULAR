@@ -140,12 +140,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    CommonModule,
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule, 
     ReactiveFormsModule,
     NgxSpinnerModule,
-    CommonModule
   ],
   providers: [Constantes, appRoutingProviders, LoaderService,
     { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },],

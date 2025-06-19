@@ -1,7 +1,11 @@
-<div style="min-height: 100vh; background-color: #007C8F;">
-    <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
+<div class="d-flex flex-column justify-content-center align-items-center"
+    style="min-height: 100vh; background-color: #007C8F;">
 
-        <!-- Card -->
+    <!-- LOGIN -->
+    <div *ngIf="vista === 'login'" class="container d-flex flex-column justify-content-center align-items-center"
+        style="min-height: 100vh;">
+        <p class="text-white">Vista actual: {{ vista }}</p>
+
         <div class="card p-4 shadow" style="width: 400px; border-radius: 15px;">
             <div class="text-center mb-3">
                 <img src="assets/logo.png" style="width: 60px;" alt="Logo" />
@@ -9,7 +13,6 @@
 
             <h4 class="text-center mb-3 text-primary">Iniciar Sesión</h4>
 
-            <!-- Tabs -->
             <ul class="nav nav-tabs justify-content-center mb-3">
                 <li class="nav-item">
                     <a class="nav-link" [ngClass]="{active: tipoLogin === 'usuario'}"
@@ -21,10 +24,8 @@
                 </li>
             </ul>
 
-            <!-- Contenedor del slide -->
             <div class="slider-container">
                 <div class="slider-inner" [style.transform]="transform">
-
                     <!-- Formulario USUARIO -->
                     <form (ngSubmit)="login()" #formUsuario="ngForm" class="form-slide">
                         <div class="form-group">
@@ -70,66 +71,61 @@
                             </button>
                         </div>
                     </form>
-
                 </div>
             </div>
 
-            <!-- Error -->
             <div *ngIf="error" class="text-danger text-center mt-3">
                 {{ error }}
             </div>
         </div>
 
-        <!-- Íconos flotantes debajo del card -->
         <div class="floating-icons-below text-center">
             <div class="hover-expand-icon">
                 <i class="fa fa-plus"></i>
-                <a class="label" data-ma-target="#register-component">Registrar Empresa</a>
+                <a class="label" (click)="vista = 'registroEmpresa'">Registrar Empresa</a>
             </div>
             <div class="hover-expand-icon">
                 <i class="fa fa-user-plus"></i>
-                <span class="label">Registrar Usuario</span>
+                <span class="label" (click)="mostrarAlertaUsuario()">Registrar Usuario</span>
             </div>
             <div class="hover-expand-icon">
                 <i class="fa fa-question-circle"></i>
-                <span class="label">Ayuda</span>
+                <span class="label" (click)="vista = 'olvidoPassword'">Ayuda</span>
             </div>
         </div>
     </div>
 
-    <!-- Olvidé mi contraseña -->
-    <div class="d-flex justify-content-center align-items-center vh-100">
+    <!-- OLVIDÉ MI CONTRASEÑA -->
+    <div *ngIf="vista === 'olvidoPassword'" class="d-flex justify-content-center align-items-center min-vh-100">
         <div class="login__block bg-white p-4 rounded shadow" id="l-forget-password" style="width: 400px;">
             <div class="mb-3 text-primary text-center">
                 <i class="zmdi zmdi-account-circle fa-2x"></i>
                 <h5>Olvidé mi contraseña</h5>
             </div>
-
             <div class="form-group">
                 <label>Correo electrónico</label>
-                <input type="email" class="form-control" [(ngModel)]='correoOlvidado' maxlength="45" minlength="8">
+                <input type="email" class="form-control" [(ngModel)]="correoOlvidado" maxlength="45" minlength="8" />
             </div>
-
             <p class="text-muted mt-3 text-center">
                 Te enviaremos un correo para restablecer tu contraseña. Si no lo ves, revisa la carpeta de Spam.
             </p>
-
             <div class="text-center">
                 <button (click)="resetPassword()" class="btn btn-success rounded-circle">
                     <i class="zmdi zmdi-check"></i>
                 </button>
             </div>
-
             <div class="text-center mt-3">
-                <a class="text-primary" data-ma-action="login-switch" data-ma-target="#l-login" href="">Volver al
-                    login</a>
+                <a class="text-primary" (click)="vista = 'login'" style="cursor: pointer;">Volver al login</a>
             </div>
         </div>
     </div>
 
-    <!-- Registro de empresa -->
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="login__block bg-white p-4 rounded shadow-lg" id="register-component" style="width: 450px;">
+
+    <!-- REGISTRO DE EMPRESA -->
+    <div *ngIf="vista === 'registroEmpresa'" class="d-flex justify-content-center align-items-center vh-100">
+        <div class="login__block bg-white p-4 rounded shadow-lg" id="register-component"
+            style="width: 750px; max-width: 95%;">
+
             <h4 class="text-center mb-4 text-primary">Registrar Empresa</h4>
 
             <form [formGroup]="companyForm" (ngSubmit)="registerCompany()" enctype="multipart/form-data">
@@ -137,37 +133,30 @@
                     <label>NIT</label>
                     <input formControlName="nit" type="text" class="form-control">
                 </div>
-
                 <div class="form-group">
                     <label>Nombre</label>
                     <input formControlName="nombre" type="text" class="form-control">
                 </div>
-
                 <div class="form-group">
                     <label>Teléfono</label>
                     <input formControlName="telefono" type="text" class="form-control">
                 </div>
-
                 <div class="form-group">
                     <label>Dirección</label>
                     <input formControlName="direccion" type="text" class="form-control">
                 </div>
-
                 <div class="form-group">
                     <label>Correo Electrónico</label>
                     <input formControlName="correo" type="email" class="form-control">
                 </div>
-
                 <div class="form-group">
                     <label>Ciudad</label>
                     <input formControlName="ciudad" type="text" class="form-control">
                 </div>
-
                 <div class="form-group">
                     <label>Descripción</label>
                     <textarea formControlName="descripcion" class="form-control"></textarea>
                 </div>
-
                 <div class="form-group">
                     <label>Régimen</label>
                     <select formControlName="regimen" class="form-control">
@@ -178,9 +167,7 @@
                 </div>
 
                 <div class="text-center mt-3">
-                    <a class="text-info" data-ma-action="login-switch" data-ma-target="#l-login" href="">
-                        Ya tengo una cuenta
-                    </a>
+                    <a class="text-info" (click)="vista = 'login'">Ya tengo una cuenta</a>
                 </div>
 
                 <div class="text-center mt-3">

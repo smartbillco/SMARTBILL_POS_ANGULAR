@@ -1,0 +1,20 @@
+//inputs
+.form-control {
+    border: none;
+    border-bottom: 2px solid #ccc;
+    border-radius: 0;
+    background-color: transparent;
+    transition: border-bottom-color 0.3s ease;
+    box-shadow: none;
+
+    &:hover,
+    &:focus {
+        border-bottom-color: #007c8f;
+        box-shadow: none;
+        outline: none;
+    }
+}
+
+body {
+  background-color: #007c8f !important ;
+}
