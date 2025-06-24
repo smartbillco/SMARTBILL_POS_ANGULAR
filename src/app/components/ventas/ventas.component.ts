@@ -584,7 +584,7 @@ export class VentasComponent implements OnInit {
       this.smartbillService
         .guardarFactura(this.factura, String(this.idUsuarioSmartbill))
         .subscribe(
-          (response) => {},
+          (response) => { },
           (error) => console.error(error)
         );
     }
@@ -641,7 +641,7 @@ export class VentasComponent implements OnInit {
       .then(() => this.router.navigate([url]));
   }
 
-  getPfdFromJsonFactura(factura: Factura) {
+  getPfdCarta(factura: Factura) {
     const doc = new jsPDF("p", "pt");
     const nombreCliente = this.newCustomer
       ? this.newCustomer.nombre
@@ -723,6 +723,122 @@ export class VentasComponent implements OnInit {
     x.document.write(iframe);
   }
 
+  getPfdTiquete(factura: Factura) {
+    const doc = new jsPDF({
+      orientation: "p",
+      unit: "pt",
+      format: [226.77, 1200], // 80mm de ancho
+    });
+
+    const nombreCliente = this.newCustomer ? this.newCustomer.nombre : "GENÉRICO";
+    let y = 20;
+
+    // === LOGO CENTRADO y proporcional ===
+    const displayWidth = 50;
+    const aspectRatio = 317 / 261; // basado en tu logo
+    const displayHeight = displayWidth * aspectRatio;
+    const xPos = (226.77 - displayWidth) / 2;
+
+    doc.addImage(VarGloblas.logoJpg, "PNG", xPos, y, displayWidth, displayHeight);
+    y += displayHeight + 18; // más margen debajo del logo
+
+    // === TÍTULO ===
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("SMARTBILL", 113, y, { align: "center" });
+    y += 14;
+    doc.setFont("helvetica", "normal");
+    doc.text("DOCUMENTO DE VENTA", 113, y, { align: "center" });
+    y += 10;
+
+    doc.setDrawColor(150);
+    doc.line(10, y, 216, y); // línea separadora
+    y += 10;
+
+    // === DATOS DE CABECERA ===
+    doc.setFontSize(8);
+    doc.text(`FACTURA No: ${factura.codigo}`, 113, y, { align: "center" });
+    y += 12;
+    doc.text(`CLIENTE: ${nombreCliente}`, 113, y, { align: "center" });
+    y += 12;
+    doc.text(`EMPLEADO: Nombre empleado`, 113, y, { align: "center" });
+    y += 12;
+    doc.text(`FECHA: ${moment(new Date()).format("DD-MM-YYYY")}`, 113, y, { align: "center" });
+    y += 10;
+
+    doc.line(10, y, 216, y);
+    y += 10;
+
+    // === ENCABEZADO PRODUCTOS ===
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("PRODUCTO", 10, y);
+    doc.text("CANT", 100, y);    // más a la izquierda
+    doc.text("TOTAL", 210, y, { align: "right" }); // más a la derecha
+    y += 10;
+
+    doc.setFont("helvetica", "normal");
+
+    // === DETALLES DE PRODUCTOS ===
+    let totalFactura = 0;
+    for (const item of factura.listDetallesFactura) {
+      const nombre = item.nombre.length > 18 ? item.nombre.substring(0, 17) + "…" : item.nombre;
+      const cantidad = item.cantidad.toString();
+      const total = `$${item.total.toLocaleString("es-CO", {
+        minimumFractionDigits: 2,
+      })}`;
+
+      doc.text(nombre, 10, y);
+      doc.text(cantidad, 100, y);
+      doc.text(total, 210, y, { align: "right" });
+
+      y += 12;
+      totalFactura += item.total;
+    }
+
+    // === LÍNEA DE SEPARACIÓN ===
+    y += 5;
+    doc.setDrawColor(150);
+    doc.line(10, y, 216, y);
+    y += 10;
+
+    // === TOTAL FINAL ===
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("TOTAL:", 10, y);
+    doc.text(
+      `$${totalFactura.toLocaleString("es-CO", { minimumFractionDigits: 2 })}`,
+      210,
+      y,
+      { align: "right" }
+    );
+    y += 25;
+
+    // === PIE DE PÁGINA ===
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.text("Gracias por su compra", 113, y, { align: "center" });
+    y += 10;
+    doc.text("www.smartbill.com.co", 113, y, { align: "center" });
+
+    // === MOSTRAR PDF EN NUEVA PESTAÑA ===
+    const string = doc.output("datauristring");
+    const iframe = "<iframe width='100%' height='100%' src='" + string + "'></iframe>";
+    const x = window.open("", "_blank");
+    x.document.open();
+    x.document.write(iframe);
+  }
+
+  imprimirFactura(factura: Factura) {
+    const tipo = sessionStorage.getItem('tipo_impresion') || 'tiquete';
+
+    if (tipo === 'carta') {
+      this.getPfdCarta(factura);
+    } else {
+      this.getPfdTiquete(factura);
+    }
+  }
+
   public printInvoicePdf(invoice: Factura): void {
     Swal.fire({
       title: "Factura registrada con exito",
@@ -734,7 +850,7 @@ export class VentasComponent implements OnInit {
       cancelButtonText: "Inprimir pdf",
     }).then((result) => {
       if (!result.value) {
-        this.getPfdFromJsonFactura(invoice);
+        this.imprimirFactura(invoice);
       } else {
         return;
       }
@@ -744,21 +860,21 @@ export class VentasComponent implements OnInit {
 
   //Old filter method
   //public fetchClientes(): void { 
-    //this.comClientServices.getListaClientes().subscribe({
-      //next: (data) => {
-        // confirm it's an array
-        //if (Array.isArray(data)) {
-          //this.clientes = data;
-          //this.filteredClientes = data;
-          //console.log(this.clientes);
-        //} else {
-          //console.error('Expected array but got:', data);
-        //}
-      //},
-      //error: (err) => {
-        //console.error('Failed to load customers', err);
-      //}
-    //})
+  //this.comClientServices.getListaClientes().subscribe({
+  //next: (data) => {
+  // confirm it's an array
+  //if (Array.isArray(data)) {
+  //this.clientes = data;
+  //this.filteredClientes = data;
+  //console.log(this.clientes);
+  //} else {
+  //console.error('Expected array but got:', data);
+  //}
+  //},
+  //error: (err) => {
+  //console.error('Failed to load customers', err);
+  //}
+  //})
 
   //}
 
@@ -769,20 +885,20 @@ export class VentasComponent implements OnInit {
     await this.comClientServices.getCostumerByMobileNumberOrId(this.searchCliente).subscribe((data) => {
       console.log(data);
       if (Array.isArray(data)) {
-          this.clientes = data
-          this.filteredClientes = data.slice(0, 7);
-          console.log(this.clientes);
-        } else {
-          console.error('Expected array but got:', data);
-        }
+        this.clientes = data
+        this.filteredClientes = data.slice(0, 7);
+        console.log(this.clientes);
+      } else {
+        console.error('Expected array but got:', data);
+      }
     })
-    
-    
+
+
   }
 
   changeSearchCliente(documento: string) {
     this.searchCliente = documento
-    
+
   }
 
 }

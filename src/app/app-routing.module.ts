@@ -36,6 +36,7 @@ import { MainComponent } from './components/main/main.component';
 import { RangosDianComponent } from './components/rangos-dian/rangos-dian.component';
 import { RecetasPlatosComponent } from './components/recetas/recetas-platos/recetas-platos.component';
 import { RegisterComponent } from './components/register/register.component';
+import { ConfiguracionImpresionComponent } from './configuracion-impresion/configuracion-impresion.component';
 
 
 const routes: Routes = [
@@ -75,7 +76,8 @@ const routes: Routes = [
       { path: 'cuentas-cobrar', component: CuentasCobroComponent },
       { path: 'platos', component: RecetasComponent },
       { path: 'recetas-platos', component: RecetasPlatosComponent },
-      { path: 'rangos-dian', component: RangosDianComponent }
+      { path: 'rangos-dian', component: RangosDianComponent },
+      {path: 'configuracion-impresion', component: ConfiguracionImpresionComponent}
       
     ]
   }

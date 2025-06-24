@@ -76,6 +76,7 @@ import { CommonModule } from '@angular/common';
 import { ExportFileButtonsComponent } from './comun/components/export-file-buttons/export-file-buttons.component';
 import { RegisterComponent } from './components/register/register.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ConfiguracionImpresionComponent } from './configuracion-impresion/configuracion-impresion.component';
 
 
 @NgModule({
@@ -135,7 +136,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     SelectProviderComponent,
     SelectCusotmerComponent,
     ExportFileButtonsComponent,
-    RegisterComponent
+    RegisterComponent,
+    ConfiguracionImpresionComponent
   ],
   imports: [
     BrowserModule,

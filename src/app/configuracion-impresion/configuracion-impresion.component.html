@@ -1,0 +1,19 @@
+<div class="card p-3 shadow-sm bg-light" style="max-width: 400px; margin: auto;">
+  <h5 class="text-center mb-3">Configuración de Impresión</h5>
+
+  <div class="form-group">
+    <label for="tipoImpresion">Tipo de impresión:</label>
+    <select
+      id="tipoImpresion"
+      class="form-control"
+      [(ngModel)]="tipoSeleccionado"
+    >
+      <option value="tiquete">Tiquete (80mm)</option>
+      <option value="carta">Carta (A4)</option>
+    </select>
+  </div>
+
+  <button class="btn btn-primary btn-block mt-3" (click)="guardarConfiguracion()">
+    Guardar configuración
+  </button>
+</div>
