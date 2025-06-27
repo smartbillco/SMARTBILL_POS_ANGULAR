@@ -642,7 +642,11 @@ export class VentasComponent implements OnInit {
   }
 
   getPfdCarta(factura: Factura) {
-    const doc = new jsPDF("p", "pt");
+    const doc = new jsPDF({
+      orientation: "p",
+      unit: "pt",
+      format: [595.28, 650], // Ancho carta, pero más corto
+    });
     const nombreCliente = this.newCustomer
       ? this.newCustomer.nombre
       : "Generico";
@@ -715,34 +719,45 @@ export class VentasComponent implements OnInit {
     const final: any = doc.lastAutoTable.finalY;
     // doc.text(20, final, 'Hello!');
 
-    const string = doc.output("datauristring");
-    const iframe =
-      "<iframe width='100%' height='100%' src='" + string + "'></iframe>";
+    const blob = doc.output("blob");
+    const blobUrl = URL.createObjectURL(blob);
+    const nombreArchivo = `factura-${this.factura.codigo}.pdf`;
+
     const x = window.open("", "_blank");
     x.document.open();
-    x.document.write(iframe);
+    x.document.write(`
+  <html>
+    <head><title>${nombreArchivo}</title></head>
+    <body style="margin:0">
+      <iframe width="100%" height="100%" src="${blobUrl}"></iframe>
+      <a href="${blobUrl}" download="${nombreArchivo}" id="descargar" style="display:none"></a>
+    </body>
+    <script>
+      document.getElementById('descargar').click(); // descarga automática
+    </script>
+  </html>
+`);
+    x.document.close();
   }
 
   getPfdTiquete(factura: Factura) {
     const doc = new jsPDF({
       orientation: "p",
       unit: "pt",
-      format: [226.77, 1200], // 80mm de ancho
+      format: [226.77, 600], // tamaño tiquete
     });
 
     const nombreCliente = this.newCustomer ? this.newCustomer.nombre : "GENÉRICO";
     let y = 20;
 
-    // === LOGO CENTRADO y proporcional ===
     const displayWidth = 50;
-    const aspectRatio = 317 / 261; // basado en tu logo
+    const aspectRatio = 317 / 261;
     const displayHeight = displayWidth * aspectRatio;
     const xPos = (226.77 - displayWidth) / 2;
 
     doc.addImage(VarGloblas.logoJpg, "PNG", xPos, y, displayWidth, displayHeight);
-    y += displayHeight + 18; // más margen debajo del logo
+    y += displayHeight + 18;
 
-    // === TÍTULO ===
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
     doc.text("SMARTBILL", 113, y, { align: "center" });
@@ -752,10 +767,9 @@ export class VentasComponent implements OnInit {
     y += 10;
 
     doc.setDrawColor(150);
-    doc.line(10, y, 216, y); // línea separadora
+    doc.line(10, y, 216, y);
     y += 10;
 
-    // === DATOS DE CABECERA ===
     doc.setFontSize(8);
     doc.text(`FACTURA No: ${factura.codigo}`, 113, y, { align: "center" });
     y += 12;
@@ -769,40 +783,35 @@ export class VentasComponent implements OnInit {
     doc.line(10, y, 216, y);
     y += 10;
 
-    // === ENCABEZADO PRODUCTOS ===
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.text("PRODUCTO", 10, y);
-    doc.text("CANT", 100, y);    // más a la izquierda
-    doc.text("TOTAL", 210, y, { align: "right" }); // más a la derecha
+    doc.text("CANTIDAD", 100, y);
+    doc.text("TOTAL", 210, y, { align: "right" });
     y += 10;
 
     doc.setFont("helvetica", "normal");
 
-    // === DETALLES DE PRODUCTOS ===
     let totalFactura = 0;
     for (const item of factura.listDetallesFactura) {
       const nombre = item.nombre.length > 18 ? item.nombre.substring(0, 17) + "…" : item.nombre;
-      const cantidad = item.cantidad.toString();
-      const total = `$${item.total.toLocaleString("es-CO", {
-        minimumFractionDigits: 2,
-      })}`;
-
       doc.text(nombre, 10, y);
-      doc.text(cantidad, 100, y);
-      doc.text(total, 210, y, { align: "right" });
-
+      doc.text(item.cantidad.toString(), 140, y, { align: "right" });
+      doc.text(
+        `$${item.total.toLocaleString("es-CO", { minimumFractionDigits: 2 })}`,
+        210,
+        y,
+        { align: "right" }
+      );
       y += 12;
       totalFactura += item.total;
     }
 
-    // === LÍNEA DE SEPARACIÓN ===
     y += 5;
     doc.setDrawColor(150);
     doc.line(10, y, 216, y);
     y += 10;
 
-    // === TOTAL FINAL ===
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.text("TOTAL:", 10, y);
@@ -812,21 +821,33 @@ export class VentasComponent implements OnInit {
       y,
       { align: "right" }
     );
-    y += 25;
 
-    // === PIE DE PÁGINA ===
+    // === Footer fijo en parte inferior del tiquete ===
+    const pageHeight = doc.internal.pageSize.getHeight();
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
-    doc.text("Gracias por su compra", 113, y, { align: "center" });
-    y += 10;
-    doc.text("www.smartbill.com.co", 113, y, { align: "center" });
+    doc.text("Gracias por su compra", 113, pageHeight - 25, { align: "center" });
+    doc.text("www.smartbill.com.co", 113, pageHeight - 12, { align: "center" });
 
-    // === MOSTRAR PDF EN NUEVA PESTAÑA ===
-    const string = doc.output("datauristring");
-    const iframe = "<iframe width='100%' height='100%' src='" + string + "'></iframe>";
+    const blob = doc.output("blob");
+    const blobUrl = URL.createObjectURL(blob);
+    const nombreArchivo = `factura-${this.factura.codigo}.pdf`;
+
     const x = window.open("", "_blank");
     x.document.open();
-    x.document.write(iframe);
+    x.document.write(`
+  <html>
+    <head><title>${nombreArchivo}</title></head>
+    <body style="margin:0">
+      <iframe width="100%" height="100%" src="${blobUrl}"></iframe>
+      <a href="${blobUrl}" download="${nombreArchivo}" id="descargar" style="display:none"></a>
+    </body>
+    <script>
+      document.getElementById('descargar').click(); // descarga automática
+    </script>
+  </html>
+`);
+    x.document.close();
   }
 
   imprimirFactura(factura: Factura) {
