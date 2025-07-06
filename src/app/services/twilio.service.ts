@@ -8,12 +8,15 @@ import { Constantes } from '../comun/constantes';
 })
 export class TwilioService {
 
-  constructor(private http: HttpClient) {}
+  private endpointFactura = `${Constantes.TWILIO}/factura`;
 
-  enviarTextoWhatsapp(data: any, url: string): Observable<any> {
-    const httpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.post(Constantes.TWILIO + url, data, {headers: httpHeaders});
+  constructor(private http: HttpClient) { }
 
+  enviarMensajeFactura(data: any): Observable<any> {
+    const httpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post(this.endpointFactura, data, {
+      headers: httpHeaders,
+      responseType: 'text'  // 👈 va aquí, fuera de headers
+    });
   }
-
 }

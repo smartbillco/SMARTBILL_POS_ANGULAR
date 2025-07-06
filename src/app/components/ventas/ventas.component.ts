@@ -25,6 +25,7 @@ import { VarGloblas } from "../../comun/global";
 import * as moment from "moment";
 import { EMediosDePago } from "../../enum/e-medios-de-pago";
 import { ETipoDescuento } from "../../enum/e-tipo-descuento";
+import { TwilioService } from "src/app/services/twilio.service";
 
 declare var $: any;
 
@@ -96,6 +97,7 @@ export class VentasComponent implements OnInit {
   disableReceived: boolean = false;
 
   constructor(
+    private twilioService: TwilioService,
     private prodService: ProductosService,
     private catService: CategoriasService,
     private smartbillService: SmartbillService,
@@ -859,6 +861,31 @@ export class VentasComponent implements OnInit {
       this.getPfdTiquete(factura);
     }
   }
+  enviarMensajeFacturaWhatsApp(factura: Factura): void {
+    const telefono = this.newCustomer && this.newCustomer.celular
+      ? (this.newCustomer.celular.startsWith('+57') ? this.newCustomer.celular : `+57${this.newCustomer.celular}`)
+      : null;
+
+    if (!telefono) {
+      console.warn('⚠️ No se encontró el número de celular del cliente');
+      Swal.fire('Error', 'El cliente no tiene número de celular asignado.', 'error');
+      return;
+    }
+
+    const data = {
+      telefono: telefono,
+      nombreCliente: this.newCustomer.nombre,
+      numeroFactura: this.factura.codigo || 'SIN_CODIGO',
+      valorTotal: (this.factura.valor ? this.factura.valor.toFixed(2) : '0.00') + '$'
+    };
+
+    console.log('📤 Enviando mensaje con datos:', data);
+
+    this.twilioService.enviarMensajeFactura(data).subscribe({
+      next: (res) => console.log('✅ Mensaje enviado:', res),
+      error: (err) => console.error('❌ Error enviando mensaje:', err)
+    });
+  }
 
   public printInvoicePdf(invoice: Factura): void {
     Swal.fire({
@@ -871,8 +898,12 @@ export class VentasComponent implements OnInit {
       cancelButtonText: "Inprimir pdf",
     }).then((result) => {
       if (!result.value) {
+        this.enviarMensajeFacturaWhatsApp(invoice);
         this.imprimirFactura(invoice);
+        console.log("Cliente activo:", this.newCustomer);
       } else {
+        console.log("Cliente activo:", this.newCustomer);
+        this.enviarMensajeFacturaWhatsApp(invoice);
         return;
       }
     });
