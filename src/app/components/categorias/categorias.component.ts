@@ -10,20 +10,21 @@ import { VarGloblas } from "../../comun/global";
 import * as moment from "moment";
 import * as XLSX from "xlsx";
 import * as jsPDF from "jspdf";
+import "jspdf-autotable"; // necesario para autoTable
 declare var $: any;
 
 @Component({
   selector: "app-categorias",
   templateUrl: "./categorias.component.html",
 })
+
 export class CategoriasComponent implements OnInit {
-  categoria: CategoriaProducto;
-  listaCategorias: Array<CategoriaProducto>;
-  categoriaActualizar: CategoriaProducto;
+  categoria: CategoriaProducto = new CategoriaProducto();
+  listaCategorias: Array<CategoriaProducto> = [];
+  categoriaActualizar: CategoriaProducto = new CategoriaProducto();
   categoriaEliminar: CategoriaProducto;
   fileCategorias: File;
   usuario: Usuario;
-  dataTable: any;
   tipoUsuario: any;
 
   constructor(
@@ -31,23 +32,16 @@ export class CategoriasComponent implements OnInit {
     private userService: AuthService,
     private router: Router
   ) {
-    const resp = comCategoryService.getListaCategoria();
-    resp.subscribe((response: any) => {
-      $(document).ready(function () {
-        $("#dt-categoria").DataTable({
-          language: VarGloblas.dtOptions.language,
-        });
-      }),
-        (this.listaCategorias = response);
-    });
-    userService.defaultUser.subscribe((user) => (this.usuario = user));
-    this.categoriaActualizar = new CategoriaProducto();
-    this.categoriaEliminar = new CategoriaProducto();
-    this.categoria = new CategoriaProducto();
     this.tipoUsuario = localStorage.getItem("tipoUsuario");
+    this.userService.defaultUser.subscribe((user) => (this.usuario = user));
   }
 
   ngOnInit() {
+    this.recargarTabla();
+    this.initFileInput();
+  }
+
+  initFileInput() {
     $("#fileCategorias").fileinput({
       showCaption: true,
       browseClass: "btn btn-primary btn-lg",
@@ -55,16 +49,40 @@ export class CategoriasComponent implements OnInit {
     });
   }
 
-  nuevaCategoria() {
-    this.comCategoryService.nuevaCategoria(this.categoria).subscribe(
-      (data: any) => {
-        $("#modal-categoria").modal("hide");
+  recargarTabla(): void {
+    console.log("[recargarTabla] Iniciando llamada a getListaCategoria...");
+    this.comCategoryService.getListaCategoria().subscribe((response: any) => {
+      this.listaCategorias = response;
+      console.log("[recargarTabla] Categorías recibidas:", this.listaCategorias);
 
-        // const respuesta = JSON.parse(data.toString())
-        const respuesta = data;
+      setTimeout(() => {
+        if ($.fn.DataTable.isDataTable('#dt-categoria')) {
+          console.log("[recargarTabla] DataTable ya existe. Destruyendo...");
+          $('#dt-categoria').DataTable().destroy();
+        } else {
+          console.log("[recargarTabla] DataTable no existía.");
+        }
+
+        $('#dt-categoria').DataTable({
+          language: VarGloblas.dtOptions.language,
+          retrieve: true,
+        });
+        console.log("[recargarTabla] DataTable inicializado");
+      }, 0);
+    });
+  }
+
+  nuevaCategoria() {
+    console.log("[nuevaCategoria] Enviando nueva categoría:", this.categoria);
+    this.comCategoryService.nuevaCategoria(this.categoria).subscribe(
+      (response: any) => {
+        this.recargarTabla();
+        $("#modal-categoria").modal("hide");
+        window.location.reload();
+        const respuesta = response;
+        console.log("[nuevaCategoria] Respuesta del servidor:", respuesta);
+
         if (respuesta.code === "1") {
-          // debe mostrar un success sweet alert
-          this.reloadPage("/home/categorias");
           this.mostrarSweetAlertSuccess("Categoría registrada exitosamente.");
         } else if (respuesta.code === "2") {
           this.showDuplicateErrorMessage();
@@ -76,54 +94,46 @@ export class CategoriasComponent implements OnInit {
   }
 
   actualizarCategoria() {
-    $("#modal-editarcategoria").modal("hide");
+    console.log("[actualizarCategoria] Actualizando categoría:", this.categoriaActualizar);
 
-    this.comCategoryService
-      .actualizarCategoria(this.categoriaActualizar)
-      .subscribe(
-        (response: any) => {
-          // const respuesta = JSON.parse(response.toString())
-          const respuesta = response;
+    this.comCategoryService.actualizarCategoria(this.categoriaActualizar).subscribe(
+      (response: any) => {
+        this.recargarTabla();
+        $("#modal-editarcategoria").modal("hide");
+        window.location.reload();
+        const respuesta = response;
+        console.log("[actualizarCategoria] Respuesta del servidor:", respuesta);
 
-          if (respuesta.code === "1") {
-            // debe mostrar un success sweet alert
-            this.reloadPage("/home/categorias");
-            this.mostrarSweetAlertSuccess(
-              "Categoría actualizada correctamente"
-            );
-          } else if (respuesta.code === "2") {
-            this.showDuplicateErrorMessage();
-            this.reloadPage("/categorias");
-          }
-        },
-        (error) => this.handleError(error)
-      );
+        if (respuesta.code === "1") {
+          this.mostrarSweetAlertSuccess("Categoría actualizada correctamente");
+        } else if (respuesta.code === "2") {
+          this.showDuplicateErrorMessage();
+          this.recargarTabla();
+        }
+      },
+      (error) => this.handleError(error)
+    );
   }
 
   eliminarCategoria(cat: CategoriaProducto) {
     Swal({
-      title: "¿Deseas eliminar esta categoría (" + cat.nombre + ")?",
-      // text: 'Esto no se puede revertir',
+      title: `¿Deseas eliminar esta categoría (${cat.nombre})?`,
       type: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Si",
+      confirmButtonText: "Sí",
     }).then((result) => {
       if (result.value) {
         this.comCategoryService.eliminarCategoria(cat).subscribe(
           (response: any) => {
-            // let respuesta = JSON.parse(response.toString());
             const respuesta = response;
-
             if (respuesta.code === "1") {
-              this.reloadPage("/home/categorias");
-
               this.mostrarSweetAlertSuccess("La categoría ha sido eliminada.");
+              window.location.reload();
+              this.recargarTabla();
             } else if (respuesta.code === "3") {
               Swal("Error", "Esta categoría no puede ser eliminada.", "error");
-            } else {
-              console.log("no se pudo borrar la categoria");
             }
           },
           (error) => this.handleError(error)
@@ -132,104 +142,76 @@ export class CategoriasComponent implements OnInit {
     });
   }
 
-  consultarCategorias() {
-    const resp = this.comCategoryService.getListaCategoria();
-    resp.subscribe(
-      (response: any) => {
-        // $('#dt-categoria').DataTable().ajax.reload();
-
-        // this.listaCategorias = JSON.parse(response.toString()).msg;
-        this.listaCategorias = response.msg;
-      },
-      (error) => this.handleError(error)
-    );
+  subirArchivo() {
+    if (this.fileCategorias) {
+      this.comCategoryService.subirArchivo(this.fileCategorias).subscribe(
+        (response: any) => {
+          const respuesta = response;
+          if (respuesta.code === "1") {
+            this.recargarTabla();
+            this.mostrarSweetAlertSuccess("Categorías registradas de manera exitosa.");
+          } else if (respuesta.code === "2") {
+            this.showDuplicateErrorMessage();
+          }
+        },
+        (error) => this.handleError(error)
+      );
+    } else {
+      console.log("Error: debes subir un archivo.");
+    }
   }
 
   cerrarModalEditar() {
     this.categoriaActualizar = new CategoriaProducto();
-    $("#modal-editarcategoria").hide();
+    $("#modal-editarcategoria").modal("hide");
   }
 
-  subirArchivo() {
-    if (this.fileCategorias != null) {
-      const resp = this.comCategoryService
-        .subirArchivo(this.fileCategorias)
-        .subscribe(
-          (response: any) => {
-            // const respuesta = JSON.parse(response.toString());
-            const respuesta = response;
-
-            if (respuesta.code === "1") {
-              this.consultarCategorias();
-              this.mostrarSweetAlertSuccess(
-                "Categorías registradas de manera exitosa."
-              );
-            } else if (respuesta.code === "2") {
-              this.showDuplicateErrorMessage();
-            }
-          },
-          (error) => this.handleError(error)
-        );
-    } else {
-      console.log("error debes subir archivo");
-    }
-  }
   setCategoriaActualizar(cat: CategoriaProducto) {
     this.categoriaActualizar.idCategoriaProducto = cat.idCategoriaProducto;
     this.categoriaActualizar.nombre = cat.nombre;
   }
+
   onFileAdded(files: FileList) {
     this.fileCategorias = files[0];
   }
+
   private handleError(error: HttpErrorResponse) {
     Swal("Error!", error.message, "error");
   }
 
   private showDuplicateErrorMessage() {
-    Swal("Error!", "Esta categorías ya se encuentra registrada.", "error");
+    Swal("Error!", "Esta categoría ya se encuentra registrada.", "error");
   }
 
   private mostrarSweetAlertSuccess(body: string) {
-    Swal("Listo!", body, "success");
-  }
-
-  reloadPage(url: string) {
-    this.router
-      .navigateByUrl("/", { skipLocationChange: true })
-      .then(() => this.router.navigate([url]));
+    Swal("¡Listo!", body, "success");
   }
 
   public exportCategoriesListToExcel(event): void {
-    const payload: any[] = [];
-    payload.push(["Código", "Nombre"]);
-
+    const payload: any[] = [["Código", "Nombre"]];
     for (const categoria of this.listaCategorias) {
-      const newElement = [categoria.idCategoriaProducto, categoria.nombre];
-      payload.push(newElement);
+      payload.push([categoria.idCategoriaProducto, categoria.nombre]);
     }
+
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(payload);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Hoja 1");
+
     XLSX.writeFile(
       wb,
-      `Lista categorías  ${moment(new Date()).format("DD-MM-YYYY HH:MM ")}.xlsx`
+      `Lista categorías ${moment(new Date()).format("DD-MM-YYYY HH:mm")}.xlsx`
     );
   }
 
   exportCategoriesListToPdf(event) {
     const doc = new jsPDF();
-    const col = ["CODIGO", "NOMBRE"];
-    const rows = [];
-    /* The following array of object as response from the API req  */
-    const itemNew = this.listaCategorias;
-    itemNew.forEach((element) => {
-      const temp = [element.idCategoriaProducto, element.nombre];
-      rows.push(temp);
-    });
+    const col = ["CÓDIGO", "NOMBRE"];
+    const rows = this.listaCategorias.map((cat) => [
+      cat.idCategoriaProducto,
+      cat.nombre,
+    ]);
 
     doc.autoTable(col, rows);
-    doc.save(
-      `Lista categorías${moment(new Date()).format("DD-MM-YYYY HH:MM")}.pdf`
-    );
+    doc.save(`Lista categorías ${moment(new Date()).format("DD-MM-YYYY HH:mm")}.pdf`);
   }
 }

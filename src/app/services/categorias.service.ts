@@ -10,7 +10,7 @@ import { Constantes } from '../comun/constantes';
 })
 export class CategoriasService {
 
- listaCategoria;
+  listaCategoria: Array<CategoriaProducto> = [];
   private catlistaSource = new BehaviorSubject<Array<CategoriaProducto>>(this.listaCategoria);
   catcurrentLista = this.catlistaSource.asObservable();
   constructor(private http: HttpClient) { }
@@ -22,27 +22,30 @@ export class CategoriasService {
   nuevaCategoria(categoria: CategoriaProducto): Observable<any> {
     const httpHeaders = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': '63c42416b411d71fb39774c144d2bb842bb814ba'});
-    return this.http.post(Constantes.HOST + Constantes.POST_CATEGORIAS, categoria, { headers: httpHeaders});
+      'Authorization': '63c42416b411d71fb39774c144d2bb842bb814ba'
+    });
+    return this.http.post(Constantes.HOST + Constantes.POST_CATEGORIAS, categoria, { headers: httpHeaders });
   }
 
   actualizarCategoria(categoria: CategoriaProducto): Observable<any> {
     const httpHeaders = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': '63c42416b411d71fb39774c144d2bb842bb814ba'});
-    return this.http.post(Constantes.HOST + Constantes.POST_ACTUALIZAR_CATEGORIAS, categoria, { headers: httpHeaders});
+      'Authorization': '63c42416b411d71fb39774c144d2bb842bb814ba'
+    });
+    return this.http.post(Constantes.HOST + Constantes.POST_ACTUALIZAR_CATEGORIAS, categoria, { headers: httpHeaders });
   }
 
   eliminarCategoria(categoria: CategoriaProducto) {
     const httpHeaders = new HttpHeaders({
-      'Authorization': '63c42416b411d71fb39774c144d2bb842bb814ba'});
-      let params: URLSearchParams = new URLSearchParams();
-      params.append('id', String(categoria.idCategoriaProducto));
-    return this.http.delete(Constantes.HOST + Constantes.DELETE_CATEGORIAS +'/'+ String(categoria.idCategoriaProducto), { headers: httpHeaders } );
-    
+      'Authorization': '63c42416b411d71fb39774c144d2bb842bb814ba'
+    });
+    let params: URLSearchParams = new URLSearchParams();
+    params.append('id', String(categoria.idCategoriaProducto));
+    return this.http.delete(Constantes.HOST + Constantes.DELETE_CATEGORIAS + '/' + String(categoria.idCategoriaProducto), { headers: httpHeaders });
+
   }
 
-  subirArchivo(file: File): Observable<any>{
+  subirArchivo(file: File): Observable<any> {
 
     let url = Constantes.HOST + Constantes.POST_ARCHIVO_CATEGORIAS;
     let formData = new FormData();
